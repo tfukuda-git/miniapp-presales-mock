@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自治体向けLINEミニアプリ｜画面イメージ（モック）</title>
+<style>
+  :root{
+    --line:#06C755; --line-d:#04a548; --navy:#0B3D4F; --teal:#0E7C86;
+    --coral:#EE7B3C; --gold:#E8B23A; --ink:#16242B; --muted:#6B7C84;
+    --bg:#EEF2F3; --panel:#F6F9FA; --line-bg:#7494C0;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif; color:var(--ink); background:var(--bg); -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1180px; margin:0 auto; padding:34px 20px 70px;}
+  header.top{margin-bottom:8px;}
+  .eyebrow{color:var(--teal); font-weight:800; font-size:13px; letter-spacing:.12em;}
+  h1{font-size:27px; margin:6px 0 6px; letter-spacing:.01em;}
+  .lead{color:var(--muted); font-size:14px; line-height:1.7; max-width:880px;}
+  .tabs{display:flex; gap:10px; margin:24px 0 8px; flex-wrap:wrap;}
+  .tab{border:none; cursor:pointer; padding:12px 20px; border-radius:999px; font-size:14px; font-weight:700;
+       background:#fff; color:var(--navy); box-shadow:0 1px 3px rgba(0,0,0,.08); transition:.15s;}
+  .tab .dot{display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:8px; vertical-align:middle;}
+  .tab.active{color:#fff;}
+  .tab[data-uc="a"].active{background:var(--coral);}
+  .tab[data-uc="b"].active{background:var(--teal);}
+  .tab[data-uc="dash"].active{background:var(--navy);}
+  .panel{display:none; animation:fade .25s ease;}
+  .panel.show{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+  .uc-head{display:flex; align-items:baseline; gap:12px; margin:18px 2px 4px;}
+  .uc-head h2{font-size:20px;}
+  .uc-head .pill{font-size:12px; font-weight:700; color:#fff; padding:3px 10px; border-radius:999px;}
+  .uc-desc{color:var(--muted); font-size:13.5px; line-height:1.7; margin:2px 2px 18px; max-width:900px;}
+
+  .phones{display:flex; gap:22px; overflow-x:auto; padding:8px 2px 18px;}
+  .step{flex:0 0 auto; width:255px;}
+  .steplabel{font-size:12px; font-weight:800; color:var(--navy); margin:0 0 9px; display:flex; align-items:center; gap:8px;}
+  .stepnum{display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; color:#fff; font-size:12px;}
+  .steptip{font-weight:500; color:var(--muted); font-size:11.5px;}
+
+  /* phone */
+  .phone{width:255px; height:530px; background:#fff; border-radius:34px; padding:11px;
+         box-shadow:0 14px 34px rgba(11,61,79,.18); border:1px solid #e3eaec; position:relative;}
+  .screen{width:100%; height:100%; border-radius:25px; overflow:hidden; position:relative; background:#fff; display:flex; flex-direction:column;}
+  .notch{position:absolute; top:13px; left:50%; transform:translateX(-50%); width:78px; height:16px; background:#0c1417; border-radius:0 0 12px 12px; z-index:6;}
+  .lhead{background:var(--line); color:#fff; padding:30px 14px 11px; display:flex; align-items:center; gap:9px; flex:0 0 auto;}
+  .lhead .av{width:26px; height:26px; border-radius:7px; background:#fff; display:flex; align-items:center; justify-content:center; font-size:13px;}
+  .lhead .t{font-size:13px; font-weight:700; line-height:1.1;}
+  .lhead .sub{font-size:9.5px; opacity:.9;}
+  .lhead .x{margin-left:auto; font-size:15px; opacity:.9;}
+  .body{flex:1 1 auto; overflow:hidden; position:relative;}
+  .scroll{position:absolute; inset:0; padding:13px; overflow:hidden;}
+
+  .hero{border-radius:14px; padding:15px; color:#fff; margin-bottom:11px;}
+  .hero h3{font-size:15px; margin-bottom:4px;}
+  .hero p{font-size:10.5px; line-height:1.5; opacity:.95;}
+  .btn{display:block; text-align:center; padding:11px; border-radius:10px; font-weight:700; font-size:12.5px; color:#fff; background:var(--line); margin-top:auto;}
+  .btn.line{background:var(--line);}
+  .btn.coral{background:var(--coral);}
+  .btn.teal{background:var(--teal);}
+  .btn.ghost{background:#fff; color:var(--navy); border:1.5px solid #d7e0e3;}
+
+  .addcard{text-align:center; padding-top:22px;}
+  .qr{width:108px; height:108px; margin:8px auto 12px; border-radius:14px; background:
+      linear-gradient(90deg,#16242b 2px,transparent 2px) 0 0/13px 13px,
+      linear-gradient(#16242b 2px,transparent 2px) 0 0/13px 13px, #fff; border:6px solid #fff; box-shadow:0 0 0 1px #e3eaec;}
+  .addcard .biz{width:54px; height:54px; border-radius:14px; background:var(--line); color:#fff; display:flex; align-items:center; justify-content:center; font-size:24px; margin:6px auto 8px;}
+  .addcard h3{font-size:14px;}
+  .addcard .meta{font-size:10.5px; color:var(--muted); margin:3px 0 16px;}
+
+  .list-row{display:flex; gap:10px; align-items:center; background:var(--panel); border-radius:12px; padding:9px; margin-bottom:9px; border:1px solid #eef2f3;}
+  .thumb{width:46px; height:46px; border-radius:9px; flex:0 0 auto; display:flex; align-items:center; justify-content:center; font-size:20px; color:#fff;}
+  .list-row .nm{font-size:12px; font-weight:700;}
+  .list-row .ds{font-size:10px; color:var(--muted); margin-top:2px;}
+  .list-row .tag{font-size:9px; font-weight:700; color:var(--coral); background:#fdeee3; padding:2px 6px; border-radius:6px; display:inline-block; margin-top:4px;}
+
+  .chips{display:flex; flex-wrap:wrap; gap:6px; margin:4px 0 12px;}
+  .chip{font-size:10.5px; padding:6px 11px; border-radius:999px; background:#fff; border:1.5px solid #dce4e6; color:var(--muted);}
+  .chip.on{background:var(--coral); color:#fff; border-color:var(--coral);}
+  .chip.on.teal{background:var(--teal); border-color:var(--teal);}
+
+  .map{height:128px; border-radius:12px; position:relative; overflow:hidden; margin-bottom:11px; background:#dfe7e9;}
+  .sech{font-size:11px; font-weight:800; color:var(--navy); margin:2px 0 8px; letter-spacing:.02em;}
+
+  .coupon{border-radius:14px; border:2px dashed var(--coral); padding:14px; text-align:center; position:relative; background:#fff;}
+  .coupon.used{border-color:#bcc7cb;}
+  .coupon .off{font-size:30px; font-weight:800; color:var(--coral); line-height:1;}
+  .coupon.used .off{color:#aeb9bd;}
+  .coupon .for{font-size:11px; color:var(--muted); margin:6px 0 2px;}
+  .coupon .nm{font-size:13px; font-weight:700;}
+  .stamp-used{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-14deg); border:3px solid #d2393a; color:#d2393a; font-weight:800; font-size:20px; padding:4px 12px; border-radius:8px; opacity:.85;}
+
+  /* stamp grid */
+  .stampgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin:6px 0 12px;}
+  .sc{aspect-ratio:1; border-radius:12px; background:var(--panel); border:1.5px solid #e6eced; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;}
+  .sc .ic{font-size:22px; filter:grayscale(1); opacity:.4;}
+  .sc.done{background:#eafaf0; border-color:var(--line);}
+  .sc.done .ic{filter:none; opacity:1;}
+  .sc .lab{font-size:8.5px; color:var(--muted);}
+  .sc.done .lab{color:var(--line-d); font-weight:700;}
+  .prog{height:8px; border-radius:999px; background:#e6eced; overflow:hidden; margin:2px 0 4px;}
+  .prog>i{display:block; height:100%; background:var(--teal);}
+
+  .anim-card{background:var(--panel); border-radius:12px; padding:12px; margin-bottom:10px; border:1px solid #eef2f3;}
+  .anim-card .ph{height:96px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:46px; margin-bottom:8px;}
+  .anim-card h4{font-size:13px;}
+  .anim-card .info{font-size:10px; color:var(--muted); line-height:1.5; margin-top:3px;}
+  .lang{display:flex; gap:5px; margin-top:7px;}
+  .lang span{font-size:9px; border:1px solid #dce4e6; border-radius:6px; padding:2px 6px; color:var(--muted);}
+
+  .complete{text-align:center; padding-top:14px;}
+  .complete .big{font-size:40px; margin:6px 0;}
+  .complete h3{font-size:16px; color:var(--teal);}
+  .complete p{font-size:10.5px; color:var(--muted); margin:5px 0 14px; line-height:1.5;}
+
+  .push{background:#fff; border:1px solid #e6eced; border-radius:12px; padding:10px; display:flex; gap:9px; box-shadow:0 4px 12px rgba(0,0,0,.06); margin-bottom:9px;}
+  .push .ai{width:30px; height:30px; border-radius:8px; background:var(--teal); color:#fff; display:flex; align-items:center; justify-content:center; font-size:15px; flex:0 0 auto;}
+  .push .tt{font-size:10.5px; font-weight:700;}
+  .push .mm{font-size:9.5px; color:var(--muted); margin-top:2px; line-height:1.4;}
+
+  /* dashboard */
+  .dash{background:#fff; border-radius:16px; padding:22px; box-shadow:0 8px 24px rgba(11,61,79,.08);}
+  .dash h3{font-size:16px; margin-bottom:3px;}
+  .dash .sub{font-size:12px; color:var(--muted); margin-bottom:18px;}
+  .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px;}
+  .kpi{background:var(--panel); border-radius:12px; padding:14px;}
+  .kpi .lab{font-size:11px; color:var(--muted);}
+  .kpi .val{font-size:26px; font-weight:800; color:var(--navy); margin-top:3px;}
+  .kpi .val small{font-size:13px; font-weight:700;}
+  .kpi.accent .val{color:var(--coral);}
+  .bars{display:flex; flex-direction:column; gap:11px;}
+  .bar-row{display:grid; grid-template-columns:120px 1fr 56px; align-items:center; gap:12px;}
+  .bar-row .n{font-size:12px; font-weight:600;}
+  .track{height:18px; background:#eef2f3; border-radius:6px; overflow:hidden;}
+  .track>i{display:block; height:100%; border-radius:6px; background:linear-gradient(90deg,var(--teal),var(--line));}
+  .bar-row .c{font-size:12px; font-weight:700; text-align:right; color:var(--navy);}
+  table.settle{width:100%; border-collapse:collapse; margin-top:18px; font-size:12px;}
+  table.settle th{background:var(--navy); color:#fff; text-align:left; padding:9px 11px; font-weight:700;}
+  table.settle td{padding:9px 11px; border-bottom:1px solid #eef2f3;}
+  table.settle tr:nth-child(even) td{background:#fafcfc;}
+  table.settle td.r{text-align:right;}
+  .note{font-size:11px; color:var(--muted); margin-top:14px; line-height:1.6; background:var(--panel); padding:12px 14px; border-radius:10px;}
+  .foot{margin-top:30px; font-size:11px; color:var(--muted); border-top:1px solid #dde5e7; padding-top:14px; line-height:1.7;}
+  .legend{font-size:11px; color:var(--muted); margin:0 2px 4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">CLIENT IMAGE / 画面イメージ（モック）</div>
+    <h1>自治体向け LINEミニアプリ｜先方提示用 画面イメージ</h1>
+    <p class="lead">阪急交通社さまが自治体に「何ができるか」を絵で見せるためのモックです。実装イメージの叩き台で、UI・文言・ブランドは案件ごとに調整します。下のタブで2つの代表ユースケースと、店舗別の集計ダッシュボードを切り替えてご覧ください。</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-uc="a"><span class="dot" style="background:var(--coral)"></span>① 回遊クーポン（ルミナリエ型）</button>
+    <button class="tab" data-uc="b"><span class="dot" style="background:var(--teal)"></span>② スタンプラリー（動物園型）</button>
+    <button class="tab" data-uc="dash"><span class="dot" style="background:var(--navy)"></span>③ 集計・精算ダッシュボード</button>
+  </div>
+
+  <!-- ============ USE CASE A ============ -->
+  <section class="panel show" id="uc-a">
+    <div class="uc-head"><h2>回遊クーポン</h2><span class="pill" style="background:var(--coral)">神戸ルミナリエ型・地域回遊</span></div>
+    <p class="uc-desc">来場者をQRで友だち化し、近隣のバー・店舗へ誘導。地図と割引クーポンで「見て帰るだけ」から「地域でお金を落としてもらう」流れをつくります。クーポンは店頭タップで“その場完結”、利用は店舗別に自動集計されます。</p>
+    <p class="legend">← 横にスクロールできます</p>
+    <div class="phones">
+
+      <div class="step">
+        <div class="steplabel"><span class="stepnum" style="background:var(--coral)">1</span>友だち追加<span class="steptip">会場QRを読む</span></div>
+        <div class="phone"><div class="notch"></div><div class="screen">
+          <div class="lhead"><div class="av">🎄</div><div><div class="t">神戸ルミナリエ 公式</div><div class="sub">回遊クーポン ミニアプリ</div></div><div class="x">✕</div></div>
+          <div class="body"><div class="scroll addcard">
+            <div class="biz">🎄</div>
+            <h3>神戸ルミナリエ 公式</h3>
+            <div class="meta">友だち追加で「街バル割引」が使えます</div>
+            <div class="qr"></div>
+            <a class="btn line" style="margin-top:10px">＋ 友だち追加して始める</a>
+            <p style="font-size:9.5px;color:var(--muted);margin-top:10px;line-height:1.5">会場ポスターのQRを読むだけ。アプリのインストール・会員登録は不要です。</p>
+          </div></div>
+        </div></div>
+      </div>
+
+      <div class="step">
+        <div class="steplabel"><span class="stepnum" style="background:var(--coral)">2</span>好みで絞り込み<span class="steptip">近隣スポット表示</span></div>
+        <div class="phone"><div class="notch"></div><div class="screen">
+          <div class="lhead"><div class="av">🍷</div><div><div class="t">近くのお店をさがす</div><div class="sub">現在地から徒歩5分圏内</div></div><div class="x">✕</div></div>
+          <div class="body"><div class="scroll">
+            <div class="sech">気分で選ぶ</div>
+            <div class="chips"><span class="chip on">バル・バー</span><span class="chip">和食</span><span class="chip">スイーツ</span><span class="chip">居酒屋</span></div>
+            <div class="map">
+              <svg width="100%" height="100%" viewBox="0 0 230 128" preserveAspectRatio="xMidYMid slice">
+                <rect width="230" height="128" fill="#e3ebec"/>
+                <path d="M0 40 H230 M0 86 H230 M70 0 V128 M150 0 V128" stroke="#cdd9db" stroke-width="7" fill="none"/>
+                <circle cx="70" cy="40" r="7" fill="#0E7C86"/><circle cx="150" cy="86" r="7" fill="#EE7B3C"/>
+                <circle cx="110" cy="63" r="9" fill="#EE7B3C" stroke="#fff" stroke-width="3"/>
+                <circle cx="40" cy="100" r="7" fill="#EE7B3C"/>
+                <text x="111" y="67" font-size="9" fill="#fff" text-anchor="middle">📍</text>
+              </svg>
+            </div>
+            <div class="list-row"><div class="thumb" style="background:var(--coral)">🍷</div><div><div class="nm">Bar Lumiere</div><div class="ds">クラフトカクテル・徒歩2分</div><span class="tag">1ドリンク無料</span></div></div>
+            <div class="list-row"><div class="thumb" style="background:var(--teal)">🍶</div><div><div class="nm">立ち呑み 港</div><div class="ds">地酒と海鮮・徒歩4分</div><span class="tag">10%OFF</span></div></div>
+          </div></div>
+        </div></div>
+      </div>
+
+      <div class="step">
+        <div class="steplabel"><span class="stepnum" style="background:var(--coral)">3</span>クーポン取得<span class="steptip">店舗詳細を見る</span></div>
+        <div class="phone"><div class="notch"></div><div class="screen">
+          <div class="lhead"><div class="av">🍷</div><div><div class="t">Bar Lumiere</div><div class="sub">クラフトカクテル</div></div><div class="x">✕</div></div>
+          <div class="body"><div class="scroll" style="display:flex;flex-direction:column">
+            <div class="hero" style="background:linear-gradient(135deg,#EE7B3C,#d2632a)"><h3>来店者かぎりの特典</h3><p>ルミナリエ会場から徒歩2分。落ち着いた雰囲気でクラフトカクテルを。</p></div>
+            <div class="coupon">
+              <div class="off">1杯<span style="font-size:14px"> 無料</span></div>
+              <div class="for">ご注文時にこの画面を提示</div>
+              <div class="nm">ウェルカムドリンク サービス</div>
+            </div>
+            <a class="btn coral" style="margin-top:13px">このクーポンを使う</a>
+            <p style="font-size:9px;color:var(--muted);margin-top:9px;text-align:center;line-height:1.4">※その場で完結。後払い精算は発生しません</p>
+          </div></div>
+        </div></div>
+      </div>
+
+      <div class="step">
+        <div class="steplabel"><span class="stepnum" style="background:var(--coral)">4</span>店頭で利用<span class="steptip">タップで使用済み</span></div>
+        <div class="phone"><div class="notch"></div><div class="screen">
+          <div class="lhead"><div class="av">🍷</div><div><div class="t">Bar Lumiere</div><div class="sub">クーポン利用</div></div><div class="x">✕</div></div>
+          <div class="body"><div class="scroll" style="display:flex;flex-direction:column">
+            <div class="coupon used" style="margin-top:8px">
+              <div class="stamp-used">USED</div>
+              <div class="off">1杯<span style="font-size:14px"> 無料</span></div>
+              <div class="for">2025/12/13 19:42 利用済み</div>
+              <div class="nm">ウェルカムドリンク サービス</div>
+            </div>
+            <p style="font-size:10.5px;color:var(--muted);margin:14px 4px;line-height:1.6;text-align:center">店員の前でタップ → 即「使用済み」。利用データは店舗別に自動集計されます。</p>
+            <div class="push" style="margin-top:6px"><div class="ai">🎁</div><div><div class="tt">次の1軒はいかが？</div><div class="mm">この後使える「2軒目10%OFF」が届きました</div></div></div>
+          </div></div>
+        </div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ USE CASE B ============ -->
+  <section class="panel" id="uc-b">
+    <div class="uc-head"><h2>スタンプラリー</h2><span class="pill" style="background:var(--teal)">動物園・施設・イベント型</span></div>
+    <p class="uc-desc">入園時にQRで友だち化。各エリアを巡ってスタンプを集め、展示の解説や多言語情報も提供。コンプリートでお土産クーポンを発行し、来園後も「また来てね」配信で再来訪につなげます。紙のスタンプ・解説をそのままDX化します。</p>
+    <p class="legend">← 横にスクロールできます</p>
+    <div class="phones">
+
+      <div class="step">
+        <div class="steplabel"><span class="stepnum" style="background:var(--teal)">1</span>入園で友だち追加<span class="steptip">入口QR</span></div>
+        <div class="phone"><div class="notch"></div><div class="screen">
+          <div class="lhead"><div class="av">🦁</div><div><div class="t">○○市動物園</div><div class="sub">スタンプラリー</div></div><div class="x">✕</div></div>
+          <div class="body"><div class="scroll addcard">
+            <div class="biz" style="background:var(--teal)">🦁</div>
+            <h3>○○市動物園</h3>
+            <div class="meta">友だち追加でスタンプラリーに参加</div>
+            <div class="qr"></div>
+            <a class="btn teal" style="margin-top:10px">＋ 友だち追加して参加</a>
+            <p style="font-size:9.5px;color:var(--muted);margin-top:10px;line-height:1.5">全エリアを巡るとお土産コーナーで使えるクーポンをプレゼント🎁</p>
+          </div></div>
+        </div></div>
+      </div>
+
+      <div class="step">
+        <div class="steplabel"><span class="stepnum" style="background:var(--teal)">2</span>各エリアでスタンプ<span class="steptip">QRを読む</span></div>
+        <div class="phone"><div class="notch"></div><div class="screen">
+          <div class="lhead"><div class="av">🦁</div><div><div class="t">スタンプカード</div><div class="sub">あと2つでコンプリート！</div></div><div class="x">✕</div></div>
+          <div class="body"><div class="scroll">
+            <div class="sech">あつめたスタンプ　4 / 6</div>
+            <div class="prog"><i style="width:66%"></i></div>
+            <div class="stampgrid">
+              <div class="sc done"><div class="ic">🦁</div><div class="lab">ライオン</div></div>
+              <div class="sc done"><div class="ic">🐘</div><div class="lab">ゾウ</div></div>
+              <div class="sc done"><div class="ic">🐧</div><div class="lab">ペンギン</div></div>
+              <div class="sc done"><div class="ic">🦒</div><div class="lab">キリン</div></div>
+              <div class="sc"><div class="ic">🐯</div><div class="lab">トラ</div></div>
+              <div class="sc"><div class="ic">🐻</div><div class="lab">クマ</div></div>
+            </div>
+            <a class="btn teal">QRを読んでスタンプGET</a>
+          </div></div>
+        </div></div>
+      </div>
+
+      <div class="step">
+        <div class="steplabel"><span class="stepnum" style="background:var(--teal)">3</span>解説・多言語<span class="steptip">展示の情報提供</span></div>
+        <div class="phone"><div class="notch"></div><div class="screen">
+          <div class="lhead"><div class="av">🐧</div><div><div class="t">ペンギンプール</div><div class="sub">スタンプGET！</div></div><div class="x">✕</div></div>
+          <div class="body"><div class="scroll">
+            <div class="anim-card">
+              <div class="ph" style="background:linear-gradient(135deg,#0E7C86,#0a5d65)">🐧</div>
+              <h4>フンボルトペンギン「あずき」</h4>
+              <div class="info">推定5歳・好物はアジ。実は当園生まれ。今年こんなに大きくなりました！季節ごとの様子も配信でお届けします。</div>
+              <div class="lang"><span>🇯🇵 日本語</span><span>🇺🇸 EN</span><span>🇰🇷 한국어</span><span>🇨🇳 中文</span></div>
+            </div>
+            <div class="push"><div class="ai">🔔</div><div><div class="tt">スタンプ4個目を獲得！</div><div class="mm">次は「キリン舎」が近くにあります</div></div></div>
+          </div></div>
+        </div></div>
+      </div>
+
+      <div class="step">
+        <div class="steplabel"><span class="stepnum" style="background:var(--teal)">4</span>コンプリート特典<span class="steptip">お土産クーポン</span></div>
+        <div class="phone"><div class="notch"></div><div class="screen">
+          <div class="lhead"><div class="av">🎁</div><div><div class="t">コンプリート！</div><div class="sub">お土産クーポン獲得</div></div><div class="x">✕</div></div>
+          <div class="body"><div class="scroll" style="display:flex;flex-direction:column">
+            <div class="complete">
+              <div class="big">🎉</div>
+              <h3>全エリア制覇おめでとう！</h3>
+              <p>お土産コーナーで使えるクーポンをプレゼント。レジでこの画面をご提示ください。</p>
+            </div>
+            <div class="coupon" style="border-color:var(--teal)">
+              <div class="off" style="color:var(--teal)">15%<span style="font-size:14px"> OFF</span></div>
+              <div class="for">お土産コーナー全品対象</div>
+              <div class="nm">コンプリート記念クーポン</div>
+            </div>
+            <div class="push" style="margin-top:13px"><div class="ai">🐧</div><div><div class="tt">また来てねクーポン</div><div class="mm">次回入園が使える特典を後日お届けします</div></div></div>
+          </div></div>
+        </div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section class="panel" id="uc-dash">
+    <div class="uc-head"><h2>集計・精算ダッシュボード</h2><span class="pill" style="background:var(--navy)">運営・自治体向け（管理画面）</span></div>
+    <p class="uc-desc">「使って終わり」にしないための管理画面イメージ。どの店舗で何枚クーポンが使われたかを自動集計し、精算用リストとして出力できます。月次で担当者に自動メール送付も可能です。店舗別の利用者分析はMico Engage AIとのセットで実現します。</p>
+    <div class="dash">
+      <h3>神戸ルミナリエ 街バル回遊キャンペーン</h3>
+      <div class="sub">集計期間：2025/12/05 – 12/14　｜　参加店舗 28店　｜　最終更新 12/14 23:00</div>
+      <div class="kpis">
+        <div class="kpi"><div class="lab">友だち追加数</div><div class="val">12,480</div></div>
+        <div class="kpi"><div class="lab">クーポン取得</div><div class="val">8,210</div></div>
+        <div class="kpi accent"><div class="lab">クーポン利用</div><div class="val">5,932</div></div>
+        <div class="kpi"><div class="lab">利用率</div><div class="val">72<small>%</small></div></div>
+      </div>
+      <div class="sech" style="font-size:13px;margin-bottom:13px">店舗別 クーポン利用枚数（上位）</div>
+      <div class="bars">
+        <div class="bar-row"><div class="n">Bar Lumiere</div><div class="track"><i style="width:96%"></i></div><div class="c">842</div></div>
+        <div class="bar-row"><div class="n">立ち呑み 港</div><div class="track"><i style="width:74%"></i></div><div class="c">651</div></div>
+        <div class="bar-row"><div class="n">トラットリア南</div><div class="track"><i style="width:60%"></i></div><div class="c">528</div></div>
+        <div class="bar-row"><div class="n">炭火 旧居留地</div><div class="track"><i style="width:47%"></i></div><div class="c">413</div></div>
+        <div class="bar-row"><div class="n">喫茶 北野坂</div><div class="track"><i style="width:33%"></i></div><div class="c">291</div></div>
+      </div>
+      <table class="settle">
+        <tr><th>店舗</th><th>クーポン種別</th><th class="r">利用枚数</th><th class="r">精算区分</th></tr>
+        <tr><td>Bar Lumiere</td><td>1ドリンク無料</td><td class="r">842</td><td class="r">その場完結</td></tr>
+        <tr><td>立ち呑み 港</td><td>10%OFF</td><td class="r">651</td><td class="r">その場完結</td></tr>
+        <tr><td>トラットリア南</td><td>10%OFF</td><td class="r">528</td><td class="r">その場完結</td></tr>
+        <tr><td>炭火 旧居留地</td><td>1ドリンク無料</td><td class="r">413</td><td class="r">その場完結</td></tr>
+      </table>
+      <p class="note">推奨：来店時にその場で完結するクーポン（1杯無料 等）にすることで、後払いの金銭精算が発生せず、利用集計だけを取得できます。CSV／PDF出力・月次自動メール送付に対応。店舗別に「誰がどの店で使ったか」まで分析する場合はMico Engage AIのセット導入が前提です。</p>
+    </div>
+  </section>
+
+  <div class="foot">
+    本モックはディスカッション用の画面イメージ（叩き台）です。実装機能・文言・デザイン・QR/地図/集計の挙動は案件ごとの要件で確定します。LINEミニアプリの利用には、自治体・主催者側のLINE公式アカウントが必要です。<br>
+    作成：株式会社Mico ／ 阪急交通社さま 自治体向けミニアプリ 代理店パッケージ
+  </div>
+</div>
+
+<script>
+  const tabs=document.querySelectorAll('.tab');
+  const map={a:'uc-a',b:'uc-b',dash:'uc-dash'};
+  tabs.forEach(t=>t.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('show'));
+    document.getElementById(map[t.dataset.uc]).classList.add('show');
+  }));
+</script>
+</body>
+</html>
