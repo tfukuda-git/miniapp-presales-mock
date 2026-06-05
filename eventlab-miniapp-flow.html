@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EVENT LAB ミニアプリ動線Mock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#3438F0; --accent-l:#DBE1FF; --deep:#201DB6; --navy:#1B1D3B;
+  --bg:#FAF9FB; --white:#fff; --fg1:#282829; --fg2:#666; --gray:#B3B3B3; --border:#E6E6E6;
+  --line-green:#06C755; --chat-bg:#8CABD8;
+  --font:'Noto Sans JP',-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',Meiryo,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
+body{font-family:var(--font);background:var(--bg);color:var(--fg1);letter-spacing:-0.01em;padding:28px 16px 60px;}
+.wrap{max-width:960px;margin:0 auto;}
+.eyebrow{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.16em;text-transform:uppercase;}
+h1{font-size:25px;font-weight:700;margin:6px 0 4px;letter-spacing:-.02em;}
+.sub{color:var(--fg2);font-size:14px;line-height:1.6;max-width:680px;}
+.layout{display:flex;gap:40px;align-items:flex-start;margin-top:24px;flex-wrap:wrap;justify-content:center;}
+
+/* segmented control */
+.seg{display:inline-flex;background:var(--white);border:1px solid var(--border);border-radius:999px;padding:4px;gap:2px;margin-bottom:14px;}
+.seg button{font-family:var(--font);font-size:12.5px;font-weight:700;border:0;background:transparent;color:var(--fg2);padding:7px 14px;border-radius:999px;cursor:pointer;transition:.15s;}
+.seg button.on{background:var(--accent);color:#fff;}
+.seg-label{font-size:11px;color:var(--fg2);margin-bottom:6px;font-weight:700;letter-spacing:.04em;}
+
+/* phone */
+.phone{width:380px;height:760px;background:#000;border-radius:46px;padding:11px;box-shadow:0 24px 60px rgba(27,29,59,.22);flex:0 0 auto;}
+.screen{position:relative;width:100%;height:100%;background:var(--white);border-radius:36px;overflow:hidden;display:flex;flex-direction:column;}
+.statusbar{height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-size:12px;font-weight:700;flex:0 0 auto;}
+.statusbar .dots{letter-spacing:2px;}
+.view{flex:1;min-height:0;display:none;flex-direction:column;}
+.view.on{display:flex;}
+
+/* app top bar */
+.topbar{height:52px;flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:0 14px;border-bottom:1px solid var(--border);background:var(--white);}
+.topbar.line{justify-content:flex-start;}
+.topbar.app{background:var(--accent);border-bottom:0;}
+.topbar.app .ttl,.topbar.app .back{color:#fff;}
+.back{font-size:20px;color:var(--fg1);background:none;border:0;cursor:pointer;line-height:1;width:26px;}
+.ttl{font-size:15px;font-weight:700;flex:1;}
+.linebadge{width:22px;height:22px;border-radius:7px;background:var(--line-green);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.body{flex:1;min-height:0;overflow-y:auto;}
+
+/* LINE chat */
+.chat{background:var(--chat-bg);min-height:100%;padding:16px 14px 14px;}
+.daychip{margin:0 auto 14px;width:max-content;background:rgba(0,0,0,.18);color:#fff;font-size:11px;padding:3px 12px;border-radius:999px;}
+.msgrow{display:flex;gap:8px;margin-bottom:12px;}
+.ava{width:34px;height:34px;border-radius:50%;background:var(--white);flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--accent);border:1px solid var(--border);}
+.bubble{background:var(--white);border-radius:4px 16px 16px 16px;padding:11px 13px;font-size:13px;line-height:1.6;max-width:230px;box-shadow:0 1px 1px rgba(0,0,0,.06);}
+.cardbtn{background:var(--white);border-radius:14px;overflow:hidden;max-width:230px;margin-top:2px;box-shadow:0 1px 2px rgba(0,0,0,.1);}
+.cardbtn .cap{padding:11px 13px;font-size:12.5px;color:var(--fg2);line-height:1.5;}
+.cardbtn .act{border-top:1px solid var(--border);padding:12px;text-align:center;color:var(--accent);font-weight:700;font-size:14px;cursor:pointer;}
+
+/* rich menu */
+.richwrap{flex:0 0 auto;border-top:1px solid var(--border);background:var(--white);}
+.richhead{display:flex;align-items:center;justify-content:space-between;padding:7px 14px 3px;}
+.richhead span{font-size:10.5px;color:var(--fg2);font-weight:700;}
+.richhead .pill{background:var(--accent-l);color:var(--deep);border-radius:999px;padding:2px 9px;font-size:10px;}
+.rich{display:grid;grid-template-columns:repeat(3,1fr);}
+.tile{aspect-ratio:1.18/1;border-right:1px solid var(--border);border-top:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;cursor:pointer;background:var(--white);transition:.12s;}
+.tile:hover{background:var(--bg);}
+.tile:nth-child(3n){border-right:0;}
+.tile svg{width:24px;height:24px;stroke:var(--accent);stroke-width:1.75;fill:none;}
+.tile span{font-size:11px;font-weight:500;color:var(--fg1);}
+
+/* mini-app */
+.appbody{padding:16px 16px 24px;background:var(--bg);min-height:100%;}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.chip{font-size:10.5px;font-weight:700;padding:5px 10px;border-radius:999px;background:var(--accent-l);color:var(--deep);}
+.chip.ghost{background:var(--white);border:1px solid var(--border);color:var(--fg2);}
+.greet{font-size:13px;color:var(--fg2);margin-bottom:3px;}
+.greetname{font-size:18px;font-weight:700;margin-bottom:16px;}
+.mcard{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:15px;margin-bottom:11px;cursor:pointer;display:flex;align-items:center;gap:13px;transition:.12s;}
+.mcard:hover{border-color:var(--accent);}
+.micon{width:42px;height:42px;border-radius:11px;background:var(--accent-l);flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
+.micon svg{width:21px;height:21px;stroke:var(--deep);stroke-width:1.75;fill:none;}
+.mcard .mt{flex:1;}
+.mcard .mt b{font-size:14.5px;font-weight:700;display:block;}
+.mcard .mt small{font-size:11.5px;color:var(--fg2);}
+.mcard .arr{color:var(--gray);font-size:18px;}
+.note{font-size:11px;color:var(--fg2);line-height:1.6;background:var(--white);border:1px dashed var(--border);border-radius:10px;padding:10px 12px;margin-top:6px;}
+
+/* info list */
+.sectit{font-size:13px;font-weight:700;color:var(--accent);margin:4px 2px 10px;}
+.irow{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:9px;display:flex;align-items:center;gap:12px;}
+.irow b{font-size:14px;font-weight:700;flex:1;}
+.irow small{display:block;font-size:11.5px;color:var(--fg2);font-weight:400;margin-top:2px;}
+.irow .arr{color:var(--gray);}
+
+/* agent chat */
+.ach{padding:16px 14px;background:var(--bg);min-height:100%;}
+.abot{background:var(--white);border:1px solid var(--border);border-radius:4px 14px 14px 14px;padding:12px;font-size:13px;line-height:1.6;max-width:250px;margin-bottom:12px;}
+.auser{background:var(--accent);color:#fff;border-radius:14px 14px 4px 14px;padding:10px 13px;font-size:13px;max-width:200px;margin:0 0 12px auto;}
+.srcchip{display:inline-block;margin-top:9px;font-size:11px;color:var(--deep);background:var(--accent-l);padding:4px 10px;border-radius:999px;}
+.qbtns{display:flex;gap:8px;margin-top:4px;}
+.qbtn{font-size:12px;font-weight:700;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--white);color:var(--fg1);cursor:pointer;flex:1;text-align:center;}
+.qbtn.pri{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* coupon */
+.ccard{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px;}
+.ctop{background:var(--accent);color:#fff;padding:14px 15px;}
+.ctop .big{font-size:20px;font-weight:700;letter-spacing:-.02em;}
+.ctop .lbl{font-size:11.5px;opacity:.9;}
+.cbot{padding:11px 15px;font-size:12px;color:var(--fg2);line-height:1.5;}
+
+.cap{max-width:380px;font-size:12.5px;color:var(--fg2);line-height:1.7;}
+.cap b{color:var(--fg1);}
+.flowsteps{list-style:none;counter-reset:s;margin-top:10px;}
+.flowsteps li{counter-increment:s;position:relative;padding:7px 0 7px 30px;font-size:13px;border-bottom:1px solid var(--border);}
+.flowsteps li:last-child{border-bottom:0;}
+.flowsteps li::before{content:counter(s);position:absolute;left:0;top:6px;width:21px;height:21px;background:var(--accent-l);color:var(--deep);border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.legend{margin-top:18px;background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px 18px;}
+.legend h3{font-size:13px;color:var(--accent);margin-bottom:8px;}
+.footnote{margin-top:22px;font-size:11px;color:var(--gray);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">PROTOTYPE — Mico Design System</div>
+  <h1>EVENT LAB（Turkish Air & Travel）｜ ミニアプリ動線 Mock</h1>
+  <p class="sub">LINEリッチメニュー → ミニアプリ（マイページ）への動線イメージです。リッチメニューは予約ステータスで出し分け、ミニアプリは共通情報・クーポン・Service Agent（無人FAQ）を、LINEログインのみ（ID/パスワード不要）でご利用いただけます。</p>
+
+  <div class="layout">
+    <div>
+      <div class="seg-label">リッチメニュー出し分け（予約ステータス）</div>
+      <div class="seg" id="seg">
+        <button data-v="pre">予約前</button>
+        <button data-v="post" class="on">予約後（出発前）</button>
+        <button data-v="trip">旅行中</button>
+      </div>
+
+      <div class="phone">
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span class="dots">●●● 5G ▮</span></div>
+
+          <!-- LINE -->
+          <div class="view on" id="v-line">
+            <div class="topbar line"><button class="back" onclick="goLine()">‹</button><span class="linebadge">L</span><span class="ttl">Turkish Air & Travel</span></div>
+            <div class="body"><div class="chat">
+              <div class="daychip">5月18日</div>
+              <div class="msgrow">
+                <div class="ava">TAT</div>
+                <div>
+                  <div class="bubble">田中様、ご出発が近づいてまいりました。マイページから持ち物・現地情報・最新のご案内をご確認いただけます。</div>
+                  <div class="cardbtn" style="margin-top:8px">
+                    <div class="cap">トルコ8日間 ／ 5月20日出発<br>予約番号 #TKT-10293</div>
+                    <div class="act" onclick="go('home')">▶ マイページを開く</div>
+                  </div>
+                </div>
+              </div>
+            </div></div>
+            <div class="richwrap">
+              <div class="richhead"><span>リッチメニュー</span><span class="pill" id="rich-state">予約後（出発前）</span></div>
+              <div class="rich" id="rich"></div>
+            </div>
+          </div>
+
+          <!-- HOME -->
+          <div class="view" id="v-home">
+            <div class="topbar app"><button class="back" onclick="go('line')">‹</button><span class="ttl">マイページ</span></div>
+            <div class="body"><div class="appbody">
+              <div class="chips"><span class="chip">予約番号 #TKT-10293</span><span class="chip ghost">LINEログイン・ID不要</span></div>
+              <div class="greet">ようこそ</div>
+              <div class="greetname">田中様 ご一行（2名）</div>
+              <div class="mcard" onclick="go('info')">
+                <div class="micon"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h10"/></svg></div>
+                <div class="mt"><b>旅程・基本情報</b><small>5/20–5/27 トルコ8日間</small></div><div class="arr">›</div>
+              </div>
+              <div class="mcard" onclick="go('info')">
+                <div class="micon"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V7z"/></svg></div>
+                <div class="mt"><b>出発までの準備</b><small>持ち物・保険・現地Wi-Fi</small></div><div class="arr">›</div>
+              </div>
+              <div class="mcard" onclick="go('agent')">
+                <div class="micon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                <div class="mt"><b>よくある質問</b><small>LINEトークに戻って自動応答（Service Agent）</small></div><div class="arr">›</div>
+              </div>
+              <div class="mcard" onclick="go('coupon')">
+                <div class="micon"><svg viewBox="0 0 24 24"><path d="M3 9V6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v3a2 2 0 0 0 0 4v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a2 2 0 0 0 0-4z"/></svg></div>
+                <div class="mt"><b>クーポン・特典</b><small>現地ツアー割引・帰国後クーポン</small></div><div class="arr">›</div>
+              </div>
+              <div class="note">予約番号をキーに同じマイページを表示するため、ご夫婦など複数人で同一予約を共有できます。リピーターが少ない新規中心の客層に合わせ、CRM連携は行わず共通情報のミニアプリ化を起点にしています。</div>
+            </div></div>
+          </div>
+
+          <!-- INFO -->
+          <div class="view" id="v-info">
+            <div class="topbar app"><button class="back" onclick="go('home')">‹</button><span class="ttl">出発までの準備</span></div>
+            <div class="body"><div class="appbody">
+              <div class="sectit">ご旅行前にご確認ください</div>
+              <div class="irow"><b>持ち物リスト<small>パスポート・常備薬・変換プラグ ほか</small></b><span class="arr">›</span></div>
+              <div class="irow"><b>海外旅行保険<small>補償内容・緊急時のご連絡先</small></b><span class="arr">›</span></div>
+              <div class="irow"><b>現地Wi-Fi・通信<small>接続方法・レンタルのご案内</small></b><span class="arr">›</span></div>
+              <div class="irow"><b>ホテル・スパ情報<small>館内施設・スパメニューのご利用方法</small></b><span class="arr">›</span></div>
+              <div class="irow"><b>緊急連絡先<small>現地デスク・日本人サポート</small></b><span class="arr">›</span></div>
+              <div class="note">これらは予約に依存しない共通情報のため、基幹連携なし（Phase 1）でミニアプリ化できます。個別の旅程・予約明細の自動表示は、基幹CSV→Mico Engage AI の日次連携（Phase 2）で対応します。</div>
+            </div></div>
+          </div>
+
+          <!-- AGENT (runs in LINE 1:1 talk, not inside the mini-app) -->
+          <div class="view" id="v-agent">
+            <div class="topbar line"><button class="back" onclick="go('home')">‹</button><span class="linebadge">L</span><span class="ttl">Turkish Air & Travel</span></div>
+            <div class="body"><div class="chat">
+              <div class="daychip">ミニアプリからLINEトークに戻りました</div>
+              <div class="msgrow"><div class="ava">TAT</div><div>
+                <div class="bubble">Service Agent です。ご旅行に関するご質問にお答えします。お困りごとを入力してください。</div>
+              </div></div>
+              <div style="background:#06C755;color:#fff;border-radius:16px 16px 4px 16px;padding:10px 13px;font-size:13px;line-height:1.5;max-width:210px;margin:0 0 12px auto;">ホテルのWi-Fiはどうつなぐ？</div>
+              <div class="msgrow"><div class="ava">TAT</div><div>
+                <div class="bubble">客室内カード記載のSSID「TAT-Guest」を選び、予約番号の下4桁をパスワードに入力してください。ロビーは無料Wi-Fiをご利用いただけます。
+                  <span class="srcchip">出典：現地ご案内 FAQ</span>
+                </div>
+                <div class="qbtns" style="max-width:230px;margin-top:8px"><div class="qbtn">解決した</div><div class="qbtn pri">オペレーターに相談</div></div>
+              </div></div>
+              <div class="note" style="margin-top:14px">Service Agent はミニアプリ内ではなく、<b>LINEの1:1トーク上で応答</b>します（無人FAQ・Phase 1／月額10万円）。「よくある質問」タップでトークに戻り、自動応答が起動します。</div>
+            </div></div>
+          </div>
+
+          <!-- COUPON -->
+          <div class="view" id="v-coupon">
+            <div class="topbar app"><button class="back" onclick="go('home')">‹</button><span class="ttl">クーポン・特典</span></div>
+            <div class="body"><div class="appbody">
+              <div class="ccard"><div class="ctop"><div class="lbl">現地オプショナルツアー</div><div class="big">10% OFF</div></div><div class="cbot">出発前のお申し込みで割引。マイページからそのままご予約いただけます。</div></div>
+              <div class="ccard"><div class="ctop"><div class="lbl">次回ご旅行で使える</div><div class="big">¥5,000 OFF</div></div><div class="cbot">帰国後に配信。再購入を後押しするクーポンです。</div></div>
+              <div class="ccard"><div class="ctop"><div class="lbl">お友だち紹介</div><div class="big">ご紹介特典</div></div><div class="cbot">ご友人の新規予約で、お互いに特典を進呈します。</div></div>
+              <div style="background:var(--accent);color:#fff;border-radius:12px;padding:13px;text-align:center;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#fff;stroke-width:1.9;fill:none"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v14"/></svg>
+                友だちにクーポンをシェア
+              </div>
+              <div class="note">クーポン紹介機能はMVPの主要機能。共有は LINE の<b>シェアターゲットピッカー</b>（liff.shareTargetPicker）を利用——連携不要のフロント機能のためPhase 1に組み込めます。</div>
+            </div></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="cap">
+      <b>動線の流れ</b>
+      <ol class="flowsteps">
+        <li>LINEのリッチメニュー（予約ステータスで出し分け）から入口</li>
+        <li>「マイページ」タップでミニアプリが起動（LINEログインのみ・ID/PW不要）</li>
+        <li>共通情報・クーポンはミニアプリ内、よくある質問はLINEトークに戻りService Agentが応答</li>
+        <li>個別の旅程・予約表示はPhase 2の連携で追加</li>
+      </ol>
+      <div class="legend">
+        <h3>このMockで確認できること</h3>
+        <p class="sub" style="font-size:12.5px">上のセグメントで<b>リッチメニューの出し分け</b>（予約前／予約後／旅行中）を切り替えられます。各タイル・カードはタップで遷移します。マイページ内の「‹」で前の画面に戻れます。</p>
+      </div>
+      <div class="footnote">© Mico Inc. ｜ CONFIDENTIAL ／ 提案用プロトタイプ（実データではありません）</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ICON = {
+  mypage:'<path d="M4 21v-2a4 4 0 0 1 4-4h4M14 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM16 19l2 2 4-4"/>',
+  itin:'<path d="M4 5h16M4 12h16M4 19h10"/>',
+  prep:'<path d="M12 3l8 4v5c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V7z"/>',
+  faq:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  coupon:'<path d="M3 9V6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v3a2 2 0 0 0 0 4v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a2 2 0 0 0 0-4z"/>',
+  contact:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  camp:'<path d="M3 11l18-5v12L3 14v-3zM11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
+  tour:'<path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zM12 9.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>',
+  doc:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6"/>',
+  support:'<path d="M3 18v-6a9 9 0 0 1 18 0v6M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>',
+  sos:'<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 8v5M12 16h.01"/>',
+};
+function tile(icon,label,target){
+  return '<div class="tile" '+(target?'onclick="go(\''+target+'\')"':'')+'><svg viewBox="0 0 24 24">'+ICON[icon]+'</svg><span>'+label+'</span></div>';
+}
+const MENUS = {
+  pre:{state:'予約前（検討層）',tiles:[['tour','おすすめツアー',null],['faq','よくある質問','agent'],['coupon','クーポン','coupon'],['doc','資料請求',null],['camp','キャンペーン',null],['contact','お問い合わせ',null]]},
+  post:{state:'予約後（出発前）',tiles:[['mypage','マイページ','home'],['itin','旅程確認','home'],['prep','出発準備','info'],['faq','よくある質問','agent'],['coupon','クーポン','coupon'],['contact','お問い合わせ',null]]},
+  trip:{state:'旅行中（タビナカ）',tiles:[['support','現地サポート','agent'],['itin','旅程確認','home'],['prep','現地情報','info'],['sos','緊急連絡',null],['coupon','クーポン','coupon'],['mypage','マイページ','home']]},
+};
+function renderMenu(v){
+  const m=MENUS[v];
+  document.getElementById('rich').innerHTML=m.tiles.map(t=>tile(t[0],t[1],t[2])).join('');
+  document.getElementById('rich-state').textContent=m.state;
+}
+function go(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.getElementById('v-'+id).classList.add('on');
+}
+function goLine(){go('line');}
+document.querySelectorAll('#seg button').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('#seg button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); renderMenu(b.dataset.v); go('line');
+  };
+});
+renderMenu('post');
+</script>
+</body>
+</html>
