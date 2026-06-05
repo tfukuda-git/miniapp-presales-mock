@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>アイメッド LINE完結フロー Mock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#3438F0; --accent-l:#DBE1FF; --deep:#201DB6; --navy:#1B1D3B;
+  --bg:#FAF9FB; --white:#fff; --fg1:#282829; --fg2:#666; --gray:#B3B3B3; --border:#E6E6E6;
+  --line-green:#06C755; --chat-bg:#8CABD8;
+  --font:'Noto Sans JP',-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',Meiryo,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
+body{font-family:var(--font);background:var(--bg);color:var(--fg1);letter-spacing:-0.01em;padding:28px 16px 60px;}
+.wrap{max-width:980px;margin:0 auto;}
+.eyebrow{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.16em;text-transform:uppercase;}
+h1{font-size:25px;font-weight:700;margin:6px 0 4px;letter-spacing:-.02em;}
+.sub{color:var(--fg2);font-size:14px;line-height:1.6;max-width:700px;}
+.layout{display:flex;gap:40px;align-items:flex-start;margin-top:22px;flex-wrap:wrap;justify-content:center;}
+
+.stepper{display:flex;gap:6px;margin-bottom:12px;}
+.stepper .st{flex:1;background:var(--white);border:1px solid var(--border);border-radius:10px;padding:8px 10px;text-align:center;transition:.15s;}
+.stepper .st.on{background:var(--accent);border-color:var(--accent);}
+.stepper .st .n{font-size:10px;font-weight:700;color:var(--fg2);letter-spacing:.06em;}
+.stepper .st.on .n,.stepper .st.on .t{color:#fff;}
+.stepper .st .t{font-size:11.5px;font-weight:700;color:var(--fg1);margin-top:2px;}
+.reset{font-family:var(--font);font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--white);color:var(--accent);border-radius:999px;padding:6px 14px;cursor:pointer;margin-bottom:12px;}
+
+.phone{width:382px;height:740px;background:#000;border-radius:46px;padding:11px;box-shadow:0 24px 60px rgba(27,29,59,.22);flex:0 0 auto;}
+.screen{width:100%;height:100%;background:var(--white);border-radius:36px;overflow:hidden;display:flex;flex-direction:column;}
+.statusbar{height:32px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-size:12px;font-weight:700;flex:0 0 auto;}
+.topbar{height:50px;flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:0 14px;border-bottom:1px solid var(--border);}
+.linebadge{width:30px;height:30px;border-radius:9px;background:var(--line-green);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.ttl{font-size:15px;font-weight:700;}
+.ttl small{display:block;font-size:10px;color:var(--fg2);font-weight:400;}
+.chat{flex:1;min-height:0;overflow-y:auto;background:var(--chat-bg);padding:14px 12px 18px;}
+.daychip{margin:0 auto 14px;width:max-content;background:rgba(0,0,0,.18);color:#fff;font-size:11px;padding:3px 12px;border-radius:999px;}
+.grp{display:flex;gap:8px;margin-bottom:13px;}
+.ava{width:32px;height:32px;border-radius:50%;background:var(--white);flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;color:var(--accent);border:1px solid var(--border);}
+.col{min-width:0;flex:1;}
+.tag{display:inline-block;background:var(--accent-l);color:var(--deep);font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:999px;margin-bottom:5px;}
+.bubble{background:var(--white);border-radius:4px 14px 14px 14px;padding:10px 12px;font-size:13px;line-height:1.6;max-width:236px;box-shadow:0 1px 1px rgba(0,0,0,.06);}
+.me{background:var(--line-green);color:#fff;border-radius:14px 14px 4px 14px;padding:9px 12px;font-size:13px;line-height:1.5;max-width:200px;margin:0 0 13px auto;width:max-content;}
+.srcchip{display:inline-block;margin-top:8px;font-size:10.5px;color:var(--deep);background:var(--accent-l);padding:3px 9px;border-radius:999px;}
+
+.carousel{display:flex;gap:9px;overflow-x:auto;padding:3px 1px 6px;max-width:248px;}
+.pcard{flex:0 0 150px;background:var(--white);border:1px solid var(--border);border-radius:13px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.07);}
+.pcard .ph{height:74px;background:var(--accent-l);display:flex;align-items:center;justify-content:center;color:var(--deep);font-size:11px;font-weight:700;}
+.pcard .bd{padding:9px 10px;}
+.pcard .nm{font-size:12.5px;font-weight:700;line-height:1.35;}
+.pcard .pr{font-size:11px;color:var(--fg2);margin-top:3px;}
+.pcard .cta{margin-top:8px;background:var(--accent);color:#fff;text-align:center;font-size:11.5px;font-weight:700;padding:7px;border-radius:8px;cursor:pointer;}
+.minote{font-size:10.5px;color:#fff;opacity:.92;background:rgba(0,0,0,.16);border-radius:8px;padding:7px 9px;margin-bottom:13px;line-height:1.55;}
+
+.bcard{background:var(--white);border-radius:13px;padding:12px;max-width:236px;box-shadow:0 1px 1px rgba(0,0,0,.06);}
+.bcard .h{font-size:12.5px;font-weight:700;margin-bottom:8px;}
+.chips{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{font-size:11.5px;font-weight:700;border:1px solid var(--border);border-radius:8px;padding:7px 11px;cursor:pointer;background:var(--white);transition:.12s;}
+.chip:hover{border-color:var(--accent);color:var(--accent);}
+.chip.day{background:var(--bg);}
+.sublabel{font-size:10px;color:var(--fg2);margin:9px 0 4px;font-weight:700;}
+.qbtns{display:flex;gap:7px;margin-top:8px;max-width:236px;}
+.qbtn{flex:1;text-align:center;font-size:11.5px;font-weight:700;border:1px solid var(--border);border-radius:8px;padding:8px;background:var(--white);cursor:pointer;}
+.qbtn.pri{background:var(--accent);color:#fff;border-color:var(--accent);}
+.askbtn{display:block;margin:2px auto 0;font-family:var(--font);font-size:12px;font-weight:700;color:var(--accent);background:var(--white);border:1px solid var(--border);border-radius:999px;padding:8px 16px;cursor:pointer;}
+
+.s1,.s2,.s3{display:none;}
+
+.side{max-width:380px;}
+.side h3{font-size:13px;color:var(--accent);margin-bottom:10px;}
+.map{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;}
+.map .q{font-size:12.5px;font-weight:700;color:var(--fg1);}
+.map .arrow{font-size:11px;color:var(--gray);margin:3px 0;}
+.map .s{font-size:12.5px;color:var(--fg1);}
+.map .s b{color:var(--accent);}
+.note{font-size:11.5px;color:var(--fg2);line-height:1.65;background:var(--white);border:1px dashed var(--border);border-radius:10px;padding:11px 13px;}
+.footnote{margin-top:18px;font-size:11px;color:var(--gray);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">PROTOTYPE — Mico Design System</div>
+  <h1>アイメッド（med.）｜ LINE完結フロー Mock</h1>
+  <p class="sub">おすすめ商品をLINEでレコメンド → そのままLINEで診察予約 → 問い合わせも個別トーク内で自動応答。すべてLINEの1:1トーク内で完結します（ミニアプリ不要）。薬の直接販売は行わず、レコメンドは「診察予約」へ送客します。</p>
+
+  <div class="layout">
+    <div style="width:382px">
+      <div class="stepper" id="stepper">
+        <div class="st on" data-s="0"><div class="n">STEP 1</div><div class="t">レコメンド</div></div>
+        <div class="st" data-s="1"><div class="n">STEP 2</div><div class="t">診察予約</div></div>
+        <div class="st" data-s="3"><div class="n">STEP 3</div><div class="t">自動応答</div></div>
+      </div>
+      <button class="reset" onclick="reset()">↺ 最初から</button>
+
+      <div class="phone">
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>●●● 5G ▮</span></div>
+          <div class="topbar"><span class="linebadge">med.</span><span class="ttl">med.（メッド）<small>オンライン診療・お薬の通販</small></span></div>
+          <div class="chat" id="chat">
+            <div class="daychip">今日</div>
+
+            <!-- STEP 1: Catalog Recommendation -->
+            <div class="grp s0base">
+              <div class="ava">med.</div>
+              <div class="col">
+                <span class="tag">Catalog Recommendation × Advanced Measurement</span>
+                <div class="bubble">田中様、最近ご覧の内容とお悩み登録から、おすすめをお届けします。気になるものは医師の診察にお進みいただけます。</div>
+                <div class="carousel">
+                  <div class="pcard"><div class="ph">発毛・AGA</div><div class="bd"><div class="nm">発毛入門プラン（タブレットF・M）</div><div class="pr">¥9,800〜／医師の診察で処方</div><div class="cta" onclick="go(1)">診察を予約する</div></div></div>
+                  <div class="pcard"><div class="ph">シミ・美容</div><div class="bd"><div class="nm">美容内服「四合剤」</div><div class="pr">¥5,940〜／医師の診察で処方</div><div class="cta" onclick="go(1)">診察を予約する</div></div></div>
+                  <div class="pcard"><div class="ph">ダイエット</div><div class="bd"><div class="nm">メディカルダイエット</div><div class="pr">医師の診察で適応を判断</div><div class="cta" onclick="go(1)">診察を予約する</div></div></div>
+                </div>
+                <div class="minote">行動データ（GTM計測）とお悩み登録 × カタログで動的にレコメンド。商品は直接販売せず「診察予約」へ送客します。</div>
+              </div>
+            </div>
+
+            <!-- STEP 2: Booking Agent -->
+            <div class="grp s1">
+              <div style="flex:1"></div>
+              <div class="me">発毛入門プランの診察を予約したい</div>
+            </div>
+            <div class="grp s1">
+              <div class="ava">med.</div>
+              <div class="col">
+                <span class="tag">Booking Agent</span>
+                <div class="bcard">
+                  <div class="h">オンライン診察のご希望日時（診察料0円）</div>
+                  <div class="sublabel">日付</div>
+                  <div class="chips"><span class="chip day">5/20(火)</span><span class="chip day">5/21(水)</span><span class="chip day">5/22(木)</span></div>
+                  <div class="sublabel">時間</div>
+                  <div class="chips"><span class="chip" onclick="go(2)">19:00</span><span class="chip" onclick="go(2)">20:00</span><span class="chip" onclick="go(2)">21:00</span></div>
+                </div>
+                <div class="minote">既存の予約システムとAPI連携。LINE上で予約まで完結し、予約情報は自社にも保持します。</div>
+              </div>
+            </div>
+
+            <!-- confirm -->
+            <div class="grp s2">
+              <div class="ava">med.</div>
+              <div class="col">
+                <div class="bubble">ご予約を承りました。<br><b>5/20(火) 19:00／オンライン診察（医師）</b><br>当日はこのトークに診察URLをお送りします。</div>
+                <button class="askbtn" onclick="go(3)">薬について質問する</button>
+              </div>
+            </div>
+
+            <!-- STEP 3: Service Agent -->
+            <div class="grp s3">
+              <div style="flex:1"></div>
+              <div class="me">副作用が心配です…</div>
+            </div>
+            <div class="grp s3">
+              <div class="ava">med.</div>
+              <div class="col">
+                <span class="tag">Service Agent</span>
+                <div class="bubble">お薬により副作用の可能性があります（例：頭痛・動悸・お腹の不快感など）。体質や併用中のお薬により異なるため、<b>診察時に医師へご相談ください</b>。
+                  <span class="srcchip">出典：医師監修FAQ</span>
+                </div>
+                <div class="qbtns"><div class="qbtn">解決した</div><div class="qbtn pri">医師・オペレーターに相談</div></div>
+                <div class="minote" style="margin-top:9px">問い合わせは同じ個別トーク内で無人FAQが自動応答（事前用意のQAベースで医療広告に配慮、有人切替も可）。</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="side">
+      <h3>アイメッドの3課題 × Micoソリューション</h3>
+      <div class="map">
+        <div class="q">① 予約・申込フローがLINEで完結しない</div>
+        <div class="arrow">↓</div>
+        <div class="s"><b>Booking Agent</b>　既存予約システムとAPI連携し、LINE上で診察予約まで完結。予約情報は自社にも保持。</div>
+      </div>
+      <div class="map">
+        <div class="q">② 診察への送客動線が弱い</div>
+        <div class="arrow">↓</div>
+        <div class="s"><b>Advanced Measurement＋Catalog Recommendation</b>　行動データ・お悩みから治療を動的レコメンドし、診察予約へ送客。</div>
+      </div>
+      <div class="map">
+        <div class="q">③ 問い合わせを自動化したい</div>
+        <div class="arrow">↓</div>
+        <div class="s"><b>Service Agent</b>　個別トーク内で無人FAQが24時間自動応答。出典提示・有人切替に対応。</div>
+      </div>
+      <div class="note">3つとも <b>同じLINE 1:1トーク内</b> で完結します。薬機法・医療広告ガイドラインに配慮し、レコメンドは「購入」ではなく「診察予約」への送客に統一。Service Agentの回答は事前用意のQAベースで、最終判断は医師へ。</div>
+      <div class="footnote">© Mico Inc. ｜ CONFIDENTIAL ／ 提案用プロトタイプ（実データ・実価格ではありません）</div>
+    </div>
+  </div>
+</div>
+
+<script>
+let cur = 0;
+function setStepper(n){
+  document.querySelectorAll('#stepper .st').forEach(el=>{
+    el.classList.toggle('on', Number(el.dataset.s) <= n);
+  });
+}
+function go(n){
+  cur = Math.max(cur, n);
+  ['s1','s2','s3'].forEach((c,i)=>{
+    const step = i+1; // s1->1, s2->2, s3->3
+    if(cur >= step) document.querySelectorAll('.'+c).forEach(el=>el.style.display='flex');
+  });
+  setStepper(cur);
+  const chat = document.getElementById('chat');
+  setTimeout(()=>{ chat.scrollTop = chat.scrollHeight; }, 30);
+}
+function reset(){
+  cur = 0;
+  document.querySelectorAll('.s1,.s2,.s3').forEach(el=>el.style.display='none');
+  setStepper(0);
+  document.getElementById('chat').scrollTop = 0;
+}
+reset();
+</script>
+</body>
+</html>
