@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ミニアプリ 提案モック 一覧</title>
+<style>
+  :root{
+    --line:#06C755; --navy:#0B3D4F; --teal:#0E7C86; --coral:#EE7B3C; --gold:#E8B23A; --plum:#7A4D8C;
+    --ink:#16242B; --muted:#6B7C84; --bg:#EEF2F3; --bd:#DBE4E6;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif; color:var(--ink); background:var(--bg); -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:880px; margin:0 auto; padding:46px 22px 70px;}
+  .eyebrow{color:var(--teal); font-weight:800; font-size:12px; letter-spacing:.14em;}
+  h1{font-size:28px; margin:8px 0 6px;}
+  .lead{font-size:14px; color:var(--muted); line-height:1.7; margin-bottom:30px;}
+  .group{margin-bottom:30px;}
+  .ghead{font-size:13px; font-weight:800; color:var(--navy); letter-spacing:.02em; margin:0 2px 12px; padding-bottom:8px; border-bottom:2px solid var(--bd);}
+  a.item{display:flex; align-items:center; gap:15px; text-decoration:none; color:inherit; background:#fff; border:1px solid var(--bd);
+    border-radius:13px; padding:15px 17px; margin-bottom:11px; transition:.15s; box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  a.item:hover{border-color:var(--teal); box-shadow:0 6px 18px rgba(11,61,79,.10); transform:translateY(-1px);}
+  .ic{width:46px; height:46px; border-radius:11px; flex:0 0 auto; display:flex; align-items:center; justify-content:center; font-size:22px; color:#fff;}
+  .it-body{flex:1 1 auto; min-width:0;}
+  .it-title{font-size:15px; font-weight:700; display:flex; align-items:center; gap:9px; flex-wrap:wrap;}
+  .badge{font-size:10px; font-weight:800; color:#fff; padding:2px 8px; border-radius:999px;}
+  .it-desc{font-size:12px; color:var(--muted); margin-top:4px; line-height:1.55;}
+  .arrow{color:var(--muted); font-size:20px; flex:0 0 auto;}
+  .foot{margin-top:34px; font-size:11px; color:var(--muted); border-top:1px solid var(--bd); padding-top:16px; line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">MICO ｜ PRE-SALES MOCK</div>
+  <h1>ミニアプリ 提案モック 一覧</h1>
+  <p class="lead">LINEミニアプリ／LINE完結フローの提案資料・画面モックの一覧です。各ページは商談・社内ディスカッション・開発チーム連携用のドラフトです。</p>
+
+  <div class="group">
+    <div class="ghead">業種別 提案モック</div>
+
+    <a class="item" href="./aimed-line-flow.html">
+      <div class="ic" style="background:var(--teal)">🩺</div>
+      <div class="it-body">
+        <div class="it-title">アイメッド｜LINE完結フロー<span class="badge" style="background:var(--teal)">医療</span></div>
+        <div class="it-desc">med.（オンライン診療）。レコメンド→診察予約→無人FAQ自動応答を、LINE 1:1トーク内で完結（ミニアプリ不要）。</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="item" href="./eventlab-miniapp-flow.html">
+      <div class="ic" style="background:var(--navy)">✈️</div>
+      <div class="it-body">
+        <div class="it-title">EVENT LAB｜ミニアプリ動線<span class="badge" style="background:var(--navy)">旅行</span></div>
+        <div class="it-desc">Turkish Air &amp; Travel。リッチメニュー出し分け→マイページ（共通情報・クーポン）→Service Agent。LINEログインのみ。</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="item" href="./阪急交通社_自治体ミニアプリ_モック.html">
+      <div class="ic" style="background:var(--coral)">🗺️</div>
+      <div class="it-body">
+        <div class="it-title">阪急交通社｜自治体ミニアプリ<span class="badge" style="background:var(--coral)">自治体</span></div>
+        <div class="it-desc">回遊クーポン（ルミナリエ型）＋スタンプラリー（動物園型）＋集計ダッシュボードのモック。</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+  </div>
+
+  <div class="group">
+    <div class="ghead">スタンプラリー パッケージ（開発検討・インド連携用）</div>
+
+    <a class="item" href="./package1_ME_stamprally_for_dev.html">
+      <div class="ic" style="background:var(--line)">🏠</div>
+      <div class="it-body">
+        <div class="it-title">ME連携 スタンプラリー（モデルハウス）<span class="badge" style="background:var(--line)">PKG①</span></div>
+        <div class="it-desc">ME導入済みクライアント向けオプション。パッケージ定義＋モデルハウス3か所巡りの画面モック。初期30万／MRR15万。</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="item" href="./package2_standalone_for_dev.html">
+      <div class="ic" style="background:var(--plum)">🎫</div>
+      <div class="it-body">
+        <div class="it-title">独立型 スタンプラリー＋回遊クーポン<span class="badge" style="background:var(--plum)">PKG②</span></div>
+        <div class="it-desc">ME非依存のフルスタック版（自治体・イベント向け）。定義＋共通/モード別機能表＋回遊・スタンプ・集計のモック。</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="item" href="./package_definitions.html">
+      <div class="ic" style="background:var(--gold)">📄</div>
+      <div class="it-body">
+        <div class="it-title">パッケージ定義（①②比較・1枚）</div>
+        <div class="it-desc">ME連携版／独立版の2パッケージを社内で握るための定義シート（各1ページ）。</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+  </div>
+
+  <div class="foot">
+    各リンクは同じリポジトリ内のHTMLを参照しています。｜ 作成：株式会社Mico ／ Mini App Pre-sales Mock 一覧
+  </div>
+</div>
+</body>
+</html>

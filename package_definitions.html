@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>社内パッケージ定義｜スタンプラリー ミニアプリ（2種）</title>
+<style>
+  :root{
+    --ink:#16242B; --muted:#6B7C84; --line:#06C755; --navy:#0B3D4F; --teal:#0E7C86;
+    --coral:#EE7B3C; --gold:#E8B23A; --bg:#EEF2F3; --panel:#F5F8F9; --bd:#DBE4E6;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif; color:var(--ink); background:var(--bg);}
+  .page{width:794px; min-height:1123px; margin:18px auto; background:#fff; padding:38px 42px 30px;
+        box-shadow:0 6px 22px rgba(11,61,79,.12); position:relative;}
+  .tagrow{display:flex; align-items:center; gap:10px; font-size:12px; font-weight:800; letter-spacing:.06em;}
+  .tagrow .acc{display:inline-block; width:34px; height:5px; border-radius:3px;}
+  .doc-kicker{color:var(--muted); font-weight:800; font-size:11px; letter-spacing:.14em; margin-bottom:14px;}
+  h1{font-size:25px; margin:8px 0 3px; line-height:1.25;}
+  .sub{font-size:13px; color:var(--muted); margin-bottom:16px;}
+  .pricebar{display:flex; gap:12px; margin:14px 0 20px;}
+  .pricebox{flex:1; border-radius:12px; padding:12px 16px; color:#fff;}
+  .pricebox .l{font-size:11px; opacity:.9; font-weight:700;}
+  .pricebox .v{font-size:24px; font-weight:800; margin-top:2px;}
+  .pricebox .v small{font-size:13px; font-weight:700;}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:13px;}
+  .card{border:1px solid var(--bd); border-radius:12px; padding:13px 15px; background:#fff;}
+  .card.full{grid-column:1 / -1;}
+  .card h3{font-size:12.5px; font-weight:800; margin-bottom:8px; display:flex; align-items:center; gap:7px;}
+  .card h3 .ic{width:8px; height:8px; border-radius:50%;}
+  .card ul{list-style:none; margin:0; padding:0;}
+  .card li{font-size:11.5px; line-height:1.5; padding-left:15px; position:relative; margin-bottom:5px; color:#2C3A42;}
+  .card li::before{content:""; position:absolute; left:2px; top:7px; width:5px; height:5px; border-radius:50%; background:var(--teal);}
+  .card.warn li::before{background:var(--coral);}
+  .card p{font-size:11.5px; line-height:1.55; color:#2C3A42;}
+  .arch{background:var(--panel); border-radius:12px; padding:13px 15px; font-size:11.5px; line-height:1.6; color:#243views;}
+  .flow{display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:6px;}
+  .flow .n{background:#fff; border:1px solid var(--bd); border-radius:8px; padding:5px 9px; font-size:10.5px; font-weight:700;}
+  .flow .ar{color:var(--muted); font-weight:800;}
+  .kv{display:flex; font-size:11.5px; margin-bottom:5px;}
+  .kv .k{width:78px; color:var(--muted); font-weight:700; flex:0 0 auto;}
+  .kv .v{color:#2C3A42;}
+  .foot{margin-top:18px; padding-top:11px; border-top:1px solid var(--bd); font-size:10px; color:var(--muted); line-height:1.6;}
+  .badge{display:inline-block; font-size:10px; font-weight:800; padding:3px 9px; border-radius:999px; color:#fff;}
+  @media print{ body{background:#fff;} .page{box-shadow:none; margin:0; page-break-after:always;} }
+</style>
+</head>
+<body>
+
+<!-- ============ PACKAGE 1 ============ -->
+<div class="page">
+  <div class="doc-kicker">社内パッケージ定義（DRAFT v0.1）｜先方提示前・社内合意用</div>
+  <div class="tagrow"><span class="acc" style="background:var(--line)"></span><span style="color:var(--teal)">PACKAGE ① ｜ ME連携・シンプル版</span><span class="badge" style="background:var(--line)">求人マッチングと同レベル</span></div>
+  <h1>ME連携 スタンプラリー ミニアプリ（オプション提供）</h1>
+  <div class="sub">既にMico Engage(ME)を導入済みのクライアント向けオプション。スタンプ状況をMEのカスタム属性に格納し、集計・配信はME側で完結。機能を最小限にしてミニマム・スピード提供。</div>
+
+  <div class="pricebar">
+    <div class="pricebox" style="background:var(--teal)"><div class="l">初期費用</div><div class="v">¥300,000</div></div>
+    <div class="pricebox" style="background:var(--line)"><div class="l">月額（MRR）</div><div class="v">¥150,000<small> / 月</small></div></div>
+    <div class="pricebox" style="background:var(--navy)"><div class="l">開発レベル感</div><div class="v" style="font-size:18px; padding-top:7px">求人マッチング相当</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3><span class="ic" style="background:var(--teal)"></span>位置づけ・対象</h3>
+      <ul>
+        <li><b>対象：</b>ME導入済みクライアント（不動産＝モデルハウス／展示場 等）</li>
+        <li>ME既存顧客への「アップセル・オプション」として提供</li>
+        <li>スタンプラリー需要が高い業種に横展開（求人と同じ売り方）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="ic" style="background:var(--teal)"></span>前提条件</h3>
+      <ul>
+        <li>クライアントがME導入済み・LINE公式アカウント保有</li>
+        <li>スタンプ・属性データはMEの既存の仕組みに連携</li>
+      </ul>
+    </div>
+
+    <div class="card full">
+      <h3><span class="ic" style="background:var(--teal)"></span>アーキテクチャ（シンプルさのキモ）</h3>
+      <div class="flow">
+        <span class="n">QRでスタンプ取得</span><span class="ar">→</span>
+        <span class="n">スタンプ状況を <b>MEカスタム属性</b>に書込</span><span class="ar">→</span>
+        <span class="n">ME上で集計</span><span class="ar">→</span>
+        <span class="n">完了/未完了で <b>MEリマインド配信</b></span>
+      </div>
+      <p style="margin-top:9px">自前の集計DB・管理画面・精算ロジックを持たず、<b>ME側の属性＆配信基盤に相乗り</b>。求人マッチングの「スワイプ→属性」を「スタンプ→属性」に置き換えただけの構成なので、同じ枠組み・同じ工数感で出せる。</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="ic" style="background:var(--line)"></span>含む機能（MVP）</h3>
+      <ul>
+        <li>友だち追加ゲート（LIFF）</li>
+        <li>初期チュートリアル（任意・軽い説明）</li>
+        <li>QR読取 → スタンプ付与（演出つき）</li>
+        <li>スタンプカードUI（進捗・コンプリート）</li>
+        <li>コンプリート → 特典クーポン表示</li>
+        <li>スタンプ／完了状態を <b>ME属性へ書込</b> ＋完了イベント発火</li>
+      </ul>
+    </div>
+    <div class="card warn">
+      <h3><span class="ic" style="background:var(--coral)"></span>含まない（ME側 or 対象外）</h3>
+      <ul>
+        <li>自前の集計ダッシュボード／管理画面 → <b>ME側で対応</b></li>
+        <li>店舗別の精算・金銭バック</li>
+        <li>多言語フル対応・地図／回遊クーポン</li>
+        <li>多テナント管理（クライアント個別導入のため）</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card warn" style="margin-top:13px">
+    <h3><span class="ic" style="background:var(--coral)"></span>不正対策の方針</h3>
+    <p>不正は一定発生する前提で「メリット＞不正リスク」に設計。特典は<b>リピート来店時に使える形</b>を基本にし、その場で高価値が抜かれない設計に（三重野さん方針）。</p>
+  </div>
+
+  <div class="foot">価格は社内提示価格（求人マッチングと同レベル）。実工数はインドチーム確認で最終化。｜ Mico Inc.</div>
+</div>
+
+<!-- ============ PACKAGE 2 ============ -->
+<div class="page">
+  <div class="doc-kicker">社内パッケージ定義（DRAFT v0.1）｜先方提示前・社内合意用</div>
+  <div class="tagrow"><span class="acc" style="background:var(--coral)"></span><span style="color:var(--navy)">PACKAGE ② ｜ 独立・自前集計版</span><span class="badge" style="background:var(--navy)">阪急交通社 → 自治体／イベント</span></div>
+  <h1>独立型 スタンプラリー＋回遊クーポン ミニアプリ</h1>
+  <div class="sub">MEを持たない客先（自治体・イベント主催）向け。阪急交通社が代理店として横展開する前提のフルスタック構成。集計・精算・管理画面を自前で持つ。</div>
+
+  <div style="margin:14px 0 20px; padding:11px 15px; background:var(--panel); border:1px solid var(--bd); border-radius:12px; font-size:12px; color:#2C3A42;">
+    <b>提供形態：</b>ライト（単発）／スタンダード（本命）／フル（通年・連携）の3ティア構成。<span style="color:var(--muted)">※価格は全体像を整理のうえ別途設定</span>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3><span class="ic" style="background:var(--navy)"></span>位置づけ・対象</h3>
+      <ul>
+        <li><b>対象：</b>自治体・期間限定イベント・施設（動物園等）</li>
+        <li>阪急交通社が代理店として提案・横展開</li>
+        <li>2目的：①イベント=その場消費最大化 ②施設=リピート＋友だち</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="ic" style="background:var(--navy)"></span>前提条件</h3>
+      <ul>
+        <li>客先がLINE公式アカウント保有（無償の地方公共団体プラン等）</li>
+        <li>MEは前提にしない（＝集計・精算を自前で実装）</li>
+        <li>金銭精算は手運用が基本／専用環境はオプション</li>
+      </ul>
+    </div>
+
+    <div class="card full">
+      <h3><span class="ic" style="background:var(--coral)"></span>アーキテクチャ（①との最大の違い＝ME非依存）</h3>
+      <div class="flow">
+        <span class="n">独立ミニアプリ(LIFF)</span><span class="ar">＋</span>
+        <span class="n">自前バックエンド／DB</span><span class="ar">＋</span>
+        <span class="n">管理画面（campaign・店舗・QR・精算）</span><span class="ar">＋</span>
+        <span class="n">配信はLINE Messaging API連携</span>
+      </div>
+      <p style="margin-top:9px">客先がMEを持たないため、<b>店舗別集計・精算リスト・配信を自前で完結</b>させる必要がある。多テナント前提で横展開。①が「ME相乗りで軽い」のに対し、②は<b>フルスタックで重い</b>＝価格も上がる。</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="ic" style="background:var(--line)"></span>含む機能</h3>
+      <ul>
+        <li>友だち追加／スタンプラリー／回遊クーポン</li>
+        <li>QR・コンテンツCMS（多言語）</li>
+        <li><b>店舗別の利用集計＋精算リスト出力</b></li>
+        <li>管理画面（多テナント・campaign設定）</li>
+        <li>セグメント／再来訪の配信連携・不正対策</li>
+      </ul>
+    </div>
+    <div class="card warn">
+      <h3><span class="ic" style="background:var(--coral)"></span>含まない（v1）</h3>
+      <ul>
+        <li>自動の金銭精算・銀行振込</li>
+        <li>基幹／CRM／予約の深い連携（フルで個別）</li>
+        <li>ネイティブアプリ</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:13px; border-color:var(--navy)">
+    <h3><span class="ic" style="background:var(--navy)"></span>既存成果物との対応</h3>
+    <p>②は先に作成した「LINE_MiniApp_Spec_for_Estimation.docx（独立版仕様）」＋「LINE_MiniApp_Estimation_Sheet.xlsx（工数シート）」＋UIモック（index.html）がそのまま使える。本1枚はその<b>社内サマリ</b>。詳細工数はインド確認で確定。</p>
+  </div>
+
+  <div class="foot">①と②は「ME有無」で明確に別商品。詳細工数はインド確認で確定。｜ Mico Inc.</div>
+</div>
+
+</body>
+</html>
