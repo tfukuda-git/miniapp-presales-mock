@@ -3,323 +3,444 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Package ① ME-linked Stamp Rally — Definition + Mock</title>
+<title>Package ① ME連携 スタンプラリー＋抽選 ミニアプリ（モデルハウス） — Definition + Mock</title>
 <style>
   :root{
-    --line:#06C755; --line-d:#04a548; --navy:#0B3D4F; --teal:#0E7C86;
-    --coral:#EE7B3C; --gold:#E8B23A; --house:#C2603A; --err:#D2393A;
-    --ink:#16242B; --muted:#6B7C84; --bg:#EEF2F3; --panel:#F6F9FA; --bd:#DBE4E6;
+    --line:#06C755; --line-d:#05a647;
+    --navy:#1F3864; --blue:#2E5BAB; --blue2:#3A7BCC;
+    --gold:#E8A33D; --gold-d:#c9851f;
+    --ink:#1b2330; --sub:#5b6573; --bg:#f4f6f9; --card:#fff;
+    --line-bd:#e2e7ee; --pink:#E2557B;
   }
-  *{box-sizing:border-box; margin:0; padding:0;}
-  body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif; color:var(--ink); background:var(--bg); -webkit-font-smoothing:antialiased;}
-  .wrap{max-width:1180px; margin:0 auto; padding:0 20px 70px;}
-  .top{background:var(--navy); color:#fff; padding:30px 0 26px; margin-bottom:26px;}
-  .top .inner{max-width:1180px; margin:0 auto; padding:0 20px;}
-  .top .tag{display:inline-block; font-size:12px; font-weight:800; letter-spacing:.08em; color:#9FE7C8; border:1px solid #2c6b5a; padding:3px 10px; border-radius:999px;}
-  .top h1{font-size:26px; margin:12px 0 4px;}
-  .top .en{font-size:13px; color:#CFE6EC;}
-  .top .meta{font-size:11.5px; color:#9FB7BF; margin-top:10px;}
-  .sec{font-size:18px; font-weight:800; color:var(--navy); margin:6px 2px 14px; display:flex; align-items:baseline; gap:10px;}
-  .sec .en{font-size:12px; font-weight:700; color:var(--muted);}
-  .pricechips{display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap;}
-  .pc{flex:1; min-width:180px; border-radius:12px; padding:12px 16px; color:#fff;}
-  .pc .l{font-size:11px; opacity:.9; font-weight:700;}
-  .pc .v{font-size:23px; font-weight:800; margin-top:2px;}
-  .pc .v small{font-size:12px;}
-  .grid{display:grid; grid-template-columns:1fr 1fr; gap:13px;}
-  .card{border:1px solid var(--bd); border-radius:12px; padding:14px 16px; background:#fff;}
-  .card.full{grid-column:1 / -1;}
-  .card h3{font-size:13px; font-weight:800; margin-bottom:9px; display:flex; align-items:center; gap:7px;}
-  .card h3 .ic{width:8px; height:8px; border-radius:50%;}
-  .card h3 .en{font-size:10.5px; font-weight:600; color:var(--muted);}
-  .card ul{list-style:none;}
-  .card li{font-size:12px; line-height:1.5; padding-left:15px; position:relative; margin-bottom:6px; color:#2C3A42;}
-  .card li::before{content:""; position:absolute; left:2px; top:7px; width:5px; height:5px; border-radius:50%; background:var(--teal);}
-  .card.warn li::before{background:var(--coral);}
-  .card li .en{color:var(--muted); font-size:10.5px;}
-  .card p{font-size:12px; line-height:1.6; color:#2C3A42;}
-  .flow{display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:8px;}
-  .flow .n{background:var(--panel); border:1px solid var(--bd); border-radius:8px; padding:6px 10px; font-size:11px; font-weight:700;}
-  .flow .ar{color:var(--muted); font-weight:800;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+  header.hero{background:linear-gradient(135deg,#13243f,#1F3864 55%,#2E5BAB);color:#fff;padding:46px 0 40px;margin-bottom:34px}
+  .hero .wrap{padding-bottom:0}
+  .badge{display:inline-block;font-size:12px;letter-spacing:.14em;font-weight:700;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);padding:6px 14px;border-radius:999px;margin-bottom:18px}
+  h1.title{font-size:30px;margin:0 0 8px;line-height:1.35}
+  .hero .en{font-size:14px;opacity:.82;margin:0 0 18px}
+  .premise{font-size:13.5px;opacity:.92;max-width:760px;background:rgba(0,0,0,.16);border-left:3px solid var(--line);padding:12px 16px;border-radius:6px}
+  h2.sec{font-size:21px;margin:48px 0 18px;padding-bottom:10px;border-bottom:2px solid var(--navy);color:var(--navy)}
+  h2.sec .n{display:inline-block;background:var(--navy);color:#fff;width:30px;height:30px;line-height:30px;text-align:center;border-radius:8px;font-size:16px;margin-right:10px}
+  h3{font-size:16px;margin:26px 0 10px;color:var(--blue)}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:10px 0 6px}
+  .stat{background:var(--card);border:1px solid var(--line-bd);border-radius:14px;padding:20px;text-align:center}
+  .stat .lab{font-size:12px;color:var(--sub);font-weight:700;letter-spacing:.04em}
+  .stat .val{font-size:30px;font-weight:800;color:var(--navy);margin-top:6px}
+  .stat .val small{font-size:14px;font-weight:700;color:var(--sub)}
+  .stat.hl{background:linear-gradient(135deg,#06C755,#05a647);border:none}
+  .stat.hl .lab,.stat.hl .val{color:#fff}
+  .card{background:var(--card);border:1px solid var(--line-bd);border-radius:14px;padding:18px 22px;margin:14px 0}
+  ul.clean{list-style:none;padding:0;margin:8px 0}
+  ul.clean li{padding:7px 0 7px 26px;position:relative;border-bottom:1px dashed #eef1f5;font-size:14px}
+  ul.clean li:last-child{border-bottom:none}
+  ul.clean li:before{content:"✓";position:absolute;left:0;top:7px;color:var(--line);font-weight:800}
+  ul.no li:before{content:"—";color:#b9c0cc}
+  .chain{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:6px 0}
+  .chain .step{background:#eef3fb;border:1px solid #d6e0f0;color:var(--navy);font-weight:700;font-size:13px;padding:9px 14px;border-radius:10px}
+  .chain .arr{color:var(--blue2);font-weight:800}
+  .chain .step.line{background:#e8f9ef;border-color:#bdeccf;color:var(--line-d)}
+  .chain .step.gold{background:#fcf2df;border-color:#f0d9a6;color:var(--gold-d)}
+  .note{font-size:13px;color:var(--sub)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .tag{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:6px;margin-right:6px}
+  .tag.new{background:#fcecf1;color:var(--pink)}
+  .tag.reuse{background:#e8f9ef;color:var(--line-d)}
 
-  /* phones */
-  .legend{font-size:12px; color:var(--muted); margin:0 2px 6px;}
-  .phones{display:flex; gap:22px; overflow-x:auto; padding:8px 2px 18px;}
-  .step{flex:0 0 auto; width:255px;}
-  .steplabel{font-size:12px; font-weight:800; color:var(--navy); margin:0 0 4px; display:flex; align-items:center; gap:8px;}
-  .stepnum{display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; color:#fff; font-size:12px; background:var(--house);}
-  .stepen{font-size:10.5px; color:var(--muted); margin:0 0 9px 30px;}
-  .phone{width:255px; height:530px; background:#fff; border-radius:34px; padding:11px; box-shadow:0 14px 34px rgba(11,61,79,.18); border:1px solid #e3eaec; position:relative;}
-  .screen{width:100%; height:100%; border-radius:25px; overflow:hidden; position:relative; background:#fff; display:flex; flex-direction:column;}
-  .notch{position:absolute; top:13px; left:50%; transform:translateX(-50%); width:78px; height:16px; background:#0c1417; border-radius:0 0 12px 12px; z-index:6;}
-  .lhead{background:var(--line); color:#fff; padding:30px 14px 11px; display:flex; align-items:center; gap:9px; flex:0 0 auto;}
-  .lhead .av{width:26px; height:26px; border-radius:7px; background:#fff; display:flex; align-items:center; justify-content:center; font-size:14px;}
-  .lhead .t{font-size:13px; font-weight:700; line-height:1.1;}
-  .lhead .sub{font-size:9.5px; opacity:.9;}
-  .lhead .x{margin-left:auto; font-size:15px; opacity:.9;}
-  .scbody{flex:1 1 auto; overflow:hidden; position:relative;}
-  .scroll{position:absolute; inset:0; padding:14px; display:flex; flex-direction:column;}
-  .hero{border-radius:14px; padding:15px; color:#fff; margin-bottom:12px; background:linear-gradient(135deg,var(--house),#9c4a2c);}
-  .hero h3{font-size:15px; margin-bottom:5px; line-height:1.3;}
-  .hero p{font-size:10.5px; line-height:1.5; opacity:.96;}
-  .btn{display:block; text-align:center; padding:12px; border-radius:11px; font-weight:700; font-size:12.5px; color:#fff; background:var(--line); margin-top:auto;}
-  .btn.house{background:var(--house);}
-  .btn.ghost{background:#fff; color:var(--navy); border:1.5px solid #d7e0e3;}
-  .sech{font-size:11px; font-weight:800; color:var(--navy); margin:2px 0 9px; text-align:center;}
-  .rich{margin-top:auto; border-top:1px solid #e6eced;}
-  .richgrid{display:grid; grid-template-columns:repeat(3,1fr);}
-  .rich .cellm{padding:13px 4px; text-align:center; font-size:10px; color:#33424a; border-right:1px solid #eef2f3;}
-  .rich .cellm.on{background:#eafaf0; color:var(--line-d); font-weight:800;}
-  .rich .cellm .ic{font-size:20px; display:block; margin-bottom:4px;}
-  .progtext{font-size:12px; font-weight:800; color:var(--navy); text-align:center; margin:4px 0 3px;}
-  .progsub{font-size:10px; color:var(--muted); text-align:center; margin-bottom:12px;}
-  .stampwrap{display:flex; justify-content:center; gap:13px;}
-  .stampcol{display:flex; flex-direction:column; align-items:center;}
-  .slot{width:62px; height:62px; border-radius:50%; border:2.5px dashed #c8d2d5; display:flex; align-items:center; justify-content:center; color:#b6c2c6; font-size:22px;}
-  .slot.done{border:2.5px solid var(--house); background:#fbeee7; color:var(--house);}
-  .slotcap{font-size:8.5px; text-align:center; color:var(--muted); margin-top:3px; height:11px;}
-  .scanbox{margin:8px auto 12px; width:150px; height:150px; border-radius:18px; position:relative; background:#0c1417; overflow:hidden; display:flex; align-items:center; justify-content:center;}
-  .scanbox .qr{width:96px; height:96px; border-radius:8px; background:linear-gradient(90deg,#fff 3px,transparent 3px) 0 0/14px 14px,linear-gradient(#fff 3px,transparent 3px) 0 0/14px 14px,#0c1417; opacity:.85;}
-  .corner{position:absolute; width:26px; height:26px; border:3px solid var(--line);}
-  .c1{top:10px; left:10px; border-right:none; border-bottom:none;} .c2{top:10px; right:10px; border-left:none; border-bottom:none;}
-  .c3{bottom:10px; left:10px; border-right:none; border-top:none;} .c4{bottom:10px; right:10px; border-left:none; border-top:none;}
-  .gotcard{text-align:center; margin-top:6px;}
-  .gotcard .ring{width:96px; height:96px; border-radius:50%; margin:8px auto; background:#fbeee7; border:3px solid var(--house); display:flex; align-items:center; justify-content:center; font-size:44px;}
-  .gotcard h3{font-size:15px; color:var(--house);}
-  .gotcard .place{font-size:11px; color:var(--muted); margin-top:3px;}
-  .complete{text-align:center; margin-top:4px;}
-  .complete .big{font-size:42px; margin:4px 0;}
-  .complete h3{font-size:17px; color:var(--house);}
-  .complete p{font-size:10.5px; color:var(--muted); margin:5px 6px 12px; line-height:1.5;}
-  .gift{border-radius:14px; border:2px dashed var(--house); padding:14px; text-align:center; background:#fff;}
-  .gift .ic{font-size:34px;} .gift .nm{font-size:14px; font-weight:800; margin:4px 0 2px;} .gift .ds{font-size:10px; color:var(--muted);}
-  .toast{position:absolute; left:14px; right:14px; bottom:74px; border-radius:11px; padding:11px 13px; font-size:10.5px; line-height:1.45; color:#fff; box-shadow:0 8px 20px rgba(0,0,0,.25); z-index:5;}
-  .toast.err{background:var(--err);} .toast b{font-size:11.5px;}
-  .note{display:flex; gap:9px; background:var(--panel); border:1px solid #e6eced; border-radius:11px; padding:10px; margin-top:9px;}
-  .note .ai{width:28px; height:28px; border-radius:8px; background:var(--teal); color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; flex:0 0 auto;}
-  .note .tt{font-size:10px; font-weight:700;} .note .mm{font-size:9px; color:var(--muted); margin-top:2px; line-height:1.4;}
-  .backstage{margin-top:16px; background:#fff; border-radius:14px; padding:18px 22px; box-shadow:0 6px 20px rgba(11,61,79,.08);}
-  .backstage h2{font-size:15px; color:var(--navy); margin-bottom:8px;}
-  .backstage p{font-size:12.5px; color:#2C3A42; line-height:1.7;}
-  .foot{margin-top:26px; font-size:11px; color:var(--muted); border-top:1px solid #dde5e7; padding-top:14px; line-height:1.7;}
-  .divider{height:1px; background:var(--bd); margin:30px 0 24px;}
+  /* ---- phone gallery ---- */
+  .gallery{display:flex;gap:20px;overflow-x:auto;padding:8px 4px 22px;scroll-snap-type:x mandatory}
+  .gallery::-webkit-scrollbar{height:9px}
+  .gallery::-webkit-scrollbar-thumb{background:#c3ccda;border-radius:9px}
+  .pcell{flex:0 0 auto;width:236px;scroll-snap-align:start}
+  .pcap{font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:8px;display:flex;align-items:center;gap:7px}
+  .pcap .num{background:var(--line);color:#fff;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;font-size:12px;flex:0 0 auto}
+  .pcap.lot .num{background:var(--gold)}
+  .pce{font-size:11px;color:var(--sub);font-weight:400}
+  .phone{width:236px;height:478px;background:#fff;border:1px solid #d7dde6;border-radius:30px;box-shadow:0 8px 26px rgba(20,35,60,.12);overflow:hidden;position:relative;display:flex;flex-direction:column}
+  .notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:74px;height:18px;background:#11161d;border-radius:0 0 12px 12px;z-index:5}
+  .lh{background:var(--line);color:#fff;font-size:12px;font-weight:700;padding:20px 12px 8px;display:flex;justify-content:space-between;align-items:center}
+  .scr{flex:1;overflow:hidden;background:#f7f8fa;padding:12px;font-size:12px}
+  .scr h4{font-size:13.5px;margin:2px 0 6px;line-height:1.4}
+  .scr p{font-size:11.5px;color:#5b6573;margin:4px 0}
+  .btn{display:block;width:100%;background:var(--line);color:#fff;border:none;border-radius:9px;padding:10px;font-size:12.5px;font-weight:700;text-align:center;margin-top:10px}
+  .btn.gold{background:var(--gold)}
+  .btn.ghost{background:#fff;color:var(--line);border:1px solid var(--line)}
+
+  /* rich menu (in-app preview, screens 2+) */
+  .rmenu{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:8px}
+  .rtile{border-radius:8px;color:#fff;font-size:10px;font-weight:700;text-align:center;padding:12px 4px;line-height:1.3}
+  .rtile .ic{font-size:18px;display:block;margin-bottom:3px}
+
+  /* LINE 1:1 talk screen (screen 1) — distinct from LIFF mini app */
+  .tk-hdr{background:#3d5566;color:#fff;font-size:12px;font-weight:700;padding:20px 10px 8px;display:flex;align-items:center;gap:7px}
+  .tk-hdr .av{width:24px;height:24px;border-radius:50%;background:#fff;color:#3d5566;display:flex;align-items:center;justify-content:center;font-size:13px;flex:0 0 auto}
+  .tk-hdr .nm{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .tk-body{flex:1;background:#9cc0d8;padding:12px 10px;overflow:hidden;display:flex;flex-direction:column;gap:9px}
+  .tk-time{align-self:center;background:rgba(0,0,0,.18);color:#fff;font-size:9px;padding:2px 10px;border-radius:999px}
+  .bub{display:flex;gap:6px;align-items:flex-end}
+  .bub .ba{width:26px;height:26px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;flex:0 0 auto}
+  .bub .bx{background:#fff;border-radius:4px 14px 14px 14px;padding:8px 10px;font-size:11px;line-height:1.5;max-width:158px;box-shadow:0 1px 1px rgba(0,0,0,.08)}
+  .tk-input{background:#fff;border-top:1px solid #e3e7ec;padding:7px 10px;display:flex;align-items:center;gap:8px;font-size:14px;color:#aab2bd}
+  .tk-input .ip{flex:1;background:#f0f2f5;border-radius:999px;padding:5px 12px;font-size:10px}
+  .rmenu-dock{display:grid;grid-template-columns:repeat(3,1fr);background:#11161d}
+  .rmenu-dock .rtile{border-radius:0;border:.5px solid rgba(255,255,255,.14);padding:13px 4px}
+  .tk-tip{position:absolute;bottom:150px;left:50%;transform:translateX(-50%);background:#11161d;color:#fff;font-size:9.5px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap;z-index:6;box-shadow:0 3px 10px rgba(0,0,0,.3)}
+  .liff-pill{font-size:9px;font-weight:700;background:rgba(255,255,255,.22);padding:2px 7px;border-radius:999px;margin-left:6px}
+
+  /* stamp card */
+  .stampgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
+  .stamp{aspect-ratio:1;border-radius:12px;border:2px dashed #cdd5e0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:#9aa4b2;background:#fff}
+  .stamp.got{border:2px solid var(--line);background:#e8f9ef;color:var(--line-d);font-weight:700}
+  .stamp.got .ic{font-size:22px}
+  .stamp .ic{font-size:20px}
+  .prog{height:8px;background:#e7ebf1;border-radius:8px;overflow:hidden;margin:6px 0}
+  .prog>i{display:block;height:100%;background:var(--line)}
+  .pill{display:inline-block;background:#11161d;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px}
+
+  /* survey swipe */
+  .swipe{background:#fff;border:1px solid #e6e9ee;border-radius:14px;padding:14px;text-align:center;margin-top:6px;box-shadow:0 4px 14px rgba(0,0,0,.06)}
+  .swipe .q{font-size:13px;font-weight:700;margin-bottom:10px}
+  .opt{border:1px solid #dfe4ec;border-radius:8px;padding:8px;font-size:11.5px;margin:5px 0;background:#fafbfc}
+  .swicon{display:flex;justify-content:center;gap:24px;margin-top:10px;font-size:18px}
+  .swicon span{width:34px;height:34px;line-height:34px;border-radius:50%;background:#f1f3f6}
+  .swicon .no{color:#c0556e}.swicon .yes{color:var(--line-d)}
+
+  /* lottery */
+  .gift{background:linear-gradient(135deg,#fff6e6,#fde9c8);border:1px solid #f0d9a6;border-radius:12px;padding:12px;text-align:center;margin-top:8px}
+  .gift .ic{font-size:30px}
+  .gift .name{font-weight:800;color:var(--gold-d);font-size:13px;margin-top:4px}
+  .result{border-radius:12px;padding:14px;text-align:center;margin-top:8px}
+  .result.win{background:linear-gradient(135deg,#fff3d6,#ffe1a8);border:1px solid #f0c878}
+  .result.lose{background:#eef1f5;border:1px solid #dde2e9}
+  .result .big{font-size:18px;font-weight:800}
+  .result.win .big{color:var(--gold-d)}
+  .result.lose .big{color:#7a828e}
+  .countbox{background:#11161d;color:#ffd86b;font-size:11px;border-radius:8px;padding:6px;text-align:center;margin-top:8px;font-weight:700;letter-spacing:.05em}
+
+  /* ME backend */
+  .me{background:#0f1b2e;color:#dfe7f2;border-radius:14px;padding:22px;margin-top:8px}
+  .me h3{color:#7fb3ff;margin-top:0}
+  .attr{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+  .attr .a{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px 13px}
+  .attr .a .k{font-size:11px;color:#9fc0ee;font-weight:700}
+  .attr .a .v{font-size:13px;font-family:monospace;color:#fff;margin-top:3px}
+  footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line-bd);font-size:12px;color:var(--sub)}
+  @media(max-width:680px){.stats{grid-template-columns:1fr}.two{grid-template-columns:1fr}h1.title{font-size:24px}}
 </style>
 </head>
 <body>
-<div class="top"><div class="inner">
-  <span class="tag">PACKAGE ① ｜ FOR DEV TEAM</span>
-  <h1>ME連携 スタンプラリー ミニアプリ（モデルハウス）</h1>
-  <div class="en">ME-linked Stamp Rally Mini App — Package definition + UI mock in one file</div>
-  <div class="meta">Premise: standalone LIFF mini app that rides on an existing Mico Engage (ME) tenant. Stamp status is written to ME custom attributes; aggregation & follow-up messaging happen in ME. Same level as the Job-Matching mini app.</div>
-</div></div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="badge">PACKAGE ① ｜ FOR DEV TEAM / 商談デモ</span>
+    <h1 class="title">ME連携 スタンプラリー＋抽選 ミニアプリ（モデルハウス）</h1>
+    <p class="en">ME-linked Stamp Rally + Lottery Mini App — Package definition + UI mock in one file</p>
+    <p class="premise">Premise：ME導入済みクライアント向けスタンプラリー（PKG①）に<strong>抽選機能</strong>を統合した強化版。ME（Mico Engage）テナント上に相乗りするLIFFミニアプリ。スタンプ本数・抽選参加・当落・実施日時はMEのカスタム属性に書き込み、集計と後追い配信はME側で実施。スタンプ単発（3ヶ月）で終わらず、抽選を3ヶ月スパンで継続実施することで<strong>月額（MRR）契約</strong>の根拠を作る。</p>
+  </div>
+</header>
 
 <div class="wrap">
 
-  <!-- PART 1: DEFINITION -->
-  <div class="sec">1. パッケージ定義 <span class="en">Package Definition</span></div>
+  <!-- ============ 1. PACKAGE DEFINITION ============ -->
+  <h2 class="sec"><span class="n">1</span>パッケージ定義 Package Definition</h2>
+  <div class="stats">
+    <div class="stat"><div class="lab">初期費用 / Initial</div><div class="val">¥300,000</div></div>
+    <div class="stat hl"><div class="lab">月額 / MRR</div><div class="val">¥150,000<small> /mo</small></div></div>
+    <div class="stat"><div class="lab">開発レベル感 / Effort</div><div class="val" style="font-size:18px;padding-top:8px">求人マッチング相当＋抽選<br><small>≈ Stamp Rally + Lottery</small></div></div>
+  </div>
+  <p class="note">※ 競合 RALLY（スタンプ機能のみ）は単発 ¥99,800（税別）/ 1ラリー・3ヶ月保存・最大24スポット。本パッケージは「抽選統合＋ME属性連携＋ナーチャリング配信＋継続運用」で価値差分を訴求。</p>
 
-  <div class="pricechips">
-    <div class="pc" style="background:var(--teal)"><div class="l">初期費用 / Initial</div><div class="v">¥300,000</div></div>
-    <div class="pc" style="background:var(--line)"><div class="l">月額 / MRR</div><div class="v">¥150,000<small> /mo</small></div></div>
-    <div class="pc" style="background:var(--navy)"><div class="l">開発レベル感 / Effort</div><div class="v" style="font-size:16px; padding-top:5px">求人マッチング相当<br><small style="opacity:.85">≈ Job-Matching app</small></div></div>
+  <h3>位置づけ・対象 Positioning / Target</h3>
+  <div class="card">
+    <ul class="clean">
+      <li>対象：ME導入済みクライアント（<strong>不動産＝モデルハウス／展示場／住宅フェア</strong> 等）</li>
+      <li>ME既存顧客への「アップセル・オプション」として提供（求人マッチングと同じ売り方）</li>
+      <li>スタンプラリー＋抽選を1パッケージ化し、不動産業界へ横展開 → 原価を1社に集中させない</li>
+      <li>初号案件：ミサワホーム様（現行はスタンプ＝RALLY単発、抽選＝専用フォームで別運用）</li>
+    </ul>
   </div>
 
-  <div class="grid">
-    <div class="card">
-      <h3><span class="ic" style="background:var(--teal)"></span>位置づけ・対象 <span class="en">Positioning / Target</span></h3>
-      <ul>
-        <li>対象：ME導入済みクライアント（不動産＝モデルハウス／展示場 等）<span class="en"> — clients who already use ME</span></li>
-        <li>ME既存顧客への「アップセル・オプション」として提供</li>
-        <li>スタンプラリー需要が高い業種に横展開（求人と同じ売り方）</li>
-      </ul>
-    </div>
-    <div class="card">
-      <h3><span class="ic" style="background:var(--teal)"></span>前提条件 <span class="en">Assumptions</span></h3>
-      <ul>
-        <li>クライアントがME導入済み・LINE公式アカウント保有<span class="en"> — ME + LINE OA in place</span></li>
-        <li>スタンプ・属性データはMEの既存の仕組みに連携<span class="en"> — stamp/attribute data flows into ME</span></li>
-      </ul>
-    </div>
+  <h3>前提条件 Assumptions</h3>
+  <div class="card">
+    <ul class="clean">
+      <li>クライアントがME導入済み・LINE公式アカウント保有</li>
+      <li>スタンプ・抽選・属性データはMEの既存の仕組みに連携（自前DB・管理画面・精算ロジックは持たない）</li>
+      <li>景品の現物手配・抽選の景品入替（3ヶ月スパン）はクライアント運用</li>
+    </ul>
+  </div>
 
-    <div class="card full">
-      <h3><span class="ic" style="background:var(--teal)"></span>アーキテクチャ（シンプルさのキモ）<span class="en">Architecture — keep it simple</span></h3>
-      <div class="flow">
-        <span class="n">QRでスタンプ取得 / Scan QR</span><span class="ar">→</span>
-        <span class="n">スタンプ状況を <b>MEカスタム属性</b>に書込 / write to ME attribute</span><span class="ar">→</span>
-        <span class="n">ME上で集計 / aggregate in ME</span><span class="ar">→</span>
-        <span class="n">未達者へ <b>MEで後追い配信</b> / follow-up push</span>
+  <h3>アーキテクチャ（シンプルさのキモ）Architecture</h3>
+  <div class="card">
+    <div class="chain">
+      <span class="step line">QRでスタンプ取得</span><span class="arr">→</span>
+      <span class="step">スタンプ状況を ME属性に書込</span><span class="arr">→</span>
+      <span class="step gold">完走 → 抽選応募</span><span class="arr">→</span>
+      <span class="step gold">抽選実行・当落を ME属性に書込</span><span class="arr">→</span>
+      <span class="step">ME上で集計</span><span class="arr">→</span>
+      <span class="step">未達者・落選者へ ME後追い配信</span>
+    </div>
+    <p class="note" style="margin-top:10px">専用バックエンド・管理画面・精算ロジックは新規開発せず、<strong>ME側の属性＆配信基盤に相乗り</strong>。求人マッチングの「スワイプ→属性」を「スタンプ／抽選→属性」に置き換えた構成。抽選ロジック（応募・抽せん・当落判定）もカスタム属性とイベントで完結する軽量実装。</p>
+  </div>
+
+  <div class="two">
+    <div>
+      <h3>含む機能（MVP）In scope</h3>
+      <div class="card" style="margin-top:0">
+        <ul class="clean">
+          <li><span class="tag reuse">流用</span>友だち追加ゲート（LIFF）</li>
+          <li><span class="tag reuse">流用</span>初期アンケート（スワイプUI）→ カスタム属性</li>
+          <li><span class="tag reuse">流用</span>QR読取 → スタンプ付与 / スタンプカードUI</li>
+          <li><span class="tag reuse">流用</span>会場ごとの重複チェック（同一会場は1回）</li>
+          <li><span class="tag new">抽選</span>スタンプ完走 or 来場で抽選に応募</li>
+          <li><span class="tag new">抽選</span>抽選実行・当落表示</li>
+          <li><span class="tag new">抽選</span>当選引換（スタッフ操作画面）</li>
+          <li><span class="tag reuse">流用</span>スタンプ／抽選状態を ME属性へ書込＋イベント発火</li>
+        </ul>
       </div>
-      <p style="margin-top:9px">自前の集計DB・管理画面・精算ロジックを持たず、<b>ME側の属性＆配信基盤に相乗り</b>。求人マッチングの「スワイプ→属性」を「スタンプ→属性」に置き換えた構成。<span class="en"> No bespoke backend/admin/settlement — reuse ME. Same pattern as Job-Matching (swipe→attribute → stamp→attribute).</span></p>
     </div>
-
-    <div class="card">
-      <h3><span class="ic" style="background:var(--line)"></span>含む機能（MVP）<span class="en">In scope (MVP)</span></h3>
-      <ul>
-        <li>友だち追加ゲート（LIFF）<span class="en"> — friend-add gating</span></li>
-        <li>初期チュートリアル（任意・軽い説明）<span class="en"> — light tutorial</span></li>
-        <li>QR読取 → スタンプ付与<span class="en"> — QR scan → award stamp</span></li>
-        <li>スタンプカードUI（進捗・コンプリート）<span class="en"> — stamp card</span></li>
-        <li>コンプリート → 特典クーポン表示<span class="en"> — completion → reward</span></li>
-        <li>スタンプ／完了状態を <b>ME属性へ書込</b>＋完了イベント発火<span class="en"> — write to ME + fire event</span></li>
-      </ul>
-    </div>
-    <div class="card warn">
-      <h3><span class="ic" style="background:var(--coral)"></span>含まない（ME側 or 対象外）<span class="en">Out of scope</span></h3>
-      <ul>
-        <li>自前の集計ダッシュボード／管理画面 → <b>ME側で対応</b><span class="en"> — handled by ME</span></li>
-        <li>店舗別の精算・金銭バック<span class="en"> — no cash settlement</span></li>
-        <li>多言語フル対応・地図／回遊クーポン<span class="en"> — no map/coupon-rally</span></li>
-        <li>多テナント管理（クライアント個別導入のため）<span class="en"> — single-tenant per client</span></li>
-      </ul>
-    </div>
-
-    <div class="card warn full">
-      <h3><span class="ic" style="background:var(--coral)"></span>不正対策の方針 <span class="en">Anti-fraud</span></h3>
-      <p>不正は一定発生する前提で「メリット＞不正リスク」に設計。特典は<b>その場で完結（来場特典）</b>＋会場ごとのユニークQR＋ユーザー単位の重複チェックで対応。<span class="en"> Assume some fraud; design so benefit > loss. Unique per-venue QR + per-user de-dup; same venue counts once.</span></p>
+    <div>
+      <h3>含まない（ME側 or 対象外）Out of scope</h3>
+      <div class="card" style="margin-top:0">
+        <ul class="clean no">
+          <li>自前の集計ダッシュボード／管理画面 → ME側で対応</li>
+          <li>景品の在庫・物流・配送管理</li>
+          <li>フェア飛び込み来場者の個人情報のLINE一元化（紙運用のまま・別フェーズ）</li>
+          <li>多言語フル対応・地図／回遊クーポン</li>
+          <li>多テナント管理（クライアント個別導入のため）</li>
+        </ul>
+      </div>
     </div>
   </div>
 
-  <div class="divider"></div>
+  <h3>不正対策の方針 Anti-fraud</h3>
+  <div class="card">
+    <p class="note" style="margin:0">不正は一定発生する前提で「メリット＞不正リスク」に設計。スタンプ特典はその場完結（来場特典）＋会場ごとのユニークQR＋ユーザー単位の重複チェック。抽選はユーザー単位で1キャンペーン1応募に制限し、当落・引換状態をME属性で管理することで二重当選・二重引換を防止。</p>
+  </div>
 
-  <!-- PART 2: MOCK -->
-  <div class="sec">2. 画面イメージ（モック）<span class="en">UI Mock — 3 model houses, collect 3, get a premium gift; same venue counts once</span></div>
-  <p class="legend">← 横にスクロールできます / scroll horizontally</p>
-  <div class="phones">
+  <!-- ============ 2. UI MOCK ============ -->
+  <h2 class="sec"><span class="n">2</span>画面イメージ（モック）UI Mock</h2>
+  <p class="note">← 横にスクロールできます / scroll horizontally　｜　<strong>①＝LINE個別トーク（リッチメニュー常駐）</strong>　／　<strong>②以降＝ミニアプリ（LIFF）</strong>。②〜⑤＝スタンプラリー、⑥〜⑨＝抽選、⑩＝裏側（ME連携）</p>
 
-    <div class="step">
-      <div class="steplabel"><span class="stepnum">1</span>リッチメニューから起動</div>
-      <div class="stepen">Launch from rich menu</div>
-      <div class="phone"><div class="notch"></div><div class="screen">
-        <div class="lhead"><div class="av">🏠</div><div><div class="t">○○ホーム 住まいの相談</div><div class="sub">公式アカウント</div></div><div class="x">≡</div></div>
-        <div class="scbody"><div class="scroll" style="padding-bottom:0">
-          <div class="hero"><h3>3つのモデルハウスを巡って<br>豪華プレゼントをGET🎁</h3><p>気になる住まいを見学しながらスタンプを集めよう。3つ集めるとその場でプレゼント！</p></div>
-          <div class="sech">スタンプを集めるには？</div>
-          <p style="font-size:10.5px; color:#3A4A52; line-height:1.55; text-align:center">各モデルハウスのQRを読み取るだけ。インストール・会員登録は不要です。</p>
-          <div class="rich"><div class="richgrid">
-            <div class="cellm on"><span class="ic">🎫</span>スタンプ<br>ラリー</div>
-            <div class="cellm"><span class="ic">🏡</span>来場<br>予約</div>
-            <div class="cellm"><span class="ic">💬</span>住まいの<br>相談</div>
-          </div></div>
-        </div></div>
-      </div></div>
+  <div class="gallery">
+
+    <!-- 1 LINE talk + rich menu -->
+    <div class="pcell">
+      <div class="pcap"><span class="num">1</span>LINE個別トーク（下部にリッチメニュー） <span class="pce">LINE chat</span></div>
+      <div class="phone"><div class="notch"></div>
+        <div class="tk-hdr"><span>‹</span><span class="av">🏠</span><span class="nm">○○ホーム 住まいの相談</span><span>☰</span></div>
+        <div class="tk-body">
+          <div class="tk-time">14:30</div>
+          <div class="bub"><span class="ba">🏠</span><span class="bx">こんにちは！住まい探しをもっと楽しく🎁 モデルハウスを巡ってスタンプを集めると、抽選にチャレンジできます。</span></div>
+          <div class="bub"><span class="ba">🏠</span><span class="bx">下のメニューから「スタンプラリー」をタップしてはじめてください👇</span></div>
+        </div>
+        <div class="tk-tip">↓ タップでミニアプリ起動</div>
+        <div class="tk-input"><span>＋</span><span class="ip">メッセージを入力</span><span>☺</span></div>
+        <div class="rmenu-dock">
+          <div class="rtile" style="background:#2E5BAB"><span class="ic">🎫</span>スタンプ<br>ラリー</div>
+          <div class="rtile" style="background:#E8A33D"><span class="ic">🎁</span>抽選に<br>応募</div>
+          <div class="rtile" style="background:#3A7BCC"><span class="ic">🏡</span>来場<br>予約</div>
+          <div class="rtile" style="background:#5A9FDE"><span class="ic">📋</span>フェア<br>情報</div>
+          <div class="rtile" style="background:#06C755"><span class="ic">💬</span>住まいの<br>相談</div>
+          <div class="rtile" style="background:#7B61FF"><span class="ic">👤</span>マイ<br>ページ</div>
+        </div>
+      </div>
+      <div class="screen-desc" style="font-size:11px;color:var(--sub);margin-top:8px">LINEの個別トーク画面。リッチメニューはここに常駐し、タップで②以降のミニアプリ（LIFF）が開く。</div>
     </div>
 
-    <div class="step">
-      <div class="steplabel"><span class="stepnum">2</span>スタンプカード（0/3）</div>
-      <div class="stepen">Stamp card — collect 3</div>
-      <div class="phone"><div class="notch"></div><div class="screen">
-        <div class="lhead"><div class="av">🎫</div><div><div class="t">スタンプカード</div><div class="sub">3つ集めてプレゼント</div></div><div class="x">✕</div></div>
-        <div class="scbody"><div class="scroll">
-          <div class="progtext">0 / 3 個</div>
-          <div class="progsub">ちがうモデルハウスで3つ集めよう</div>
-          <div class="stampwrap">
-            <div class="stampcol"><div class="slot">🏠</div><div class="slotcap"></div></div>
-            <div class="stampcol"><div class="slot">🏠</div><div class="slotcap"></div></div>
-            <div class="stampcol"><div class="slot">🎁</div><div class="slotcap">プレゼント</div></div>
+    <!-- 2 survey swipe -->
+    <div class="pcell">
+      <div class="pcap"><span class="num">2</span>初期アンケート（スワイプ） <span class="pce">→ 属性</span></div>
+      <div class="phone"><div class="notch"></div>
+        <div class="lh"><span>はじめのアンケート<span class="liff-pill">ミニアプリ</span></span><span>×</span></div>
+        <div class="scr">
+          <p>かんたんな質問に答えると、あなたに合った住まい情報が届きます。</p>
+          <div class="swipe">
+            <div class="q">いま、家づくりはどの段階ですか？</div>
+            <div class="opt">情報収集を始めたばかり</div>
+            <div class="opt">そろそろ具体的に検討したい</div>
+            <div class="opt">土地は決まっている</div>
+            <div class="swicon"><span class="no">✕</span><span class="yes">♥</span></div>
           </div>
-          <p style="font-size:10px; color:var(--muted); text-align:center; line-height:1.5; margin-top:4px">※同じモデルハウスのスタンプは1回まで</p>
-          <a class="btn house">QRコードを読み取る</a>
-        </div></div>
-      </div></div>
+          <p class="note" style="text-align:center;margin-top:8px">回答はMEカスタム属性へ保存<br>→ 次回配信・リッチメニュー出し分けに活用</p>
+        </div>
+      </div>
     </div>
 
-    <div class="step">
-      <div class="steplabel"><span class="stepnum">3</span>QRを読み取る</div>
-      <div class="stepen">Scan venue QR</div>
-      <div class="phone"><div class="notch"></div><div class="screen">
-        <div class="lhead"><div class="av">📷</div><div><div class="t">QRコード読み取り</div><div class="sub">会場のスタンプQRへ</div></div><div class="x">✕</div></div>
-        <div class="scbody"><div class="scroll" style="justify-content:center; align-items:center">
-          <div class="scanbox"><div class="corner c1"></div><div class="corner c2"></div><div class="corner c3"></div><div class="corner c4"></div><div class="qr"></div></div>
-          <p style="font-size:11px; color:#3A4A52; text-align:center; line-height:1.5">モデルハウス内のQRを<br>枠に合わせてください</p>
-        </div></div>
-      </div></div>
-    </div>
-
-    <div class="step">
-      <div class="steplabel"><span class="stepnum">4</span>スタンプGET（1つ目）</div>
-      <div class="stepen">Stamp 1 — Sakuradai</div>
-      <div class="phone"><div class="notch"></div><div class="screen">
-        <div class="lhead"><div class="av">🎫</div><div><div class="t">スタンプGET！</div><div class="sub">さくら台 展示場</div></div><div class="x">✕</div></div>
-        <div class="scbody"><div class="scroll">
-          <div class="gotcard"><div class="ring">🏠</div><h3>スタンプを獲得しました</h3><div class="place">さくら台 展示場・モデルA</div></div>
-          <div class="progtext" style="margin-top:14px">1 / 3 個</div>
-          <div class="stampwrap" style="margin-top:8px">
-            <div class="stampcol"><div class="slot done">🏠</div><div class="slotcap">さくら台</div></div>
-            <div class="stampcol"><div class="slot">🏠</div><div class="slotcap"></div></div>
-            <div class="stampcol"><div class="slot">🎁</div><div class="slotcap">プレゼント</div></div>
+    <!-- 3 stamp card -->
+    <div class="pcell">
+      <div class="pcap"><span class="num">3</span>スタンプカード（1/3） <span class="pce">Stamp card</span></div>
+      <div class="phone"><div class="notch"></div>
+        <div class="lh"><span>🎫 スタンプカード</span><span>×</span></div>
+        <div class="scr">
+          <p>3つ集めると<strong>抽選</strong>にチャレンジ！</p>
+          <div class="prog"><i style="width:33%"></i></div>
+          <span class="pill">1 / 3 個</span>
+          <div class="stampgrid">
+            <div class="stamp got"><span class="ic">🏠</span>さくら台</div>
+            <div class="stamp"><span class="ic">🏠</span>？</div>
+            <div class="stamp"><span class="ic">🎁</span>抽選</div>
           </div>
-          <a class="btn house" style="margin-top:14px">次の会場でまた読み取る</a>
-        </div></div>
-      </div></div>
+          <p class="note">※同じモデルハウスのスタンプは1回まで</p>
+          <button class="btn">QRコードを読み取る</button>
+        </div>
+      </div>
     </div>
 
-    <div class="step">
-      <div class="steplabel"><span class="stepnum">5</span>同じ会場はNG（重複不可）</div>
-      <div class="stepen">Same venue blocked</div>
-      <div class="phone"><div class="notch"></div><div class="screen">
-        <div class="lhead"><div class="av">🎫</div><div><div class="t">スタンプカード</div><div class="sub">さくら台は取得済み</div></div><div class="x">✕</div></div>
-        <div class="scbody"><div class="scroll">
-          <div class="progtext">2 / 3 個</div>
-          <div class="progsub">あと1か所！別のモデルハウスへ</div>
-          <div class="stampwrap">
-            <div class="stampcol"><div class="slot done">🏠</div><div class="slotcap">さくら台</div></div>
-            <div class="stampcol"><div class="slot done">🏠</div><div class="slotcap">みどり台</div></div>
-            <div class="stampcol"><div class="slot">🎁</div><div class="slotcap">プレゼント</div></div>
+    <!-- 4 stamp get -->
+    <div class="pcell">
+      <div class="pcap"><span class="num">4</span>スタンプGET → 完走 <span class="pce">3/3</span></div>
+      <div class="phone"><div class="notch"></div>
+        <div class="lh"><span>🎫 スタンプGET！</span><span>×</span></div>
+        <div class="scr" style="text-align:center">
+          <div style="font-size:40px;margin:6px 0">🎉</div>
+          <h4>3か所めぐり達成！</h4>
+          <p>さくら台・みどり台・あおば台を制覇。抽選にチャレンジできます。</p>
+          <div class="prog"><i style="width:100%"></i></div>
+          <div class="stampgrid">
+            <div class="stamp got"><span class="ic">🏠</span>さくら台</div>
+            <div class="stamp got"><span class="ic">🏠</span>みどり台</div>
+            <div class="stamp got"><span class="ic">🏠</span>あおば台</div>
           </div>
-          <a class="btn house">QRコードを読み取る</a>
-          <div class="toast err"><b>このモデルハウスは取得済みです</b><br>「さくら台 展示場」は登録済み。別の会場でQRを読み取ってください。</div>
-        </div></div>
-      </div></div>
+          <button class="btn gold">抽選に応募する 🎁</button>
+        </div>
+      </div>
     </div>
 
-    <div class="step">
-      <div class="steplabel"><span class="stepnum">6</span>3つ達成！</div>
-      <div class="stepen">Complete (3/3)</div>
-      <div class="phone"><div class="notch"></div><div class="screen">
-        <div class="lhead"><div class="av">🎉</div><div><div class="t">コンプリート！</div><div class="sub">3か所めぐり達成</div></div><div class="x">✕</div></div>
-        <div class="scbody"><div class="scroll">
-          <div class="complete"><div class="big">🎉</div><h3>3つ達成おめでとう！</h3><p>さくら台・みどり台・あおば台を制覇。いまいる会場でプレゼントを受け取れます。</p></div>
-          <div class="stampwrap" style="margin-bottom:6px">
-            <div class="stampcol"><div class="slot done">🏠</div><div class="slotcap">さくら台</div></div>
-            <div class="stampcol"><div class="slot done">🏠</div><div class="slotcap">みどり台</div></div>
-            <div class="stampcol"><div class="slot done">🎁</div><div class="slotcap">あおば台</div></div>
+    <!-- 5 entry choice -->
+    <div class="pcell">
+      <div class="pcap"><span class="num">5</span>来場だけでも応募OK <span class="pce">2 routes</span></div>
+      <div class="phone"><div class="notch"></div>
+        <div class="lh"><span>抽選への応募方法</span><span>×</span></div>
+        <div class="scr">
+          <p>2つの方法で抽選に応募できます。</p>
+          <div class="card" style="margin:8px 0;padding:12px">
+            <strong>① スタンプ完走で応募</strong>
+            <p class="note" style="margin:4px 0 0">3か所めぐると自動で応募権を獲得。当選確率UP。</p>
           </div>
-          <a class="btn house">プレゼントを受け取る</a>
-        </div></div>
-      </div></div>
+          <div class="card" style="margin:8px 0;padding:12px">
+            <strong>② 来場するだけで応募</strong>
+            <p class="note" style="margin:4px 0 0">展示場でQRを1つ読むだけでも応募できます。</p>
+          </div>
+          <p class="note">来場ハードルを下げつつ、完走で確率UP＝回遊を促進。</p>
+        </div>
+      </div>
     </div>
 
-    <div class="step">
-      <div class="steplabel"><span class="stepnum">7</span>プレゼント引換</div>
-      <div class="stepen">Redeem gift (staff)</div>
-      <div class="phone"><div class="notch"></div><div class="screen">
-        <div class="lhead"><div class="av">🎁</div><div><div class="t">プレゼント引換</div><div class="sub">あおば台 展示場</div></div><div class="x">✕</div></div>
-        <div class="scbody"><div class="scroll">
-          <p style="font-size:11px; color:#3A4A52; text-align:center; line-height:1.5; margin-bottom:10px">受付スタッフにこの画面をお見せください</p>
-          <div class="gift"><div class="ic">🎁</div><div class="nm">3か所達成 記念プレゼント</div><div class="ds">（例）カタログギフト／地域特産品 などの“豪華版”景品</div></div>
-          <div class="note"><div class="ai">📊</div><div><div class="tt">裏側：ME連携</div><div class="mm">スタンプ状況・達成はMEカスタム属性へ。未達者に「あと1つ！」後追い配信。</div></div></div>
-          <a class="btn ghost" style="margin-top:10px">引換済みにする（スタッフ操作）</a>
-        </div></div>
-      </div></div>
+    <!-- 6 lottery top -->
+    <div class="pcell">
+      <div class="pcap lot"><span class="num">6</span>抽選トップ（今回の景品） <span class="pce">Lottery</span></div>
+      <div class="phone"><div class="notch"></div>
+        <div class="lh" style="background:#E8A33D"><span>🎁 今月の抽選会</span><span>×</span></div>
+        <div class="scr">
+          <h4>夏の住まいキャンペーン抽選</h4>
+          <div class="gift"><div class="ic">🎁</div><div class="name">カタログギフト／地域特産品</div></div>
+          <div class="countbox">応募締切まで あと 12 日</div>
+          <p class="note" style="margin-top:8px">※景品は3ヶ月スパンで入れ替え。当キャンペーン期間：2026/07/01〜09/30</p>
+          <button class="btn gold">この抽選に応募する</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 apply -->
+    <div class="pcell">
+      <div class="pcap lot"><span class="num">7</span>抽選に応募 <span class="pce">Apply</span></div>
+      <div class="phone"><div class="notch"></div>
+        <div class="lh" style="background:#E8A33D"><span>抽選に応募</span><span>×</span></div>
+        <div class="scr">
+          <p>以下の内容で応募します。</p>
+          <div class="card" style="margin:8px 0;padding:12px;font-size:11.5px">
+            <div>お名前：<strong>福田 様</strong>（LINE連携済）</div>
+            <div style="margin-top:5px">応募区分：<strong>スタンプ完走（3/3）</strong></div>
+            <div style="margin-top:5px">キャンペーン：夏の住まい抽選</div>
+          </div>
+          <label style="font-size:11px;display:flex;gap:6px;align-items:flex-start"><input type="checkbox" checked>抽選結果の通知をLINEで受け取る</label>
+          <button class="btn gold">応募を確定する</button>
+          <p class="note" style="text-align:center">1キャンペーンにつき1回まで応募できます</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 result win -->
+    <div class="pcell">
+      <div class="pcap lot"><span class="num">8</span>抽選結果（当選） <span class="pce">Result</span></div>
+      <div class="phone"><div class="notch"></div>
+        <div class="lh" style="background:#E8A33D"><span>🎉 抽選結果</span><span>×</span></div>
+        <div class="scr" style="text-align:center">
+          <div style="font-size:40px;margin:6px 0">🎊</div>
+          <div class="result win"><div class="big">当選しました！</div><div class="gift" style="margin-top:8px"><div class="ic">🎁</div><div class="name">カタログギフト</div></div></div>
+          <p class="note">会場受付で引換画面をご提示ください。</p>
+          <button class="btn gold">引換画面を表示</button>
+          <p class="note" style="margin-top:10px;color:#b9c0cc">※落選時は「残念！次回もぜひ」＋次回告知＋ME後追い配信</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9 redeem -->
+    <div class="pcell">
+      <div class="pcap lot"><span class="num">9</span>当選引換（スタッフ操作） <span class="pce">Redeem</span></div>
+      <div class="phone"><div class="notch"></div>
+        <div class="lh" style="background:#E8A33D"><span>🎁 当選引換</span><span>×</span></div>
+        <div class="scr" style="text-align:center">
+          <p>受付スタッフにこの画面をお見せください</p>
+          <div class="gift"><div class="ic">🎁</div><div class="name">カタログギフト</div></div>
+          <div class="card" style="margin:10px 0;padding:10px;font-size:11px">
+            当選ID：<strong>LT-20260815-0421</strong><br>会場：あおば台 展示場
+          </div>
+          <button class="btn">引換済みにする（スタッフ操作）</button>
+          <p class="note">引換状態をME属性に書込 → 二重引換を防止</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10 ME backend -->
+    <div class="pcell">
+      <div class="pcap"><span class="num" style="background:#0f1b2e">10</span>裏側：ME連携 <span class="pce">Backend</span></div>
+      <div class="phone"><div class="notch"></div>
+        <div class="lh" style="background:#0f1b2e"><span>📊 ME カスタム属性</span><span></span></div>
+        <div class="scr" style="background:#11161d;color:#dfe7f2">
+          <p style="color:#9fc0ee">スタンプ・抽選の状態はすべてME属性へ</p>
+          <div style="font-family:monospace;font-size:11px;line-height:2">
+            stamp_count：<span style="color:#7fffa8">3</span><br>
+            stamp_venues：<span style="color:#7fffa8">桜台,緑台,青葉台</span><br>
+            lottery_entry：<span style="color:#7fffa8">true</span><br>
+            lottery_result：<span style="color:#ffd86b">当選</span><br>
+            lottery_redeemed：<span style="color:#7fffa8">false</span><br>
+            campaign_id：<span style="color:#7fffa8">2026Q3</span><br>
+            entry_at：<span style="color:#7fffa8">2026-08-15</span>
+          </div>
+          <p class="note" style="color:#8da3c0;margin-top:10px">未達者へ「あと1つ！」、落選者へ「次回もぜひ」を ME で後追い配信。</p>
+        </div>
+      </div>
     </div>
 
   </div>
 
-  <div class="backstage">
-    <h2>3. 裏側のしくみ（ME連携・シンプル構成）/ Backend — rides on ME</h2>
-    <p>専用バックエンド・管理画面は新規開発せず、導入済みのMico Engageに相乗り。スタンプ取得・達成の状態はMEのカスタム属性に書き込み、集計と「未達者への後追い配信」もME側で実施。求人マッチングの「スワイプ→属性」を「スタンプ→属性」に置き換えた構成です。</p>
-    <div class="flow">
-      <span class="n">会場QRを読み取り</span><span class="ar">→</span>
-      <span class="n">スタンプ状況を MEカスタム属性に書込</span><span class="ar">→</span>
-      <span class="n">ME上で集計</span><span class="ar">→</span>
-      <span class="n">未達者へ後追い配信</span>
+  <!-- ============ 3. BACKEND ============ -->
+  <h2 class="sec"><span class="n">3</span>裏側のしくみ（ME連携・シンプル構成）Backend</h2>
+  <div class="me">
+    <h3>専用バックエンドを持たず、導入済みの Mico Engage に相乗り</h3>
+    <p style="font-size:13.5px;opacity:.92">スタンプ取得・完走・抽選応募・当落・引換の状態は、すべてMEのカスタム属性に書き込み。集計と「未達者・落選者への後追い配信」もME側で実施します。求人マッチングの「スワイプ→属性」を「スタンプ／抽選→属性」に置き換えた構成です。</p>
+    <div class="attr">
+      <div class="a"><div class="k">スタンプ</div><div class="v">stamp_count / stamp_venues</div></div>
+      <div class="a"><div class="k">抽選参加</div><div class="v">lottery_entry / campaign_id</div></div>
+      <div class="a"><div class="k">当落</div><div class="v">lottery_result（当選/落選）</div></div>
+      <div class="a"><div class="k">引換・日時</div><div class="v">lottery_redeemed / entry_at</div></div>
+    </div>
+    <div class="chain" style="margin-top:16px">
+      <span class="step line" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#fff">会場QR読取</span><span class="arr" style="color:#7fb3ff">→</span>
+      <span class="step" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#fff">スタンプ→ME属性</span><span class="arr" style="color:#7fb3ff">→</span>
+      <span class="step gold" style="background:rgba(232,163,61,.18);border-color:rgba(232,163,61,.4);color:#ffd86b">抽選応募・抽せん→ME属性</span><span class="arr" style="color:#7fb3ff">→</span>
+      <span class="step" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#fff">ME集計</span><span class="arr" style="color:#7fb3ff">→</span>
+      <span class="step" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#fff">後追い配信</span>
     </div>
   </div>
 
-  <div class="foot">
-    ディスカッション用の画面イメージ（叩き台）。文言・デザイン・景品・QRの挙動は案件ごとに確定。重複防止（同じ会場は1回まで）は会場ごとのユニークQR＋ユーザー単位の重複チェックで実現。<br>
-    Discussion draft for the dev team. Copy, design, gift and QR behavior to be finalized per project. ｜ Mico Inc. — Package ① (ME-linked Stamp Rally)
-  </div>
+  <footer>
+    ディスカッション用の画面イメージ（叩き台）。文言・デザイン・景品・QR／抽選の挙動は案件ごとに確定します。実画面は各クライアントのブランドガイドラインに合わせて調整予定。詳細は PRD を参照。<br>
+    重複防止（同一会場は1回／1キャンペーン1応募）は会場ごとのユニークQR＋ユーザー単位の重複チェックで実現。｜ Mico Inc. — Package ①（ME連携 スタンプラリー＋抽選）
+  </footer>
+
 </div>
 </body>
 </html>
