@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>トヨタユナイテッド静岡 マイカー登録・入庫予約ミニアプリ モック v0.3（マージ版）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root{
+    --accent:#3438F0; --accent-light:#DBE1FF; --mid:#6E82FF; --deep:#201DB6; --navy:#1B1D3B;
+    --white:#fff; --bg:#FAF9FB; --fg1:#282829; --fg2:#666; --gray:#B3B3B3; --border:#E6E6E6;
+    --line:#06C755;
+    --font:'Noto Sans JP',-apple-system,'Hiragino Sans','Yu Gothic',Meiryo,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--font);background:var(--bg);color:var(--fg1);padding:40px 20px;line-height:1.5;font-feature-settings:'palt' 1;}
+  .wrap{max-width:1400px;margin:0 auto;}
+  h1{font-size:25px;font-weight:700;letter-spacing:-0.02em;color:var(--navy);padding-bottom:10px;border-bottom:3px solid var(--accent);}
+  .subtitle{color:var(--fg2);font-size:13px;margin:8px 0 22px;}
+  .eyebrow{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.08em;}
+  .legend{font-size:12px;color:var(--fg2);line-height:1.9;background:var(--white);border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:8px;}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;margin-right:6px;color:#fff;font-weight:700;}
+  .pill.user{background:var(--line);} .pill.admin{background:var(--accent);} .pill.sys{background:var(--navy);}
+  .imp{display:inline-block;background:var(--accent);color:#fff;font-size:10px;font-weight:700;border-radius:999px;padding:1px 8px;margin-right:4px;}
+  .src{display:inline-block;background:var(--accent-light);color:var(--deep);font-size:10px;font-weight:700;border-radius:999px;padding:1px 8px;margin-right:4px;}
+  .phase-title{font-size:18px;font-weight:700;color:var(--navy);border-left:6px solid var(--accent);padding-left:12px;margin:40px 0 6px;}
+  .phase-note{font-size:12px;color:var(--fg2);margin:0 0 18px;padding-left:18px;}
+  /* journey strip */
+  .journey{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:8px;}
+  .jp{flex:1;min-width:150px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
+  .jp .ph{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.05em;}
+  .jp .t{font-size:12.5px;font-weight:700;color:var(--navy);margin:3px 0;}
+  .jp .d{font-size:10px;color:var(--fg2);line-height:1.45;}
+  .jloop{font-size:11px;color:var(--accent);font-weight:700;text-align:right;margin-top:8px;}
+  /* improvement table */
+  .imp-table{width:100%;border-collapse:collapse;font-size:12px;background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+  .imp-table th,.imp-table td{padding:9px 11px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;}
+  .imp-table th{background:var(--navy);color:#fff;font-weight:700;font-size:12px;}
+  .imp-table td.no{text-align:center;font-weight:700;color:var(--accent);width:36px;}
+  .imp-table td.cat{width:54px;color:var(--fg2);font-weight:700;text-align:center;}
+  .imp-table td.app{background:#F7F8FF;color:var(--fg1);}
+  .imp-table td.app strong{color:var(--navy);}
+  .imp-table tr:last-child td{border-bottom:none;}
+  /* grids & phones */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;}
+  .screen-wrap{display:flex;flex-direction:column;align-items:center;}
+  .screen-label{font-size:12.5px;font-weight:700;color:var(--accent);margin-bottom:8px;text-align:center;}
+  .screen-desc{font-size:11px;color:var(--fg2);text-align:center;max-width:290px;margin-top:8px;line-height:1.55;}
+  .phone{width:290px;height:600px;border:9px solid var(--navy);border-radius:32px;background:#fff;overflow:hidden;position:relative;box-shadow:0 8px 24px rgba(27,29,59,.10);}
+  .phone-notch{height:18px;background:var(--navy);border-radius:0 0 12px 12px;width:100px;margin:0 auto;}
+  .line-header{background:var(--line);color:#fff;padding:9px 12px;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+  .liff{padding:13px;background:#fff;height:calc(100% - 18px - 36px);overflow-y:auto;}
+  .liff h2{font-size:14.5px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+  .liff p.lead{font-size:11px;color:var(--fg2);margin-bottom:11px;line-height:1.5;}
+  .field{margin-bottom:11px;}
+  .field label{display:block;font-size:11px;color:var(--fg1);margin-bottom:4px;font-weight:700;}
+  .field label .req{color:#fff;background:var(--accent);font-size:9px;border-radius:4px;padding:1px 5px;margin-left:4px;}
+  .field input,.field select,.field textarea{width:100%;padding:7px 9px;font-size:12px;border:1px solid var(--border);border-radius:8px;font-family:var(--font);}
+  .field .hint{font-size:9.5px;color:var(--gray);margin-top:3px;}
+  .chip{border:1px solid var(--border);border-radius:999px;padding:5px 11px;font-size:11px;display:inline-block;margin:0 4px 4px 0;}
+  .chip.sel{background:var(--accent-light);border-color:var(--accent);color:var(--deep);font-weight:700;}
+  .btn{display:block;width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;margin-top:11px;font-family:var(--font);}
+  .btn.outline{background:#fff;color:var(--accent);border:1px solid var(--accent);}
+  .btn.ghost{background:#fff;color:var(--accent);border:1px dashed var(--accent);}
+  .note{background:var(--accent-light);border:1px solid var(--mid);border-radius:8px;padding:7px 9px;font-size:10px;color:var(--deep);margin-top:7px;line-height:1.5;}
+  .vcard{border:1px solid var(--border);border-radius:11px;padding:10px;margin-bottom:9px;background:#fff;}
+  .vcard .vt{font-size:12.5px;font-weight:700;color:var(--navy);}
+  .vcard .vn{font-size:10.5px;color:var(--fg2);margin:2px 0 7px;}
+  .toggle-row{display:flex;justify-content:space-between;align-items:center;font-size:10.5px;color:var(--fg1);margin-top:5px;}
+  .toggle{width:32px;height:18px;border-radius:999px;position:relative;display:inline-block;flex:none;}
+  .toggle.on{background:var(--accent);} .toggle.off{background:var(--gray);}
+  .toggle:after{content:"";position:absolute;top:2px;width:14px;height:14px;border-radius:50%;background:#fff;}
+  .toggle.on:after{right:2px;} .toggle.off:after{left:2px;}
+  .scan{border:2px dashed var(--accent);border-radius:11px;padding:16px 10px;text-align:center;background:#F7F8FF;}
+  .scan .ico{font-size:28px;} .scan .t{font-size:12px;font-weight:700;color:var(--deep);margin-top:5px;} .scan .d{font-size:10px;color:var(--fg2);margin-top:3px;}
+  .autofill{background:#F7F8FF;border:1px solid var(--accent-light);border-radius:8px;padding:8px 10px;font-size:10.5px;color:var(--fg1);line-height:1.75;margin-top:8px;}
+  .autofill strong{color:var(--navy);}
+  .mapbox{height:96px;border-radius:10px;background:linear-gradient(135deg,#e7ebff,#f3f4ff);border:1px solid var(--accent-light);position:relative;margin-bottom:8px;}
+  .mapbox .pin{position:absolute;font-size:18px;}
+  .storelist .st{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);border-radius:9px;padding:8px 10px;margin-bottom:7px;font-size:11.5px;}
+  .storelist .st.sel{border-color:var(--accent);background:var(--accent-light);font-weight:700;color:var(--deep);}
+  .svc{border:1px solid var(--border);border-radius:9px;padding:9px 10px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;font-size:11.5px;}
+  .svc.sel{border-color:var(--accent);background:var(--accent-light);font-weight:700;color:var(--deep);}
+  .svc .badge{font-size:9.5px;color:var(--fg2);background:var(--bg);border-radius:999px;padding:2px 7px;}
+  .svc.sel .badge{color:var(--deep);background:#fff;}
+  /* mini calendar */
+  .calhead{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;font-weight:700;color:var(--navy);margin:4px 0;}
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+  .cal .dow{font-size:9px;color:var(--fg2);text-align:center;padding:2px 0;}
+  .cal .cell{border:1px solid var(--border);border-radius:6px;text-align:center;padding:4px 0;font-size:10px;}
+  .cal .cell .mk{font-size:9px;display:block;}
+  .cal .cell.ok .mk{color:var(--line);} .cal .cell.few .mk{color:#c98a00;} .cal .cell.full{background:#f3f3f3;color:var(--gray);} .cal .cell.full .mk{color:var(--gray);}
+  .cal .cell.off{background:#f7f7f7;color:var(--gray);} .cal .cell.sel{background:var(--accent-light);border-color:var(--accent);font-weight:700;color:var(--deep);}
+  .slotline{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-top:6px;font-size:11px;}
+  .slotline.sel{border-color:var(--accent);background:var(--accent-light);color:var(--deep);font-weight:700;}
+  .slotline.few{border-color:#f0d27a;color:#9a6b00;} .slotline.full{color:var(--gray);background:#f7f7f7;}
+  .cand{border:1px solid var(--border);border-radius:9px;padding:8px 10px;margin-bottom:7px;font-size:11px;}
+  .cand .r{font-size:9.5px;color:var(--accent);font-weight:700;} .cand .v{font-weight:700;color:var(--navy);margin-top:2px;}
+  .ticket{border:2px dashed var(--accent);border-radius:11px;padding:13px;text-align:center;background:#F7F8FF;}
+  .ticket .no{font-size:18px;font-weight:800;color:var(--deep);} .ticket .st{font-size:10px;color:var(--fg2);margin-top:3px;}
+  .status-pill{display:inline-block;font-size:10px;font-weight:700;border-radius:999px;padding:2px 9px;}
+  .status-pill.pend{background:#FFF8E6;color:#9a6b00;border:1px solid #f0d27a;}
+  .status-pill.fix{background:#EAFBF0;color:#1e8e54;border:1px solid #b7e6c9;}
+  .richmenu{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px;}
+  .rm{background:var(--bg);border:1px solid var(--border);border-radius:8px;text-align:center;padding:10px 4px;font-size:10px;color:var(--fg1);}
+  .rm .i{font-size:18px;display:block;}
+  /* messages / chat */
+  .msgbg{background:#8aa6c2;padding:12px;height:100%;overflow-y:auto;}
+  .bubble{max-width:82%;padding:8px 10px;border-radius:12px;font-size:11px;line-height:1.5;margin-bottom:8px;}
+  .bubble.shop{background:#fff;color:var(--fg1);border-top-left-radius:2px;}
+  .bubble.user{background:#aee6b8;color:#06400f;margin-left:auto;border-top-right-radius:2px;}
+  .bubble .nm{font-size:9px;color:var(--fg2);margin-bottom:2px;}
+  .dm{background:#fff;border-radius:12px;padding:10px;margin-bottom:8px;}
+  .dm .tag{font-size:9px;font-weight:700;color:var(--accent);} .dm .t{font-size:11.5px;font-weight:700;color:var(--navy);margin:2px 0 3px;} .dm .d{font-size:10px;color:var(--fg2);}
+  /* PC admin */
+  .pc{width:100%;max-width:1180px;margin:0 auto;border:8px solid var(--navy);border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(27,29,59,.10);}
+  .pc-bar{background:var(--navy);padding:8px 12px;display:flex;align-items:center;gap:6px;}
+  .pc-dot{width:10px;height:10px;border-radius:50%;}.pc-dot.r{background:#ff5f57;}.pc-dot.y{background:#ffbd2e;}.pc-dot.g{background:#28c940;}
+  .pc-url{flex:1;background:#3a3c63;color:#cfd2ff;border-radius:6px;padding:4px 10px;font-size:11px;margin-left:10px;}
+  .pc-body{padding:20px;background:#fff;display:grid;grid-template-columns:1.7fr 1fr;gap:16px;}
+  .pc-body h2{color:var(--navy);font-size:16px;font-weight:700;margin-bottom:4px;}
+  .pc-body p.sub{font-size:11.5px;color:var(--fg2);margin-bottom:12px;}
+  .alert{display:flex;align-items:center;gap:8px;background:#FFF8E6;border:1px solid #F0D27A;border-radius:10px;padding:9px 12px;font-size:12px;color:#7a5a00;margin-bottom:12px;}
+  .alert .dot{width:9px;height:9px;border-radius:50%;background:#E8A400;display:inline-block;flex:none;}
+  .tabs{display:flex;gap:6px;margin-bottom:10px;}
+  .tab{font-size:11px;border:1px solid var(--border);border-radius:999px;padding:4px 11px;color:var(--fg2);}
+  .tab.on{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700;}
+  table.adm{width:100%;border-collapse:collapse;font-size:11.5px;}
+  table.adm th,table.adm td{padding:8px 9px;border-bottom:1px solid var(--border);text-align:left;}
+  table.adm th{background:var(--accent-light);color:var(--deep);font-weight:700;}
+  .tag{display:inline-block;font-size:9.5px;font-weight:700;border-radius:999px;padding:2px 8px;}
+  .tag.wait{background:#FFF1F0;color:#c0392b;border:1px solid #f3c0bb;}
+  .tag.prog{background:#FFF8E6;color:#9a6b00;border:1px solid #f0d27a;}
+  .tag.done{background:#EAFBF0;color:#1e8e54;border:1px solid #b7e6c9;}
+  .action-btn{padding:3px 9px;font-size:10.5px;border:1px solid var(--accent);background:#fff;color:var(--accent);border-radius:6px;cursor:pointer;}
+  .action-btn.fill{background:var(--accent);color:#fff;}
+  .cpanel{border:1px solid var(--border);border-radius:12px;padding:14px;background:var(--bg);}
+  .cpanel .cn{font-size:13px;font-weight:700;color:var(--navy);} .cpanel .cm{font-size:10.5px;color:var(--fg2);margin-bottom:8px;}
+  .cpanel .row{display:flex;justify-content:space-between;font-size:11px;padding:5px 0;border-bottom:1px solid var(--border);}
+  .copt{border:1px solid var(--border);border-radius:9px;padding:8px 10px;margin-top:7px;font-size:11px;display:flex;justify-content:space-between;align-items:center;}
+  .copt.sel{border-color:var(--accent);background:var(--accent-light);color:var(--deep);font-weight:700;}
+  .flow-note{max-width:1180px;margin:22px auto;background:#fff;border-left:4px solid var(--accent);padding:15px 18px;font-size:12.5px;line-height:1.8;border-radius:0 10px 10px 0;box-shadow:0 1px 2px rgba(27,29,59,.04);}
+  .flow-note strong{color:var(--navy);}
+  .disc{max-width:1400px;margin:18px auto 0;font-size:10.5px;color:var(--gray);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">MICO × TOPPAN ｜ BizClo ミニアプリ</p>
+  <h1>トヨタユナイテッド静岡 様｜マイカー登録・入庫予約 ミニアプリ モック（マージ版）</h1>
+  <p class="subtitle">v0.3 ｜ 通しシナリオ（全体ジャーニー）＋ ご要望7項目 反映版 ｜ 作成：株式会社Mico ／ TOPPAN株式会社 ｜ 2026年6月29日</p>
+
+  <div class="legend">
+    <span class="pill user">ユーザー</span> LINEミニアプリ（LIFF）画面
+    <span class="pill admin">店舗スタッフ</span> 管理画面
+    <span class="pill sys">ME/BizClo</span> 配信・自動処理<br>
+    <span class="src">ベースシナリオ</span> 通しシナリオ（友だち獲得→案内→予約→確定→完了後）の画面
+    <span class="imp">①〜⑦</span> 6/26 MTGでのご要望（As-Is→To-Be）反映箇所<br>
+    実画面は貴社ブランド・i-CROP-J仕様に合わせ調整します。
+  </div>
+
+  <!-- ===== ジャーニー全体 ===== -->
+  <p class="phase-title">全体ジャーニー（LTVループ）</p>
+  <p class="phase-note">通しシナリオ構造をベースに、6/26 MTGでの7改善点を各フェーズへ統合しています。</p>
+  <div class="journey">
+    <div class="jp"><div class="ph">PHASE 0</div><div class="t">友だち獲得・登録</div><div class="d">マイカー登録（車両ごと）＋車検証登録。登録完了→予約導線・リッチメニュー</div></div>
+    <div class="jp"><div class="ph">PHASE 1</div><div class="t">案内・想起</div><div class="d">車検満了30日前にME自動配信。『予約する』でLIFF起動</div></div>
+    <div class="jp"><div class="ph">PHASE 2</div><div class="t">予約（4ステップ）</div><div class="d">店舗→サービス→予約情報→日時→確認→受付（受付中）</div></div>
+    <div class="jp"><div class="ph">PHASE 3</div><div class="t">店舗確定</div><div class="d">店舗スタッフが候補から確定。アラート＋ステータスで対応漏れ防止</div></div>
+    <div class="jp"><div class="ph">PHASE 4</div><div class="t">通知・予約後</div><div class="d">確定/リマインド通知＋予約後チャット・デジタルDM</div></div>
+    <div class="jp"><div class="ph">PHASE 5</div><div class="t">完了後フォロー</div><div class="d">お礼＋次回案内。次回満了でPhase1へ循環</div></div>
+  </div>
+  <p class="jloop">↻ 完了後フォロー → 次回満了で PHASE 1 へ循環（LTVループ）</p>
+
+  <!-- ===== 改善ポイント対応表 ===== -->
+  <p class="phase-title">ご要望への対応マップ（6/26 MTG ／ As-Is → To-Be → 実現）</p>
+  <table class="imp-table">
+    <tr><th>#</th><th>区分</th><th>As-Is（現状の課題）</th><th>To-Be（ご要望）</th><th>本モックでの実現（該当画面）</th></tr>
+    <tr><td class="no">①</td><td class="cat">登録</td><td>顧客情報の保有車両が全てLINE IDに紐づき、併有車にも全案内が届く</td><td>1台ごと紐付け・使用者ごと設定</td><td class="app"><strong>車両単位で登録・通知ON/OFF</strong>（P0-1）</td></tr>
+    <tr><td class="no">②</td><td class="cat">登録</td><td>法人顧客は対象外（16台で16台分機能が発生）</td><td>①と同じ</td><td class="app">複数台・法人対応、必要な車だけ通知（P0-1）</td></tr>
+    <tr><td class="no">③</td><td class="cat">登録</td><td>新規客は電話で車両情報を聞き取り→離脱多い</td><td>車検証情報を同時取得し事前準備</td><td class="app"><strong>車検証の撮影アップロードで自動登録</strong>（P0-2）</td></tr>
+    <tr><td class="no">④</td><td class="cat">予約</td><td>予約枠を3候補設定が面倒・電話連絡発生</td><td>タイムリー対応なら2枠でよい</td><td class="app"><strong>第1・第2の2枠でOK</strong>（第3任意）（P2-3）</td></tr>
+    <tr><td class="no">⑤</td><td class="cat">予約</td><td>カレンダーから1日ずつしか空きを確認できない</td><td>UI改善</td><td class="app"><strong>空き枠を◎△×でまとめて表示</strong>＋可変スロット（P2-4）</td></tr>
+    <tr><td class="no">⑥</td><td class="cat">予約</td><td>SF画面でしか確認できず対応漏れ（1週間放置も）</td><td>リクエストでアラート・ステータス可視化</td><td class="app"><strong>管理ボードにアラート＋対応ステータス</strong>（A-1）</td></tr>
+    <tr><td class="no">⑦</td><td class="cat">受付</td><td>予約受理後にLINEで追加連絡ができない</td><td>チャットでやり取り（デジタルDMも）</td><td class="app"><strong>予約後チャット＆デジタルDM</strong>（P4-2）</td></tr>
+  </table>
+
+  <!-- ===== PHASE 0 ===== -->
+  <p class="phase-title">PHASE 0 ｜ 友だち獲得・登録</p>
+  <div class="grid">
+    <!-- P0-1 -->
+    <div class="screen-wrap">
+      <div class="screen-label">P0-1 ｜ マイカー登録（車両ごと・使用者・通知）</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>マイカー登録</span><span>×</span></div>
+        <div class="liff">
+          <h2>お車の情報を登録</h2>
+          <p class="lead">車検満了日が入庫案内のトリガーになります。</p>
+          <div class="field"><label>よく利用される店舗 <span class="req">必須</span></label><select><option>長沼店</option><option>他の店舗から選ぶ（一覧・地図）</option><option>利用したことがない</option></select></div>
+          <div class="vcard"><div class="vt">プリウス</div><div class="vn">静岡 300 あ 12-34 ／ 使用者：ご本人 ／ 車検満了 2026/04</div><div class="toggle-row"><span>入庫案内・リマインド</span><span class="toggle on"></span></div></div>
+          <div class="vcard"><div class="vt">ヤリス</div><div class="vn">静岡 500 か 88-12 ／ 使用者：奥様</div><div class="toggle-row"><span>入庫案内・リマインド</span><span class="toggle off"></span></div></div>
+          <button class="btn ghost">＋ お車を追加</button>
+          <div class="note"><span class="imp">①②</span><span class="src">店舗連携</span>車両単位で紐付け、使用者別に通知ON/OFF。併有車・法人の複数台に対応。</div>
+        </div></div>
+      <div class="screen-desc">登録画面に、車両ごとの紐付け・通知制御（ご要望①②）を統合。</div>
+    </div>
+    <!-- P0-2 -->
+    <div class="screen-wrap">
+      <div class="screen-label">P0-2 ｜ 新規のお客様：車検証で登録</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>お車の登録</span><span>×</span></div>
+        <div class="liff">
+          <h2>車検証で かんたん登録</h2>
+          <p class="lead">お電話でのお聞き取りは不要です。</p>
+          <div class="scan"><div class="ico">📷</div><div class="t">車検証を撮影してアップロード</div><div class="d">枠内に合わせて撮影してください</div></div>
+          <div class="autofill"><strong>読み取り結果（自動入力）</strong><br>車名：プリウス／型式：6AA-MXWH60<br>登録番号：静岡 300 あ 12-34<br>初度登録：2022/04／車検満了：2026/04</div>
+          <button class="btn">この内容で登録する</button>
+          <div class="note"><span class="imp">③</span>車検証情報を事前取得し店舗の事前準備が可能。聞き取り電話による離脱を低減。</div>
+        </div></div>
+      <div class="screen-desc">ご要望③の新機能。新規客（顧客情報なし）でも撮影だけで登録完了。</div>
+    </div>
+    <!-- P0-3 -->
+    <div class="screen-wrap">
+      <div class="screen-label">P0-3 ｜ 登録完了 → そのまま予約へ</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>登録完了</span><span>×</span></div>
+        <div class="liff" style="text-align:center;">
+          <div style="font-size:34px;margin:10px 0;">✅</div>
+          <h2 style="text-align:center;">登録が完了しました</h2>
+          <p class="lead" style="text-align:center;">プリウスの車検満了が近づいています（2026/04）。</p>
+          <button class="btn">続けて入庫予約に進む</button>
+          <button class="btn outline">あとで予約する</button>
+          <div class="note"><span class="src">登録完了画面</span>満了が近ければそのまま予約へ誘導。</div>
+        </div></div>
+      <div class="screen-desc">旧フローで抜けていた登録完了画面。満了が近い場合は予約導線へ。</div>
+    </div>
+    <!-- P0-4 -->
+    <div class="screen-wrap">
+      <div class="screen-label">P0-4 ｜ 受付メッセージ＋リッチメニュー</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>トヨタユナイテッド静岡</span><span>≡</span></div>
+        <div class="msgbg">
+          <div class="bubble shop"><div class="nm">公式アカウント</div>ご登録ありがとうございます。長沼店（営業9-18／火曜定休）。ご予約はいつでもこちらから。</div>
+          <div style="background:#fff;border-radius:12px;padding:8px;">
+            <div class="richmenu">
+              <div class="rm"><span class="i">🚗</span>入庫予約</div><div class="rm"><span class="i">📋</span>マイカー管理</div><div class="rm"><span class="i">💬</span>店舗に相談</div>
+              <div class="rm"><span class="i">🎫</span>クーポン</div><div class="rm"><span class="i">📍</span>店舗情報</div><div class="rm"><span class="i">❓</span>よくある質問</div>
+            </div>
+          </div>
+          <div class="note" style="background:#fff;"><span class="src">自発予約の入口</span>案内を待たずに自発予約できるリッチメニュー。</div>
+        </div></div>
+      <div class="screen-desc">登録受付メッセージ＋リッチメニューで、案内配信を待たない自発予約の入口を用意。</div>
+    </div>
+  </div>
+
+  <!-- ===== PHASE 1 ===== -->
+  <p class="phase-title">PHASE 1 ｜ 案内・想起（ME自動配信）</p>
+  <div class="grid">
+    <div class="screen-wrap">
+      <div class="screen-label">P1 ｜ 車検案内配信（ME）</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>トヨタユナイテッド静岡</span><span>≡</span></div>
+        <div class="msgbg">
+          <div class="bubble shop"><div class="nm">公式アカウント</div>田中さま、プリウスの車検満了が近づいています（2026/04/30）。ご予約はお早めに。</div>
+          <div style="background:#fff;border-radius:12px;padding:10px;margin-bottom:8px;">
+            <div style="font-size:12px;font-weight:700;color:var(--navy);">車検のご予約</div>
+            <div style="font-size:10.5px;color:var(--fg2);margin:3px 0 8px;">ボタンから予約画面が開きます（店舗・お車は入力済み）</div>
+            <div class="btn" style="margin:0;">予約する</div>
+          </div>
+          <div class="note" style="background:#fff;"><span class="pill sys" style="margin:0 4px 0 0;">ME</span>満了30日前に自動配信。『予約する』でLIFF起動（service/carプリセット）。未反応は再配信。</div>
+        </div></div>
+      <div class="screen-desc">Phase1。満了30日前トリガーで自動配信し、ワンタップで予約へ。</div>
+    </div>
+  </div>
+
+  <!-- ===== PHASE 2 ===== -->
+  <p class="phase-title">PHASE 2 ｜ 入庫予約（店舗→サービス→予約情報→日時→確認→受付）</p>
+  <div class="grid">
+    <!-- P2-1 store -->
+    <div class="screen-wrap">
+      <div class="screen-label">P2-1 ｜ ①店舗選択（一覧・地図・絞り込み）</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>入庫予約（1/4）</span><span>×</span></div>
+        <div class="liff">
+          <h2>ご利用店舗を選ぶ</h2>
+          <div class="mapbox"><span class="pin" style="left:30%;top:30%;">📍</span><span class="pin" style="left:62%;top:55%;">📍</span></div>
+          <div class="storelist">
+            <div class="st sel"><span>長沼店（よく利用）</span><span>1.2km</span></div>
+            <div class="st"><span>静岡中央店</span><span>4.5km</span></div>
+            <div class="st"><span>清水店</span><span>8.0km</span></div>
+          </div>
+          <button class="btn">次へ（サービス選択）</button>
+          <div class="note"><span class="src">複数店舗販社対応</span>一覧・地図・絞り込みに対応。複数店舗の販社でも選択可。</div>
+        </div></div>
+      <div class="screen-desc">4ステップ予約の起点。よく利用する店舗＋他店舗・地図・絞り込み。</div>
+    </div>
+    <!-- P2-2 service -->
+    <div class="screen-wrap">
+      <div class="screen-label">P2-2 ｜ ②サービス選択（所要時間バッジ）</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>入庫予約（2/4）</span><span>×</span></div>
+        <div class="liff">
+          <h2>ご用件を選ぶ</h2>
+          <div class="svc sel"><span>車検</span><span class="badge">所要90分・ピット3</span></div>
+          <div class="svc"><span>12ヶ月点検</span><span class="badge">所要60分</span></div>
+          <div class="svc"><span>プロケア10</span><span class="badge">所要60分</span></div>
+          <div class="svc"><span>6ヶ月点検（貨物）</span><span class="badge">所要45分</span></div>
+          <div class="svc"><span>6ヶ月無料点検</span><span class="badge">所要30分</span></div>
+          <div class="svc"><span>オイル交換</span><span class="badge">所要20分</span></div>
+          <button class="btn">次へ（予約情報）</button>
+          <div class="note"><span class="src">可変スロット連動</span>所要時間バッジが日時の可変スロットに連動。</div>
+        </div></div>
+      <div class="screen-desc">サービスごとの所要時間が、後段の空き枠（可変スロット）に反映。</div>
+    </div>
+    <!-- P2-3 info + 2 candidates -->
+    <div class="screen-wrap">
+      <div class="screen-label">P2-3 ｜ ③予約情報（2枠でOK・マイカー引用）</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>入庫予約（3/4）</span><span>×</span></div>
+        <div class="liff">
+          <h2>ご連絡先・希望日時</h2>
+          <div class="field"><label>お名前（カナ） <span class="req">必須</span></label><input value="タナカ ナオキ"></div>
+          <div class="field"><label>お電話番号 <span class="req">必須</span></label><input value="090-1234-5678"></div>
+          <div class="autofill" style="margin-bottom:8px;"><strong>マイカー情報から選ぶ：</strong>プリウス（静岡 300 あ 12-34）</div>
+          <div class="cand"><div class="r">第1希望</div><div class="v">タップして日時を選択 ›</div></div>
+          <div class="cand"><div class="r">第2希望</div><div class="v">タップして日時を選択 ›</div></div>
+          <div class="cand" style="opacity:.6;"><div class="r">第3希望（任意）</div><div class="v">＋ 追加する</div></div>
+          <button class="btn">次へ（確認）</button>
+          <div class="note"><span class="imp">④</span>タイムリー対応を前提に第1・第2の2枠でOK（第3は任意）。連絡先＋マイカー情報を引用。</div>
+        </div></div>
+      <div class="screen-desc">「第1〜3候補・マイカー引用」を、ご要望④の2枠運用に簡素化。</div>
+    </div>
+    <!-- P2-4 datetime modal -->
+    <div class="screen-wrap">
+      <div class="screen-label">P2-4 ｜ ④日時選択（空き枠まとめ・◎△×）</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>第1候補の日時を選ぶ</span><span>×</span></div>
+        <div class="liff">
+          <p class="lead">営業9-18 ／ 火曜定休 ／ 前日17時締切（空き枠 最終更新 6/29 06:00）</p>
+          <div class="calhead"><span>‹</span><span>2026年 7月</span><span>›</span></div>
+          <div class="cal">
+            <div class="dow">日</div><div class="dow">月</div><div class="dow">火</div><div class="dow">水</div><div class="dow">木</div><div class="dow">金</div><div class="dow">土</div>
+            <div class="cell off">29</div><div class="cell off">30</div><div class="cell off">1<span class="mk">休</span></div><div class="cell ok sel">2<span class="mk">◎</span></div><div class="cell few">3<span class="mk">△</span></div><div class="cell full">4<span class="mk">×</span></div><div class="cell ok">5<span class="mk">◎</span></div>
+            <div class="cell ok">6<span class="mk">◎</span></div><div class="cell ok">7<span class="mk">◎</span></div><div class="cell off">8<span class="mk">休</span></div><div class="cell few">9<span class="mk">△</span></div><div class="cell ok">10<span class="mk">◎</span></div><div class="cell full">11<span class="mk">×</span></div><div class="cell ok">12<span class="mk">◎</span></div>
+          </div>
+          <div style="font-size:11px;font-weight:700;color:var(--navy);margin:10px 0 2px;">7/2(水) の時間枠 <span style="font-weight:400;color:var(--fg2);">（車検90分・ピット3）</span></div>
+          <div class="slotline sel"><span>9:00〜10:30</span><span>選択中</span></div>
+          <div class="slotline few"><span>10:30〜12:00</span><span>△ 残1</span></div>
+          <div class="slotline full"><span>13:00〜14:30</span><span>× 満枠</span></div>
+          <button class="btn">この日時で決定</button>
+          <div class="note"><span class="imp">⑤</span>1日ずつ確認する手間を解消。◎△×でまとめ表示し、サービス所要に応じた可変スロット＋残台数を選択（条件は店舗Admin設定）。</div>
+        </div></div>
+      <div class="screen-desc">日時モーダル（◎△×・火曜定休・残台数）。ご要望⑤の「まとめ表示」を満たす。</div>
+    </div>
+    <!-- P2-5 confirm -->
+    <div class="screen-wrap">
+      <div class="screen-label">P2-5 ｜ ④確認</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>入庫予約（4/4）</span><span>×</span></div>
+        <div class="liff">
+          <h2>内容のご確認</h2>
+          <div class="autofill">
+            <strong>店舗：</strong>長沼店<br><strong>サービス：</strong>車検（90分）<br>
+            <strong>お客様：</strong>田中 直樹／090-1234-5678<br><strong>お車：</strong>プリウス（静岡 300 あ 12-34）<br>
+            <strong>第1希望：</strong>7/2(水) 9:00〜<br><strong>第2希望：</strong>7/9(火) ※定休のため別日提案あり</div>
+          <div class="note" style="background:#FFF8E6;border-color:#f0d27a;color:#9a6b00;">まだ確定していません。店舗の確認後に確定します。</div>
+          <button class="btn">この内容で申し込む</button>
+          <button class="btn outline">修正する</button>
+        </div></div>
+      <div class="screen-desc">店舗・サービス・連絡先・車両・候補を確認。「まだ確定していません」を明示。</div>
+    </div>
+    <!-- P2-6 受付完了 -->
+    <div class="screen-wrap">
+      <div class="screen-label">P2-6 ｜ 受付完了（受付中 / pending）</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>受付完了</span><span>×</span></div>
+        <div class="liff" style="text-align:center;">
+          <div style="font-size:30px;margin:10px 0;">📨</div>
+          <h2 style="text-align:center;">お申し込みを受け付けました</h2>
+          <div class="ticket"><div class="st">受付番号</div><div class="no">#1042</div><div class="st" style="margin-top:6px;"><span class="status-pill pend">受付中</span></div></div>
+          <p class="lead" style="margin-top:10px;">店舗が空き状況を確認し、確定日時をLINEでお知らせします。</p>
+          <div class="note"><span class="src">受付と確定は別段階</span>受付番号を発行し status:pending。受付中通知をBizClo送信。</div>
+        </div></div>
+      <div class="screen-desc">「受付中」と「確定」を分ける2段階設計。受付中通知を自動送信。</div>
+    </div>
+  </div>
+
+  <!-- ===== PHASE 3 admin ===== -->
+  <p class="phase-title">PHASE 3 ｜ 店舗スタッフ：予約一覧・確定（管理画面）</p>
+  <p class="phase-note">A-1 ｜ 新規リクエストのアラートと対応ステータスで対応漏れを防止（ご要望⑥）。候補から確定すると原子的に枠をデクリメントし二重確定0%。</p>
+  <div class="pc">
+    <div class="pc-bar"><div class="pc-dot r"></div><div class="pc-dot y"></div><div class="pc-dot g"></div><div class="pc-url">https://icrop-j.tus.example.jp/booking</div></div>
+    <div class="pc-body">
+      <div>
+        <h2>予約一覧</h2>
+        <p class="sub">LINE de 入庫 管理ボード（長沼店）</p>
+        <div class="alert"><span class="dot"></span><strong>新規の入庫リクエストが1件あります（#1042）</strong> — 放置防止のためアラート表示</div>
+        <div class="tabs"><span class="tab on">受付中 8</span><span class="tab">確定 24</span><span class="tab">来店済 18</span><span class="tab">すべて 54</span></div>
+        <table class="adm">
+          <tr><th>受付No</th><th>顧客 / 車両</th><th>サービス</th><th>第1希望</th><th>状態</th><th>操作</th></tr>
+          <tr><td>#1042</td><td>田中 直樹<br><span style="color:var(--fg2);font-size:10px;">プリウス</span></td><td>車検</td><td>7/2(水) ◎</td><td><span class="tag wait">受付中</span></td><td><button class="action-btn fill">確定</button></td></tr>
+          <tr><td>#1041</td><td>渡辺 健一<br><span style="color:var(--fg2);font-size:10px;">アクア</span></td><td>点検(6ヶ月)</td><td>7/3(金) △</td><td><span class="tag prog">対応中</span></td><td><button class="action-btn">チャット</button></td></tr>
+          <tr><td>#1035</td><td>中村 拓也<br><span style="color:var(--fg2);font-size:10px;">ハリアー</span></td><td>タイヤ交換</td><td>7/2(水) ×満</td><td><span class="tag wait">要再調整</span></td><td><button class="action-btn">詳細</button></td></tr>
+          <tr style="color:var(--gray);"><td>#1030</td><td>山口 さくら</td><td>点検(12ヶ月)</td><td>7/5(土) ◎</td><td><span class="tag done">確定</span></td><td><button class="action-btn">詳細</button></td></tr>
+        </table>
+      </div>
+      <div class="cpanel">
+        <div class="cn">田中 直樹</div><div class="cm">受付No #1042・LINE連携済み</div>
+        <div class="row"><span>車両</span><span>プリウス（静岡300 あ12-34）</span></div>
+        <div class="row"><span>サービス</span><span>車検（90分）</span></div>
+        <div class="row"><span>車検満了</span><span>2026/04/30</span></div>
+        <div style="font-size:11px;font-weight:700;color:var(--navy);margin:10px 0 2px;">希望日（空き状況）を選んで確定</div>
+        <div class="copt sel"><span>第1希望 7/2(水) AM</span><span>◎ 空き</span></div>
+        <div class="copt"><span>第2希望 7/9(火) PM</span><span>△ 残1</span></div>
+        <button class="btn">この日程で確定して通知</button>
+        <button class="btn outline">チャットで相談（BizClo）</button>
+        <div class="note"><span class="src">二重確定0%</span><span class="imp">⑥</span>原子的枠デクリメントで二重確定を防止。状態はSF確認〜SMB計画の現行運用と連携。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PHASE 4 ===== -->
+  <p class="phase-title">PHASE 4 ｜ 通知・予約後コミュニケーション</p>
+  <div class="grid">
+    <!-- P4-1 confirm notice -->
+    <div class="screen-wrap">
+      <div class="screen-label">P4-1 ｜ 確定通知・前日リマインド</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>トヨタユナイテッド静岡</span><span>≡</span></div>
+        <div class="msgbg">
+          <div class="dm"><div class="tag">ご予約確定</div><div class="t">7/2(水) 9:00 で確定しました</div><div class="d">車検・長沼店。車検証と印鑑をお持ちください。</div></div>
+          <div class="bubble shop"><div class="nm">公式アカウント</div>※第2希望での確定／全枠NG時は文面が自動で分岐します。</div>
+          <div class="dm"><div class="tag">前日リマインド</div><div class="t">明日 9:00 ご来店です</div><div class="d">変更・キャンセルはこちらから。</div></div>
+          <div class="note" style="background:#fff;"><span class="src">文面分岐</span>確定即時通知＋前日リマインド。第2/3希望確定・全NGで文面分岐。</div>
+        </div></div>
+      <div class="screen-desc">確定・前日リマインドを自動配信。希望順や全NGに応じて文面を出し分け。</div>
+    </div>
+    <!-- P4-2 chat after booking -->
+    <div class="screen-wrap">
+      <div class="screen-label">P4-2 ｜ 予約後チャット・デジタルDM</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>長沼店とのトーク</span><span>≡</span></div>
+        <div class="msgbg">
+          <div class="bubble shop"><div class="nm">長沼店</div>ブレーキパッドの交換時期が近づいています。当日あわせて点検しますか？</div>
+          <div class="bubble user">お願いします！代車も希望です</div>
+          <div class="bubble shop"><div class="nm">長沼店</div>承知しました。代車をご用意しておきます。当日は車検証をお持ちください。</div>
+          <div class="dm"><div class="tag">デジタルDM</div><div class="t">夏のエアコン点検キャンペーン</div><div class="d">ご来店時にクーポンをご提示ください。</div></div>
+          <div class="note" style="background:#fff;"><span class="imp">⑦</span><span class="src">差別化核</span>予約後の1:1チャット＝競合に無い予約後導線。追加整備案内・持ち物・デジタルDMをLINEで完結。</div>
+        </div></div>
+      <div class="screen-desc">ご要望⑦＋「予約後導線（差別化核）」を統合。サンキューコール重複工数を削減。</div>
+    </div>
+  </div>
+
+  <!-- ===== PHASE 5 ===== -->
+  <p class="phase-title">PHASE 5 ｜ 完了後フォロー（LTVループ）</p>
+  <div class="grid">
+    <div class="screen-wrap">
+      <div class="screen-label">P5 ｜ 完了後フォロー・次回案内</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>トヨタユナイテッド静岡</span><span>≡</span></div>
+        <div class="msgbg">
+          <div class="bubble shop"><div class="nm">長沼店</div>本日はご入庫ありがとうございました。点検結果はマイページからご確認いただけます。</div>
+          <div class="dm"><div class="tag">次回のご案内</div><div class="t">次回点検：2026/10 / 次回車検：2028/04</div><div class="d">時期が近づいたらLINEでお知らせします。</div></div>
+          <div class="bubble shop"><div class="nm">長沼店</div>オイル交換のおすすめ時期もLINEでご案内します。</div>
+          <div class="note" style="background:#fff;"><span class="src">LTVループ</span>入庫完了→お礼＋次回案内。次回満了でPHASE 1へ循環。</div>
+        </div></div>
+      <div class="screen-desc">完了後フォローで次回入庫へつなぐLTVループ。Phase1の案内配信へ戻る。</div>
+    </div>
+  </div>
+
+  <div class="flow-note">
+    <strong>📌 注記：</strong>本モックは v0.3 マージ版（2026-06-29）。<span class="src">ベースシナリオ</span>＝通しシナリオ（友だち獲得→案内→予約4ステップ→受付中→店舗確定→通知→完了後フォローのLTVループ）、<span class="imp">①〜⑦</span>＝6/26 MTGでのご要望反映。車検証OCR・空き枠のリアルタイム反映・チャット/デジタルDM・原子的枠デクリメントは、実装範囲・連携方式を要件定義で確定します。SF確認〜SMB計画作成は現行運用を維持。費用・スケジュールは別紙「PRD」「概算見積もり」を参照ください。
+  </div>
+  <p class="disc">アイコン・地図は仮表示。実装時はLucide／実地図に差し替え。単一HTML・アカウント不要（GitHub Pages配布可）。© Mico Inc. / TOPPAN Inc. — CONFIDENTIAL</p>
+</div>
+</body>
+</html>
