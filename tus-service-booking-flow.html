@@ -141,9 +141,28 @@
   .flow-note{max-width:1180px;margin:22px auto;background:#fff;border-left:4px solid var(--accent);padding:15px 18px;font-size:12.5px;line-height:1.8;border-radius:0 10px 10px 0;box-shadow:0 1px 2px rgba(27,29,59,.04);}
   .flow-note strong{color:var(--navy);}
   .disc{max-width:1400px;margin:18px auto 0;font-size:10.5px;color:var(--gray);}
+  /* password gate */
+  #pw-gate{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:var(--font);}
+  #pw-gate .box{background:#fff;border-radius:16px;padding:30px 26px;width:330px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.25);}
+  #pw-gate .lk{font-size:30px;}
+  #pw-gate .t{font-size:16px;font-weight:700;color:var(--navy);margin:8px 0 2px;}
+  #pw-gate .d{font-size:12px;color:var(--fg2);margin-bottom:14px;}
+  #pw-gate input{width:100%;padding:10px 12px;font-size:14px;border:1px solid var(--border);border-radius:10px;font-family:var(--font);}
+  #pw-gate button{width:100%;margin-top:12px;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);}
+  #pw-gate .err{font-size:11px;color:#c0392b;margin-top:8px;min-height:14px;}
+  body.unlocked #pw-gate{display:none;}
+  body:not(.unlocked) .wrap{display:none;}
 </style>
 </head>
 <body>
+<div id="pw-gate"><div class="box">
+  <div class="lk">🔒</div>
+  <div class="t">トヨタユナイテッド静岡 様｜提案モック</div>
+  <div class="d">パスワードを入力してください</div>
+  <input id="pw-input" type="password" placeholder="パスワード" autocomplete="off">
+  <button id="pw-btn">表示する</button>
+  <div class="err" id="pw-err"></div>
+</div></div>
 <div class="wrap">
   <p class="eyebrow">MICO × TOPPAN ｜ BizClo ミニアプリ</p>
   <h1>トヨタユナイテッド静岡 様｜マイカー登録・入庫予約 ミニアプリ モック（マージ版）</h1>
@@ -458,5 +477,26 @@
   </div>
   <p class="disc">アイコン・地図は仮表示。実装時はLucide／実地図に差し替え。単一HTML・アカウント不要（GitHub Pages配布可）。© Mico Inc. / TOPPAN Inc. — CONFIDENTIAL</p>
 </div>
+<script>
+(function(){
+  var HASH="1ec2bc6f53b7e5ecc5144b83ea4090f6711ce3598f836d009d511a61817a98e3";
+  async function sha256hex(str){
+    var buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,"0");}).join("");
+  }
+  async function tryUnlock(){
+    var v=document.getElementById("pw-input").value;
+    var h=await sha256hex(v);
+    if(h===HASH){ try{sessionStorage.setItem("tus_ok","1");}catch(e){} document.body.classList.add("unlocked"); }
+    else{ document.getElementById("pw-err").textContent="パスワードが違います"; }
+  }
+  document.addEventListener("DOMContentLoaded",function(){
+    try{ if(sessionStorage.getItem("tus_ok")==="1") document.body.classList.add("unlocked"); }catch(e){}
+    document.getElementById("pw-btn").addEventListener("click",tryUnlock);
+    document.getElementById("pw-input").addEventListener("keydown",function(e){ if(e.key==="Enter") tryUnlock(); });
+    document.getElementById("pw-input").focus();
+  });
+})();
+</script>
 </body>
 </html>
