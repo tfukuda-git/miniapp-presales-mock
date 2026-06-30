@@ -122,6 +122,12 @@
   .opt{border:1px solid #dfe4ec;border-radius:8px;padding:8px;font-size:11.5px;margin:5px 0;background:#fafbfc}
   .swicon{display:flex;justify-content:center;gap:24px;margin-top:10px;font-size:18px}
   .swicon span{width:34px;height:34px;line-height:34px;border-radius:50%;background:#f1f3f6}
+  /* form survey */
+  .formq{margin-top:6px}
+  .flabel{font-size:11px;font-weight:700;color:#3d4654;margin:8px 0 4px}
+  .fopt{border:1px solid #dfe4ec;border-radius:8px;padding:7px 9px;font-size:11px;margin:4px 0;background:#fff;color:#5b6573}
+  .fopt.sel{border-color:var(--line);background:#e8f9ef;color:var(--line-d);font-weight:700}
+  .fselect{border:1px solid #dfe4ec;border-radius:8px;padding:7px 9px;font-size:11px;background:#fff;color:#5b6573;display:flex;justify-content:space-between}
 
   /* lottery */
   .gift{background:linear-gradient(135deg,#fff6e6,#fde9c8);border:1px solid #f0d9a6;border-radius:12px;padding:12px;text-align:center;margin-top:8px}
@@ -189,12 +195,11 @@
       <h3>含む機能（MVP）In scope</h3>
       <div class="card" style="margin-top:0">
         <ul class="clean">
-          <li><span class="tag reuse">流用</span>友だち追加ゲート（LIFF）</li>
-          <li><span class="tag new">新</span>エリア選択（配信→フォームで選択／出し分け）</li>
-          <li><span class="tag reuse">流用</span>初期アンケート（スワイプUI）→ 属性</li>
+          <li><span class="tag new">新</span>エリア選択（ミニアプリ内で選択／配信からも誘導）</li>
+          <li><span class="tag reuse">流用</span>初期アンケート（フォームで回収）→ 属性</li>
           <li><span class="tag reuse">流用</span>QR読取 → スタンプ付与／スタンプカード</li>
           <li><span class="tag new">新</span>段階的景品付与（1個/2個/3個…で景品）</li>
-          <li><span class="tag chk">要確認</span>状態別QR制御（4個目はスタッフ提示QRのみ）</li>
+          <li><span class="tag new">新</span>状態別QR制御（4個目はスタッフ提示QRのみ・軽微な実装）</li>
           <li><span class="tag new">新</span>スタンプが押せる場所一覧（エリア別出し分け）</li>
           <li><span class="tag new">新</span>拠点ごとの注意事項 出し分け</li>
           <li><span class="tag reuse">流用</span>会場ごとの重複チェック</li>
@@ -207,7 +212,7 @@
       <h3>含まない（ME側 or 対象外）Out of scope</h3>
       <div class="card" style="margin-top:0">
         <ul class="clean no">
-          <li>ミニアプリ専用の管理画面・エリア別権限管理画面 →（1月以降の開発課題として切り離し。10月はオペレーションで対応）</li>
+          <li>ミニアプリ専用の管理画面・エリア別権限管理画面 →（別途検討・実施時期は未定。10月はオペレーションで対応）</li>
           <li>住所テキストからの自動エリア判定 →（開発要のため、配信でエリア選択を促す方式に）</li>
           <li>自前の集計DB／景品の在庫・物流・配送管理</li>
           <li>フェア飛び込み来場者の個人情報のLINE一元化（紙運用のまま・別フェーズ）</li>
@@ -218,7 +223,7 @@
 
   <h3>不正対策の方針 Anti-fraud</h3>
   <div class="card">
-    <p class="note" style="margin:0">不正は一定発生する前提で「メリット＞不正リスク」に設計。会場ごとのユニークQR＋ユーザー単位の重複チェック。<strong>1〜3個目は来場（展示場・モデルハウス見学）でQR取得可、4個目はスタッフが相談後に提示するQRでのみ取得</strong>とし、状態別QR制御で来場・相談後のみ加算されるよう制御（標準機能での可否は要確認）。</p>
+    <p class="note" style="margin:0">不正は一定発生する前提で「メリット＞不正リスク」に設計。会場ごとのユニークQR＋ユーザー単位の重複チェック。<strong>1〜3個目は来場（展示場・モデルハウス見学）でQR取得可、4個目はスタッフが相談後に提示するQRでのみ取得</strong>とし、状態別QR制御で来場・相談後のみ加算されるよう制御（属性条件で加算可否を判定する軽微な実装。最終確認はインド開発チーム）。</p>
   </div>
 
   <!-- 2. UI MOCK -->
@@ -264,27 +269,29 @@
             <span class="areachip">東北</span>
             <span class="areachip">中国・四国</span>
           </div>
-          <div class="notice">住所からの自動判定は行わず、配信・フォームでエリアを選んでいただく方式。選択後はリッチメニュー切替・エリア別配信がリアルタイムで反映。</div>
+          <div class="notice">住所からの自動判定は行わず、ミニアプリ内でエリアを選択（配信からも誘導可）。選択後はリッチメニュー切替・エリア別配信がリアルタイムで反映。</div>
           <button class="btn">このエリアで進む</button>
         </div>
       </div>
     </div>
 
-    <!-- 3 survey -->
+    <!-- 3 survey (form) -->
     <div class="pcell">
-      <div class="pcap"><span class="num">3</span>初期アンケート（スワイプ） <span class="pce">→ 属性</span></div>
+      <div class="pcap"><span class="num">3</span>初期アンケート（フォーム） <span class="pce">→ 属性</span></div>
       <div class="phone"><div class="notch"></div>
         <div class="lh"><span>はじめのアンケート<span class="liff-pill">ミニアプリ</span></span><span>×</span></div>
         <div class="scr">
-          <p>かんたんな質問に答えると、あなたに合った住まい情報が届きます。</p>
-          <div class="swipe">
-            <div class="q">いま、家づくりはどの段階ですか？</div>
-            <div class="opt">情報収集を始めたばかり</div>
-            <div class="opt">そろそろ具体的に検討したい</div>
-            <div class="opt">土地は決まっている</div>
-            <div class="swicon"><span style="color:#c0556e">✕</span><span style="color:#05a647">♥</span></div>
+          <p>かんたんなフォームにご回答ください。内容に合わせて住まい情報をお届けします。</p>
+          <div class="formq">
+            <div class="flabel">家づくりの検討段階</div>
+            <div class="fopt">情報収集を始めたばかり</div>
+            <div class="fopt sel">そろそろ具体的に検討したい</div>
+            <div class="fopt">土地は決まっている</div>
+            <div class="flabel">ご希望の間取り</div>
+            <div class="fselect"><span>3LDK 〜 4LDK</span><span>▾</span></div>
           </div>
-          <p class="note" style="text-align:center;margin-top:8px">回答はME AIカスタム属性へ保存</p>
+          <button class="btn">回答を送信</button>
+          <p class="note" style="text-align:center">回答はME AIカスタム属性へ保存</p>
         </div>
       </div>
     </div>
@@ -342,7 +349,7 @@
             <div style="font-size:30px">🔳</div>
             <p class="note" style="margin:4px 0 0">スタッフ提示のQRを読み取り</p>
           </div>
-          <div class="notice">状態別QR制御：1〜3個目は来場で取得可、4個目は「相談後」状態のユーザーのみ加算。同じQRでも条件を満たさないと加算されない制御（標準機能での可否は確認中）。</div>
+          <div class="notice">状態別QR制御：1〜3個目は来場で取得可、4個目は「相談後」状態のユーザーのみ加算。同じQRでも条件を満たさないと加算されない制御（属性条件での軽微な実装で対応想定）。</div>
         </div>
       </div>
     </div>
@@ -403,7 +410,7 @@
   <h2 class="sec"><span class="n">3</span>裏側のしくみ（ME連携・管理）Backend</h2>
   <div class="me">
     <h3>専用管理画面を持たず、導入済みの Mico Engage AI に相乗り</h3>
-    <p style="font-size:13.5px;opacity:.92">スタンプ取得・段階的景品の付与・抽選会の応募/当落・エリアなどの状態は、すべてME AIのカスタム属性に書き込み。リアルタイムの閲覧・セグメント抽出・CSVダウンロードはME AI画面で行います。エリア別の管理画面・権限分けは1月以降の開発課題として切り離し、10月はオペレーション（エリア選択方式・拠点別出し分け）で対応します。</p>
+    <p style="font-size:13.5px;opacity:.92">スタンプ取得・段階的景品の付与・抽選会の応募/当落・エリアなどの状態は、すべてME AIのカスタム属性に書き込み。リアルタイムの閲覧・セグメント抽出・CSVダウンロードはME AI画面で行います。エリア別の管理画面・権限分けは別途検討（実施時期未定）とし、10月はオペレーション（エリア選択方式・拠点別出し分け）で対応します。</p>
     <div class="attr">
       <div class="a"><div class="k">エリア／スタンプ</div><div class="v">area / stamp_count / stamp_venues</div></div>
       <div class="a"><div class="k">段階的景品</div><div class="v">reward_tier</div></div>
