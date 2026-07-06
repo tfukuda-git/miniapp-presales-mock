@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人材ミニアプリ｜スワイプ×デイリーガチャ モック v0.2</title>
+<style>
+  :root{
+    --blue:#2B2FE0; --blue-light:#EEF0FF; --blue-pale:#8A8DF0;
+    --pink:#FF4D6D; --ink:#1A1A2E; --gray:#8A8FA3; --line:#E7E9F2;
+    --gold:#F5A623; --green:#06C755; --bg:#F4F5FA;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Hiragino Sans","Yu Gothic",system-ui,sans-serif;}
+  body{background:var(--bg);color:var(--ink);padding:32px 24px 64px;}
+  h1{font-size:24px;margin-bottom:4px;}
+  .subtitle{color:var(--gray);font-size:13px;margin-bottom:24px;}
+  .flow-diagram{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:36px;font-size:13px;line-height:2;}
+  .flow-diagram b{color:var(--blue);}
+  .section-title{font-size:17px;font-weight:700;margin:40px 0 18px;border-left:4px solid var(--blue);padding-left:10px;}
+  .section-note{font-size:12px;color:var(--gray);margin:-8px 0 18px;line-height:1.8;}
+  .grid{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start;}
+  .screen-wrap{width:320px;}
+  .screen-label{font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px;}
+  .screen-desc{font-size:12px;color:var(--gray);margin-top:8px;line-height:1.6;}
+
+  /* phone frame */
+  .phone{width:320px;height:640px;background:#fff;border:10px solid #1d1d27;border-radius:36px;overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 8px 24px rgba(20,20,60,.12);}
+  .liff-bar{height:44px;display:flex;align-items:center;justify-content:center;position:relative;border-bottom:1px solid var(--line);flex:none;}
+  .liff-bar .t{font-size:12px;font-weight:600;}
+  .liff-bar .x{position:absolute;right:12px;color:#555;font-size:15px;}
+  .brand{display:flex;align-items:center;gap:6px;padding:10px 14px 4px;flex:none;}
+  .brand .logo{font-size:12px;font-weight:800;color:#1B4FA0;font-style:italic;}
+  .brand .logo span{color:#F5A623;}
+  .body{flex:1;overflow:hidden;padding:10px 14px;position:relative;}
+
+  /* tab bar */
+  .tabbar{flex:none;height:58px;border-top:1px solid var(--line);display:flex;background:#fff;}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;color:var(--gray);position:relative;}
+  .tab .ic{font-size:19px;line-height:1;}
+  .tab.active{color:var(--blue);font-weight:700;}
+  .tab .badge{position:absolute;top:6px;right:24px;width:8px;height:8px;border-radius:50%;background:var(--pink);}
+
+  /* swipe screen */
+  .job-card{border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(20,20,60,.08);}
+  .job-img{height:120px;background:linear-gradient(135deg,#1B4FA0,#3A7BCC);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;}
+  .job-img .s1{font-size:11px;opacity:.9}
+  .job-img .s2{font-size:18px;}
+  .job-body{padding:10px 12px;}
+  .job-title{font-size:12px;font-weight:700;line-height:1.5;}
+  .job-co{font-size:10px;color:var(--gray);margin:4px 0;}
+  .wage{display:flex;align-items:center;gap:6px;margin:6px 0;}
+  .wage .lbl{background:var(--blue);color:#fff;font-size:9px;padding:2px 6px;border-radius:4px;}
+  .wage .val{font-size:18px;font-weight:800;}
+  .chips{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0;}
+  .chip{font-size:9px;color:var(--blue);background:var(--blue-light);padding:2px 6px;border-radius:4px;}
+  .btn{display:block;width:100%;background:var(--blue);color:#fff;text-align:center;border:none;border-radius:8px;padding:11px 0;font-size:13px;font-weight:700;}
+  .btn.ghost{background:#fff;color:var(--blue);border:1.5px solid var(--blue);}
+  .btn.disabled{background:#C9CBE3;}
+  .swipe-actions{display:flex;justify-content:center;gap:22px;margin-top:12px;}
+  .act{width:46px;height:46px;border-radius:50%;background:#fff;box-shadow:0 3px 10px rgba(20,20,60,.15);display:flex;align-items:center;justify-content:center;font-size:19px;}
+  .act.like{background:var(--blue);color:#fff;width:54px;height:54px;font-size:22px;}
+  .act.no{color:#E53935;}
+  .act.undo{color:var(--gray);font-size:15px;}
+
+  /* gacha */
+  .gacha-head{text-align:center;margin:6px 0 10px;}
+  .gacha-head .ttl{font-size:16px;font-weight:800;}
+  .gacha-head .rest{display:inline-block;margin-top:6px;background:var(--pink);color:#fff;font-size:11px;font-weight:700;padding:3px 12px;border-radius:999px;}
+  .machine{width:150px;margin:8px auto;position:relative;}
+  .dome{width:150px;height:110px;background:linear-gradient(180deg,#ffffff,#dfe4ff);border:4px solid var(--blue);border-bottom:none;border-radius:75px 75px 8px 8px;position:relative;overflow:hidden;}
+  .cap{width:34px;height:34px;border-radius:50%;position:absolute;}
+  .cap.c1{background:#FF4D6D;left:14px;top:52px;}
+  .cap.c2{background:#F5A623;left:56px;top:62px;}
+  .cap.c3{background:#06C755;left:98px;top:50px;}
+  .cap.c4{background:#7B61FF;left:36px;top:24px;}
+  .cap.c5{background:#3A7BCC;left:80px;top:28px;}
+  .machine-base{width:150px;height:64px;background:var(--blue);border-radius:8px;position:relative;}
+  .machine-base .knob{width:26px;height:26px;background:#fff;border-radius:50%;position:absolute;left:20px;top:19px;border:5px solid #1d1f9e;}
+  .machine-base .slot{width:40px;height:22px;background:#1d1f9e;border-radius:5px;position:absolute;right:18px;top:21px;}
+  .prize-row{display:flex;gap:8px;margin:12px 0;}
+  .prize{flex:1;border:1px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center;}
+  .prize .pi{font-size:20px;}
+  .prize .pn{font-size:9px;font-weight:700;margin-top:3px;line-height:1.4;}
+  .prize .pr{font-size:8px;color:var(--gray);}
+  .rules{background:var(--blue-light);border-radius:10px;padding:9px 12px;font-size:9.5px;color:#3D3F8F;line-height:1.7;}
+
+  /* result */
+  .result-win{position:relative;text-align:center;padding-top:16px;}
+  .confetti{position:absolute;inset:0;pointer-events:none;font-size:14px;}
+  .confetti i{position:absolute;font-style:normal;}
+  .win-badge{display:inline-block;background:var(--gold);color:#fff;font-size:12px;font-weight:800;padding:4px 16px;border-radius:999px;}
+  .win-title{font-size:21px;font-weight:900;color:var(--pink);margin:10px 0 2px;}
+  .prize-card{width:200px;margin:12px auto;border:2px solid var(--gold);border-radius:14px;padding:16px 10px;background:#FFFBEF;}
+  .prize-card .big{font-size:44px;}
+  .prize-card .nm{font-size:13px;font-weight:800;margin-top:6px;}
+  .prize-card .cond{font-size:9.5px;color:var(--gray);margin-top:6px;line-height:1.6;}
+  .lose-face{font-size:52px;text-align:center;margin-top:28px;}
+  .lose-title{font-size:18px;font-weight:800;text-align:center;margin:10px 0 4px;}
+  .lose-sub{font-size:11px;color:var(--gray);text-align:center;line-height:1.8;}
+
+  /* coupons */
+  .coupon{display:flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px;background:#fff;}
+  .coupon .ic{width:64px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:26px;flex:none;}
+  .coupon .cb{padding:8px 10px;flex:1;}
+  .coupon .cn{font-size:11.5px;font-weight:700;}
+  .coupon .ce{font-size:9px;color:var(--gray);margin-top:3px;line-height:1.6;}
+  .st{display:inline-block;font-size:8.5px;font-weight:700;padding:2px 8px;border-radius:4px;margin-top:4px;}
+  .st.ok{background:#E6F9EE;color:#06A34A;}
+  .st.used{background:#EFEFF4;color:var(--gray);}
+  .st.wait{background:#FFF4E0;color:#D98A00;}
+
+  /* coupon detail */
+  .detail-card{border:2px dashed var(--blue);border-radius:14px;padding:14px;text-align:center;}
+  .code{font-family:monospace;font-size:15px;font-weight:700;letter-spacing:2px;background:var(--blue-light);border-radius:8px;padding:8px 0;margin:10px 0 4px;}
+  .staff-box{margin-top:12px;background:#FAFAFE;border:1px solid var(--line);border-radius:12px;padding:12px;}
+  .staff-box .sl{font-size:10px;font-weight:700;color:var(--gray);margin-bottom:6px;}
+  .staff-box input{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px;font-size:12px;margin-bottom:8px;}
+
+  /* PC frame */
+  .pc{width:920px;max-width:100%;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(20,20,60,.10);}
+  .pc.opt{opacity:.92;border:1px dashed var(--blue-pale);}
+  .pc-bar{height:38px;background:#F1F2F8;display:flex;align-items:center;gap:6px;padding:0 14px;border-bottom:1px solid var(--line);}
+  .dot{width:10px;height:10px;border-radius:50%;}
+  .d1{background:#FF605C}.d2{background:#FFBD44}.d3{background:#00CA4E}
+  .url{flex:1;background:#fff;border:1px solid var(--line);border-radius:6px;font-size:11px;color:var(--gray);padding:4px 10px;margin-left:8px;}
+  .pc-body{padding:20px 24px;}
+  .pc-body h2{font-size:16px;margin-bottom:14px;}
+  .opt-badge{display:inline-block;background:var(--gold);color:#fff;font-size:11px;font-weight:800;border-radius:6px;padding:3px 10px;margin-left:8px;vertical-align:middle;}
+  table.adm{width:100%;border-collapse:collapse;font-size:12px;}
+  table.adm th{background:var(--blue-light);color:#3D3F8F;text-align:left;padding:8px 10px;border:1px solid var(--line);}
+  table.adm td{padding:8px 10px;border:1px solid var(--line);}
+  .kpis{display:flex;gap:14px;margin-bottom:18px;}
+  .kpi{flex:1;background:#FAFAFE;border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
+  .kpi .kl{font-size:11px;color:var(--gray);}
+  .kpi .kv{font-size:22px;font-weight:800;color:var(--blue);margin-top:2px;}
+  .abtn{display:inline-block;background:var(--blue);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:6px 14px;}
+  .abtn.line2{background:#fff;color:var(--blue);border:1px solid var(--blue);}
+  footer{margin-top:48px;font-size:11px;color:var(--gray);line-height:1.9;}
+</style>
+</head>
+<body>
+
+<h1>人材ミニアプリ｜スワイプ×デイリーガチャ 追加機能モック</h1>
+<p class="subtitle">v0.2 ｜ 2026年7月 ｜ 株式会社Mico ｜ リリース済みお仕事スワイプマッチングへのタブ追加（社名・商品名はサンプル表記）</p>
+
+<div class="flow-diagram">
+  <b>ユーザーフロー：</b>ミニアプリ起動 → 下部タブで <b>おしごと（スワイプ）／ガチャ／クーポン</b> を切り替え → 1日1回無料ガチャ →
+  当たり＝<b>面談来場時に使える特典クーポン</b>（アイス引換券・ギフト券等）発行 → 応募・面接予約 → <b>面談来場時にスタッフが消込</b>して特典お渡し →
+  翌日ガチャ回復のLINE通知で再訪（習慣化ループ）<br>
+  <b>運用フロー：</b>景品・当選確率・在庫の設定変更は<b>Micoが運用代行</b>。実施数・当選数・消込数（来場数）は<b>月次実績レポート</b>でご提供
+</div>
+
+<p class="section-title">■ ミニアプリ画面（タブ切り替え）</p>
+<div class="grid">
+
+  <!-- SCR-001 -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-001 ｜ おしごとタブ（既存スワイプ＋タブバー追加）</div>
+    <div class="phone">
+      <div class="liff-bar"><span class="t">お仕事さがし</span><span class="x">✕</span></div>
+      <div class="brand"><span class="logo">🏭 工場お仕事ナビ<span> SAMPLE</span></span></div>
+      <div class="body">
+        <div class="job-card">
+          <div class="job-img"><span class="s1">2交替勤務でしっかり稼げる！男女活躍！</span><span class="s2">エリア内高時給　月収32万円可</span></div>
+          <div class="job-body">
+            <div class="job-title">高時給1500円／寮費半額補助／限定特典あり／未経験歓迎</div>
+            <div class="job-co">🏢 株式会社サンプル製造 ｜ 京都府</div>
+            <div class="wage"><span class="lbl">時給</span><span class="val">¥ 1,500</span></div>
+            <div class="chips"><span class="chip">健康保険</span><span class="chip">厚生年金</span><span class="chip">雇用保険</span><span class="chip">労災保険</span></div>
+            <button class="btn">🔗 詳細を見る</button>
+          </div>
+        </div>
+        <div class="swipe-actions">
+          <div class="act undo">↩</div><div class="act no">✕</div><div class="act like">♥</div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="tab active"><span class="ic">💼</span>おしごと</div>
+        <div class="tab"><span class="ic">🎰</span>ガチャ<span class="badge"></span></div>
+        <div class="tab"><span class="ic">🎟️</span>クーポン</div>
+      </div>
+    </div>
+    <div class="screen-desc">リリース済みのスワイプ画面はそのまま。下部にタブバーを追加し、本日ガチャ未実施の場合はガチャタブに赤バッジを表示して誘導します。</div>
+  </div>
+
+  <!-- SCR-002 -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-002 ｜ ガチャホーム</div>
+    <div class="phone">
+      <div class="liff-bar"><span class="t">お仕事さがし</span><span class="x">✕</span></div>
+      <div class="brand"><span class="logo">🏭 工場お仕事ナビ<span> SAMPLE</span></span></div>
+      <div class="body">
+        <div class="gacha-head">
+          <div class="ttl">デイリーガチャ</div>
+          <span class="rest">本日あと 1 回 無料！</span>
+        </div>
+        <div class="machine">
+          <div class="dome">
+            <div class="cap c1"></div><div class="cap c2"></div><div class="cap c3"></div><div class="cap c4"></div><div class="cap c5"></div>
+          </div>
+          <div class="machine-base"><div class="knob"></div><div class="slot"></div></div>
+        </div>
+        <button class="btn" style="margin-top:6px;">ガチャをまわす</button>
+        <div class="prize-row">
+          <div class="prize"><div class="pi">🍨</div><div class="pn">アイス引換券</div><div class="pr">当たり</div></div>
+          <div class="prize"><div class="pi">💳</div><div class="pn">ギフト券 500円</div><div class="pr">当たり</div></div>
+          <div class="prize"><div class="pi">☕</div><div class="pn">カフェチケット</div><div class="pr">当たり</div></div>
+        </div>
+        <div class="rules">🎯 毎日1回無料で引けます（毎日0:00に回復）<br>🎁 当たったクーポンは<b>応募・面談来場時にスタッフへ提示</b>すると受け取れます<br>⏰ クーポンには有効期限があります</div>
+      </div>
+      <div class="tabbar">
+        <div class="tab"><span class="ic">💼</span>おしごと</div>
+        <div class="tab active"><span class="ic">🎰</span>ガチャ</div>
+        <div class="tab"><span class="ic">🎟️</span>クーポン</div>
+      </div>
+    </div>
+    <div class="screen-desc">1日1回無料。残回数・景品ラインナップ・利用条件を明示。実施済みの場合はボタンが「また明日 0:00〜」表示で非活性になります。景品の入れ替えはMicoが運用代行します。</div>
+  </div>
+
+  <!-- SCR-003a -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-003a ｜ ガチャ結果（当たり）</div>
+    <div class="phone">
+      <div class="liff-bar"><span class="t">お仕事さがし</span><span class="x">✕</span></div>
+      <div class="body">
+        <div class="result-win">
+          <div class="confetti">
+            <i style="left:8%;top:4%">🎊</i><i style="right:10%;top:2%">✨</i><i style="left:20%;top:16%">🎉</i>
+            <i style="right:18%;top:14%">🎊</i><i style="left:6%;top:30%">✨</i><i style="right:6%;top:32%">🎉</i>
+          </div>
+          <span class="win-badge">🎯 大当たり</span>
+          <div class="win-title">おめでとうございます！</div>
+          <div class="prize-card">
+            <div class="big">🍨</div>
+            <div class="nm">アイス引換券 GET！</div>
+            <div class="cond">応募・面談来場時にスタッフへ<br>この画面をご提示ください<br>有効期限：2026/08/31</div>
+          </div>
+          <button class="btn" style="margin-bottom:8px;">クーポンを確認する</button>
+          <button class="btn ghost">お仕事をさがす（スワイプへ）</button>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="tab"><span class="ic">💼</span>おしごと</div>
+        <div class="tab active"><span class="ic">🎰</span>ガチャ</div>
+        <div class="tab"><span class="ic">🎟️</span>クーポン</div>
+      </div>
+    </div>
+    <div class="screen-desc">当選時は演出（紙吹雪アニメーション）→クーポン自動発行。当選内容はLINEメッセージでも通知され、面談予約への動機づけになります。</div>
+  </div>
+
+  <!-- SCR-003b -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-003b ｜ ガチャ結果（はずれ）</div>
+    <div class="phone">
+      <div class="liff-bar"><span class="t">お仕事さがし</span><span class="x">✕</span></div>
+      <div class="body">
+        <div class="lose-face">😢</div>
+        <div class="lose-title">ざんねん…また明日！</div>
+        <p class="lose-sub">ガチャは毎日0:00に回復します。<br>回復したらLINEでお知らせします🔔</p>
+        <div style="margin-top:22px;">
+          <button class="btn ghost" style="margin-bottom:8px;">お仕事をさがす（スワイプへ）</button>
+          <button class="btn disabled">また明日 0:00〜</button>
+        </div>
+        <div class="rules" style="margin-top:16px;">💡 気になるお仕事リストのお仕事は、面接予約まで進むとガチャ以外の限定特典が付く場合があります。</div>
+      </div>
+      <div class="tabbar">
+        <div class="tab"><span class="ic">💼</span>おしごと</div>
+        <div class="tab active"><span class="ic">🎰</span>ガチャ</div>
+        <div class="tab"><span class="ic">🎟️</span>クーポン</div>
+      </div>
+    </div>
+    <div class="screen-desc">はずれ時も翌日への期待とスワイプへの回遊導線を提示し、デイリー習慣化とお仕事探しの継続につなげます。</div>
+  </div>
+
+  <!-- SCR-004 -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-004 ｜ クーポン一覧</div>
+    <div class="phone">
+      <div class="liff-bar"><span class="t">お仕事さがし</span><span class="x">✕</span></div>
+      <div class="brand"><span class="logo">🏭 工場お仕事ナビ<span> SAMPLE</span></span></div>
+      <div class="body">
+        <div class="gacha-head"><div class="ttl">マイクーポン</div></div>
+        <div class="coupon">
+          <div class="ic">🍨</div>
+          <div class="cb">
+            <div class="cn">アイス引換券</div>
+            <div class="ce">面談来場時にスタッフへ提示 ｜ 期限 2026/08/31</div>
+            <span class="st ok">利用可</span>
+          </div>
+        </div>
+        <div class="coupon">
+          <div class="ic">💳</div>
+          <div class="cb">
+            <div class="cn">ギフト券 500円</div>
+            <div class="ce">面談来場時にスタッフへ提示 ｜ 期限 2026/07/31</div>
+            <span class="st used">使用済み（7/2 面談来場）</span>
+          </div>
+        </div>
+        <div class="coupon">
+          <div class="ic">☕</div>
+          <div class="cb">
+            <div class="cn">カフェチケット</div>
+            <div class="ce">面談来場時にスタッフへ提示 ｜ 期限 2026/06/30</div>
+            <span class="st wait">期限切れ</span>
+          </div>
+        </div>
+        <div class="rules" style="margin-top:10px;">🎁 クーポンは応募後の<b>面談来場時</b>にご利用いただけます。まずは気になるお仕事に応募してみましょう！</div>
+      </div>
+      <div class="tabbar">
+        <div class="tab"><span class="ic">💼</span>おしごと</div>
+        <div class="tab"><span class="ic">🎰</span>ガチャ</div>
+        <div class="tab active"><span class="ic">🎟️</span>クーポン</div>
+      </div>
+    </div>
+    <div class="screen-desc">獲得クーポンを状態別（利用可／使用済み／期限切れ）に一覧表示。利用条件と期限を常に明示します。</div>
+  </div>
+
+  <!-- SCR-005 -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-005 ｜ クーポン詳細・引換（スタッフ消込）</div>
+    <div class="phone">
+      <div class="liff-bar"><span class="t">お仕事さがし</span><span class="x">✕</span></div>
+      <div class="body">
+        <div class="detail-card" style="margin-top:8px;">
+          <div style="font-size:38px;">🍨</div>
+          <div style="font-size:14px;font-weight:800;margin-top:4px;">アイス引換券</div>
+          <div class="code">JOBS-7F3K-92QX</div>
+          <div style="font-size:9.5px;color:var(--gray);line-height:1.7;">有効期限：2026/08/31<br>応募・面談来場時にスタッフへご提示ください</div>
+          <span class="st ok" style="margin-top:8px;">利用可</span>
+        </div>
+        <div class="staff-box">
+          <div class="sl">🔒 スタッフ確認欄（来場時にスタッフが操作します）</div>
+          <input type="password" placeholder="スタッフコードを入力">
+          <button class="btn" style="background:var(--pink);">使用済みにする</button>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="tab"><span class="ic">💼</span>おしごと</div>
+        <div class="tab"><span class="ic">🎰</span>ガチャ</div>
+        <div class="tab active"><span class="ic">🎟️</span>クーポン</div>
+      </div>
+    </div>
+    <div class="screen-desc">面談会場でスタッフがコードを入力して消込。スクリーンショットでの使い回しを防ぎ、消込ログがそのまま来場計測になります。誤消込の取り消しはMico運用窓口で対応します。</div>
+  </div>
+</div>
+
+<p class="section-title">■ 運用イメージ（Phase 1：Mico運用代行）</p>
+<p class="section-note">
+  Phase 1では顧客向け管理画面は開発せず、<b>景品・当選確率・在庫の設定変更はMicoが運用代行</b>。
+  実施数・当選数・消込数（面談来場数）は<b>月次実績レポート</b>としてお届けします。下記のようなセルフサーブ管理画面は<b>Phase 2オプション</b>（別途お見積もり）でご提供可能です。
+</p>
+<div class="pc opt">
+  <div class="pc-bar">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="url">https://admin.example.com/gacha ｜ Phase 2 オプションのイメージ</span>
+  </div>
+  <div class="pc-body">
+    <h2>🎰 景品・確率設定（OPT-001）<span class="opt-badge">Phase 2 オプション</span></h2>
+    <table class="adm">
+      <tr><th>景品名</th><th>当選確率</th><th>在庫</th><th>クーポン有効期限</th><th>状態</th><th>操作</th></tr>
+      <tr><td>🍨 アイス引換券</td><td>8%</td><td>142 / 200</td><td>発行から30日</td><td>公開中</td><td><span class="abtn line2">編集</span></td></tr>
+      <tr><td>💳 ギフト券 500円</td><td>3%</td><td>38 / 50</td><td>発行から30日</td><td>公開中</td><td><span class="abtn line2">編集</span></td></tr>
+      <tr><td>☕ カフェチケット</td><td>12%</td><td>210 / 300</td><td>発行から30日</td><td>公開中</td><td><span class="abtn line2">編集</span></td></tr>
+      <tr><td>― はずれ（また明日）</td><td>77%</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+    </table>
+    <p style="font-size:11px;color:var(--gray);margin:8px 0 24px;">※ Phase 1ではこの設定作業をMicoが代行します。</p>
+
+    <h2>📊 実績ダッシュボード（OPT-002）<span class="opt-badge">Phase 2 オプション</span></h2>
+    <div class="kpis">
+      <div class="kpi"><div class="kl">ガチャ実施数</div><div class="kv">1,842</div></div>
+      <div class="kpi"><div class="kl">当選数</div><div class="kv">423</div></div>
+      <div class="kpi"><div class="kl">消込数（面談来場）</div><div class="kv">96</div></div>
+      <div class="kpi"><div class="kl">来場利用率</div><div class="kv">22.7%</div></div>
+    </div>
+    <p style="font-size:11px;color:var(--gray);">※ Phase 1では上記と同内容を毎月の実績レポート（PDF/スプレッドシート）でご提供します。</p>
+  </div>
+</div>
+
+<footer>
+  ※ 本モックは画面イメージ確認用のドラフトです。実画面は既存ミニアプリのデザイントーンに合わせて調整予定です。<br>
+  ※ 社名・ブランド名・景品名・確率・数値はすべて架空のサンプルです。<br>
+  © 2026 Mico, Inc.
+</footer>
+
+</body>
+</html>
