@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>アパレル会員証＋クイック入力 LINEミニアプリ モック v0.1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Yu Gothic", "ヒラギノ角ゴ ProN", sans-serif;
+    background: #f4f5f7;
+    color: #111;
+    padding: 40px 20px;
+  }
+  h1 {
+    font-size: 28px; color: #1F3864;
+    border-bottom: 3px solid #1F3864;
+    padding-bottom: 10px; margin-bottom: 8px;
+    max-width: 1400px; margin-left: auto; margin-right: auto;
+  }
+  .subtitle { max-width: 1400px; margin: 0 auto 30px; color: #666; font-size: 14px; }
+  .section-title {
+    max-width: 1400px; margin: 40px auto 16px; font-size: 18px; color: #1F3864;
+    border-left: 6px solid #06C755; padding-left: 12px;
+  }
+  .grid {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 28px;
+  }
+  .screen-wrap { display: flex; flex-direction: column; align-items: center; }
+  .screen-label { font-size: 13px; font-weight: 600; color: #1F3864; margin-bottom: 8px; text-align: center; }
+  .screen-desc { font-size: 11px; color: #666; text-align: center; max-width: 320px; margin-top: 6px; line-height: 1.5; }
+
+  .phone {
+    width: 320px; height: 640px; border: 10px solid #222; border-radius: 32px;
+    background: #fff; overflow: hidden; position: relative;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  }
+  .phone-notch {
+    height: 22px; background: #222; border-bottom-left-radius: 14px; border-bottom-right-radius: 14px;
+    width: 120px; margin: 0 auto; position: relative; top: -2px;
+  }
+  .line-header {
+    background: #06C755; color: white; padding: 10px 12px; font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .line-header .avatar {
+    width: 28px; height: 28px; background: white; border-radius: 50%;
+    display: inline-block; margin-right: 8px; vertical-align: middle;
+    color: #06C755; text-align: center; line-height: 28px; font-weight: 900;
+  }
+  .scroll { overflow-y: auto; height: calc(100% - 22px - 40px); background: #f4f5f7; }
+
+  .chat { padding: 12px; }
+  .chat .time { text-align: center; color: #888; font-size: 10px; margin: 8px 0; }
+  .bubble-row { display: flex; align-items: flex-start; margin-bottom: 10px; }
+  .bubble-row.me { justify-content: flex-end; }
+  .bubble-row .avatar-small {
+    width: 30px; height: 30px; border-radius: 50%; background: #B03060; color: white;
+    text-align: center; line-height: 30px; margin-right: 6px; font-size: 11px; font-weight: 600;
+  }
+  .bubble { max-width: 230px; padding: 8px 10px; border-radius: 12px; font-size: 12px; line-height: 1.5; }
+  .bubble.bot { background: white; border: 1px solid #e0e0e0; }
+  .bubble.me { background: #06C755; color: white; }
+
+  .liff { padding: 16px; background: #fff; height: calc(100% - 22px - 40px); overflow-y: auto; }
+  .liff h2 { font-size: 16px; margin-bottom: 8px; color: #1F3864; }
+  .liff p.lead { font-size: 12px; color: #555; margin-bottom: 16px; line-height: 1.5; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 12px; color: #333; margin-bottom: 4px; font-weight: 600; }
+  .field label .req { color: #E53935; font-size: 11px; }
+  .field label .auto { color: #06C755; font-size: 10px; font-weight: 600; }
+  .field input, .field select, .field textarea {
+    width: 100%; padding: 8px 10px; font-size: 13px; border: 1px solid #ccc; border-radius: 6px;
+  }
+  .field input.autofilled { background: #F0FBF4; border-color: #06C755; }
+  .field .hint { font-size: 10px; color: #888; margin-top: 2px; }
+  .btn {
+    display: block; width: 100%; padding: 12px; background: #06C755; color: white;
+    border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 16px;
+  }
+  .btn.brand { background: #B03060; }
+  .btn.secondary { background: #888; }
+  .check { font-size: 12px; color: #333; display: flex; align-items: flex-start; margin-bottom: 8px; }
+  .check input { margin-right: 6px; margin-top: 3px; }
+
+  /* Member card */
+  .member-card {
+    margin: 14px; border-radius: 14px; padding: 16px;
+    background: linear-gradient(135deg, #B03060 0%, #7A1F42 100%);
+    color: white; box-shadow: 0 4px 12px rgba(176,48,96,0.3);
+  }
+  .member-card.full { background: linear-gradient(135deg, #1F3864 0%, #101F3C 100%); box-shadow: 0 4px 12px rgba(31,56,100,0.3); }
+  .member-card .card-type { font-size: 10px; letter-spacing: 2px; opacity: 0.85; }
+  .member-card .card-brand { font-size: 17px; font-weight: 700; letter-spacing: 1px; margin: 2px 0 12px; }
+  .barcode-box { background: white; border-radius: 8px; padding: 10px 12px 6px; text-align: center; }
+  .barcode {
+    height: 48px; margin: 0 auto; width: 90%;
+    background: repeating-linear-gradient(90deg,
+      #111 0 2px, #fff 2px 4px, #111 4px 5px, #fff 5px 9px,
+      #111 9px 12px, #fff 12px 14px, #111 14px 15px, #fff 15px 18px,
+      #111 18px 20px, #fff 20px 23px);
+  }
+  .barcode-num { color: #333; font-size: 11px; letter-spacing: 2px; padding: 4px 0 2px; }
+  .point-row { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 12px; }
+  .point-row .pt { font-size: 20px; font-weight: 700; }
+
+  .banner {
+    margin: 0 14px 14px; background: #FFF6F9; border: 1px solid #F3C6D6; border-radius: 10px;
+    padding: 12px; font-size: 12px; line-height: 1.6; color: #7A1F42;
+  }
+  .banner strong { color: #B03060; }
+
+  .list-item {
+    background: white; padding: 12px 14px; border-bottom: 1px solid #eee;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .list-item .label { font-size: 13px; color: #111; font-weight: 500; }
+  .list-item .sub { font-size: 11px; color: #888; }
+  .list-item .arrow { color: #B03060; font-size: 18px; }
+
+  .status { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; color: white; }
+  .status.ok { background: #06C755; }
+  .status.pending { background: #E98B2F; }
+
+  .flow-diagram {
+    max-width: 1400px; margin: 20px auto 40px; background: white; padding: 24px;
+    border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  .flow-step {
+    display: inline-block; background: #1F3864; color: white; padding: 8px 14px;
+    border-radius: 6px; font-size: 12px; font-weight: 600; margin: 4px;
+  }
+  .flow-step.brand { background: #B03060; }
+  .flow-arrow { font-size: 18px; color: #06C755; margin: 0 6px; }
+
+  .flow-note {
+    max-width: 1400px; margin: 30px auto; background: white; border-left: 4px solid #06C755;
+    padding: 16px 20px; font-size: 13px; line-height: 1.8; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  .flow-note strong { color: #1F3864; }
+
+  .done-icon {
+    width: 64px; height: 64px; border-radius: 50%; background: #06C755; color: white;
+    font-size: 34px; line-height: 64px; text-align: center; margin: 30px auto 16px;
+  }
+</style>
+</head>
+<body>
+
+<h1>アパレル会員証＋クイック入力 LINEミニアプリ モック v0.1</h1>
+<p class="subtitle">仮会員証＋クイック入力による会員接点再構築 ｜ 作成：株式会社Mico ｜ 日付：2026年7月6日 ｜ ※ブランド名「MERIA」は説明用の架空ブランドです</p>
+
+<div class="flow-diagram">
+  <h2 style="color:#1F3864; font-size:16px; margin-bottom:12px;">全体フロー</h2>
+  <div>
+    <span class="flow-step">店頭QR（試着・検討後）</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">友だち登録（5秒）</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step brand">仮会員証 即時発行</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">会計時バーコード提示</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">退店後フォロー配信</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step brand">クイック入力で本会員化</span>
+  </div>
+  <div style="margin-top:14px; font-size:12px; color:#555; line-height:1.7;">
+    ・店舗スタッフは<strong>QRコードを見せるだけ</strong>（複雑な説明トーク不要）<br>
+    ・仮会員時点からポイントを可視化し、<strong>本会員プログラム（MERIA CLUB）への転換をアシスト</strong><br>
+    ・試着3日後・再入荷時の<strong>自動フォロー配信</strong>（店舗スタッフの手作業ゼロ）<br>
+    ・裏側：LINE UID単位の行動データ蓄積 → セグメント配信・KPI管理
+  </div>
+</div>
+
+<p class="section-title">■ モバイル画面（LINEミニアプリ）</p>
+
+<div class="grid">
+
+  <!-- SCR-001 -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-001 ｜ 店頭QRランディング</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="line-header"><span><span class="avatar" style="color:#B03060;">M</span>MERIA公式</span><span>×</span></div>
+      <div class="liff" style="text-align:center;">
+        <div style="margin:24px 0 8px; font-size:13px; color:#B03060; font-weight:700; letter-spacing:1px;">MERIA MEMBERS</div>
+        <h2 style="font-size:18px;">ようこそ！</h2>
+        <p class="lead" style="margin-top:8px;">友だち登録ありがとうございます。<br>そのまま使える<strong>仮会員証</strong>を発行します。<br>アプリのダウンロードは不要です。</p>
+        <div style="background:#FFF6F9; border:1px solid #F3C6D6; border-radius:10px; padding:14px; font-size:12px; color:#7A1F42; text-align:left; line-height:1.7;">
+          ✔ 会計時にバーコード提示でポイントが貯まる<br>
+          ✔ 入力は一切不要・約5秒で完了<br>
+          ✔ 本会員にはあとからいつでも
+        </div>
+        <button class="btn brand">仮会員証を発行する</button>
+        <p style="font-size:10px; color:#888; margin-top:12px;">※登録店舗：〇〇店（QRコードから自動記録）</p>
+      </div>
+    </div>
+    <div class="screen-desc">店頭QR読取→友だち追加→この画面。追加入力なしで仮会員証発行へ。登録経由店舗を自動記録。</div>
+  </div>
+
+  <!-- SCR-002 -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-002 ｜ 仮会員証（バーコード・ポイント）</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="line-header"><span>会員証</span><span>×</span></div>
+      <div class="scroll">
+        <div class="member-card">
+          <div class="card-type">PROVISIONAL MEMBER ／ 仮会員証</div>
+          <div class="card-brand">MERIA</div>
+          <div class="barcode-box">
+            <div class="barcode"></div>
+            <div class="barcode-num">9200 1234 5678 901</div>
+          </div>
+          <div class="point-row">
+            <span>保有ポイント</span>
+            <span><span class="pt">120</span> pt</span>
+          </div>
+        </div>
+        <div class="banner">
+          <strong>本会員（MERIA CLUB）になると…</strong><br>
+          いま貯めた120ptをそのまま引き継ぎ。誕生日特典・限定クーポンも。登録は<strong>約30秒</strong>で完了します。
+        </div>
+        <div style="margin:0 14px;">
+          <button class="btn brand" style="margin-top:0;">本会員になる（30秒）</button>
+        </div>
+        <p style="text-align:center; font-size:10px; color:#888; margin-top:12px;">会計時にこのバーコードをご提示ください</p>
+      </div>
+    </div>
+    <div class="screen-desc">ミニアプリ起動で即表示。POS読取可能なバーコード＋ポイント＋本会員化CTA。通信エラー時もキャッシュ表示。</div>
+  </div>
+
+  <!-- SCR-003 -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-003 ｜ クイック入力（本会員登録）</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="line-header"><span>本会員登録（クイック入力）</span><span>×</span></div>
+      <div class="liff">
+        <h2>あと少しで完了です</h2>
+        <p class="lead">LINEの情報を自動入力済み。<span style="color:#06C755; font-weight:600;">緑色の項目は確認するだけでOK</span>です。</p>
+        <div class="field">
+          <label>お名前 <span class="req">必須</span> <span class="auto">✔ LINEから自動入力</span></label>
+          <input type="text" class="autofilled" value="山田 花子">
+        </div>
+        <div class="field">
+          <label>生年月日 <span class="req">必須</span></label>
+          <input type="text" placeholder="1990/01/01" value="1990/01/01">
+        </div>
+        <div class="field">
+          <label>電話番号 <span class="req">必須</span></label>
+          <input type="text" value="090-1234-5678">
+        </div>
+        <div class="field">
+          <label>メールアドレス <span class="req">必須</span></label>
+          <input type="email" value="hanako@example.com">
+          <div class="hint">既に本会員の方は自動でお客様情報と紐付けます</div>
+        </div>
+        <div class="check"><input type="checkbox" checked>MERIA CLUB会員規約・プライバシーポリシーに同意する</div>
+        <button class="btn brand">登録を完了する</button>
+      </div>
+    </div>
+    <div class="screen-desc">クイック入力（共通プロフィール）でLINE登録情報を自動反映＋最小項目のみ入力。既存会員は照合・紐付け。※認証済みミニアプリ＋利用申請が前提。</div>
+  </div>
+
+  <!-- SCR-004 -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-004 ｜ 登録完了・本会員証</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="line-header"><span>登録完了</span><span>×</span></div>
+      <div class="scroll">
+        <div class="done-icon">✓</div>
+        <h2 style="text-align:center; font-size:17px; color:#1F3864;">本会員登録が完了しました</h2>
+        <p style="text-align:center; font-size:12px; color:#555; margin:8px 0 4px;">MERIA CLUB 会員として<br>ポイント・特典をご利用いただけます</p>
+        <div class="member-card full">
+          <div class="card-type">CLUB MEMBER ／ 本会員証</div>
+          <div class="card-brand">MERIA CLUB</div>
+          <div class="barcode-box">
+            <div class="barcode"></div>
+            <div class="barcode-num">9200 1234 5678 901</div>
+          </div>
+          <div class="point-row">
+            <span>保有ポイント（引き継ぎ済み）</span>
+            <span><span class="pt">120</span> pt</span>
+          </div>
+        </div>
+        <p style="text-align:center; font-size:10px; color:#888;">仮会員のポイントはそのまま引き継がれます</p>
+      </div>
+    </div>
+    <div class="screen-desc">本会員登録完了で本会員証へ切り替え。ポイント引き継ぎを明示し「損しない」体験に。</div>
+  </div>
+
+  <!-- SCR-005 -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-005 ｜ マイページ</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="line-header"><span>マイページ</span><span>×</span></div>
+      <div class="scroll">
+        <div style="background:white; padding:16px 14px; border-bottom:1px solid #eee;">
+          <div style="font-size:14px; font-weight:700;">山田 花子 さま</div>
+          <div style="margin-top:6px;"><span class="status ok">本会員（MERIA CLUB）</span>
+            <span style="font-size:12px; color:#555; margin-left:8px;">保有ポイント：<strong>120pt</strong></span></div>
+        </div>
+        <div class="list-item"><div><div class="label">会員証を表示</div><div class="sub">会計時のバーコード提示</div></div><div class="arrow">›</div></div>
+        <div class="list-item"><div><div class="label">ポイント履歴</div><div class="sub">獲得・利用の履歴</div></div><div class="arrow">›</div></div>
+        <div class="list-item"><div><div class="label">登録情報の確認・変更</div><div class="sub">お名前・連絡先など</div></div><div class="arrow">›</div></div>
+        <div class="list-item"><div><div class="label">会員プログラム（Web）へ</div><div class="sub">ご利用履歴・詳細サービス</div></div><div class="arrow">›</div></div>
+        <div class="list-item"><div><div class="label">お知らせ設定</div><div class="sub">配信の受け取り設定</div></div><div class="arrow">›</div></div>
+        <div style="padding:14px;">
+          <p style="font-size:11px; color:#666; line-height:1.6;">※ ミニアプリとネイティブアプリはほぼ同じ機能を提供し、お客様がお好みのチャネルを選べる設計です。</p>
+        </div>
+      </div>
+    </div>
+    <div class="screen-desc">会員種別・ポイント・登録情報を確認。本会員は既存会員基盤（Web/アプリ）への導線も提供。</div>
+  </div>
+
+  <!-- SCR-006 -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-006 ｜ 退店後フォロー配信（LINEトーク）</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="line-header"><span><span class="avatar" style="color:#B03060;">M</span>MERIA公式</span><span>⋮</span></div>
+      <div class="scroll">
+        <div class="chat">
+          <div class="time">ご来店から3日後 10:00（自動配信）</div>
+          <div class="bubble-row">
+            <div class="avatar-small">M</div>
+            <div class="bubble bot">山田さま、先日は〇〇店へのご来店ありがとうございました。ご試着いただいたアイテムはいかがでしたか？</div>
+          </div>
+          <div class="bubble-row">
+            <div class="avatar-small">M</div>
+            <div class="bubble bot">ただいま仮会員証のご提示で使える<strong>ウェルカムクーポン</strong>をお届けしています🎁<br><br>▶ 会員証を開く<br>▶ 近くの店舗を探す</div>
+          </div>
+          <div class="time">再入荷時（自動配信）</div>
+          <div class="bubble-row">
+            <div class="avatar-small">M</div>
+            <div class="bubble bot">ご覧いただいた商品の在庫が〇〇店に入荷しました。オンラインでの取り置きも可能です。</div>
+          </div>
+          <div class="bubble-row me"><div class="bubble me">会員証を開く</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-desc">試着3日後・再入荷時などの自動フォロー。店舗スタッフの手作業ゼロで再来店・本会員化をアシスト。</div>
+  </div>
+
+</div>
+
+<div class="flow-note">
+  <strong>📌 注記：</strong>本モックは v0.1（2026/07/06 初版）のドラフトです。ブランド名「MERIA」「MERIA CLUB」は説明用の架空ブランドであり、実画面はクライアント様のブランドガイドラインに合わせて配色・ロゴ・フォント・アイコンを調整します。バーコード規格（POS読取互換性）・ポイント表示の有無は要件定義で確定します。クイック入力は認証済みLINEミニアプリでのみ利用可能（審査2回・利用申請が前提）。
+</div>
+
+</body>
+</html>
