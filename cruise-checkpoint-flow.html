@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<!--
+  OCEAN VOYAGE LINEミニアプリ モック v0.1
+  QR=チェックポイント紐付け方式（GPS不要）
+  作成：株式会社Mico
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>クルーズ寄港地チェックポイント｜LINEミニアプリ モック</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Yu Gothic", "ヒラギノ角ゴ ProN", sans-serif;
+    background: #eef2f6; color: #111; padding: 40px 20px;
+  }
+  h1 {
+    font-size: 28px; color: #0B3D91;
+    border-bottom: 3px solid #0B3D91;
+    padding-bottom: 10px; margin-bottom: 8px;
+    max-width: 1400px; margin-left: auto; margin-right: auto;
+  }
+  .subtitle { max-width: 1400px; margin: 0 auto 30px; color: #666; font-size: 14px; }
+  .section-title {
+    max-width: 1400px; margin: 40px auto 16px; font-size: 18px; color: #0B3D91;
+    border-left: 6px solid #06C755; padding-left: 12px;
+  }
+  .grid {
+    max-width: 1400px; margin: 0 auto; display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 28px;
+  }
+  .screen-wrap { display: flex; flex-direction: column; align-items: center; }
+  .screen-label { font-size: 13px; font-weight: 600; color: #0B3D91; margin-bottom: 8px; text-align: center; }
+  .screen-desc { font-size: 11px; color: #666; text-align: center; max-width: 320px; margin-top: 6px; line-height: 1.5; }
+
+  /* Mobile frame */
+  .phone {
+    width: 320px; height: 640px; border: 10px solid #222; border-radius: 32px;
+    background: #fff; overflow: hidden; position: relative; box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  }
+  .phone-notch { height: 22px; background: #222; border-bottom-left-radius: 14px; border-bottom-right-radius: 14px; width: 120px; margin: 0 auto; position: relative; top: -2px; }
+  .line-header {
+    background: #06C755; color: white; padding: 10px 12px; font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .line-header .avatar { width: 28px; height: 28px; background: white; border-radius: 50%; display: inline-block; margin-right: 8px; vertical-align: middle; color: #06C755; text-align: center; line-height: 28px; font-weight: 900; }
+  .scroll { overflow-y: auto; height: calc(100% - 22px - 40px); background: #f4f5f7; }
+  .chat { padding: 12px; }
+  .chat .time { text-align: center; color: #888; font-size: 10px; margin: 8px 0; }
+  .bubble-row { display: flex; align-items: flex-start; margin-bottom: 10px; }
+  .bubble-row .avatar-small { width: 30px; height: 30px; border-radius: 50%; background: #0B3D91; color: white; text-align: center; line-height: 30px; margin-right: 6px; font-size: 11px; font-weight: 600; }
+  .bubble { max-width: 220px; padding: 8px 10px; border-radius: 12px; font-size: 12px; line-height: 1.5; }
+  .bubble.bot { background: white; border: 1px solid #e0e0e0; }
+
+  /* Rich menu */
+  .rich-menu { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 2px; background: #ddd; width: 100%; height: 200px; position: absolute; bottom: 0; }
+  .rich-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 600; padding: 8px; text-align: center; }
+  .rich-tile:nth-child(1) { background: #0B3D91; }
+  .rich-tile:nth-child(2) { background: #1565C0; }
+  .rich-tile:nth-child(3) { background: #2E86C1; }
+  .rich-tile:nth-child(4) { background: #E98B2F; }
+  .rich-tile:nth-child(5) { background: #06C755; }
+  .rich-tile:nth-child(6) { background: #C0392B; }
+  .rich-tile .icon { font-size: 28px; margin-bottom: 4px; }
+
+  /* LIFF form / content */
+  .liff { padding: 16px; background: #fff; height: calc(100% - 22px - 40px); overflow-y: auto; }
+  .liff h2 { font-size: 16px; margin-bottom: 8px; color: #0B3D91; }
+  .liff p.lead { font-size: 12px; color: #555; margin-bottom: 16px; line-height: 1.5; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 12px; color: #333; margin-bottom: 4px; font-weight: 600; }
+  .field label .req { color: #E53935; font-size: 11px; }
+  .field input, .field select, .field textarea { width: 100%; padding: 8px 10px; font-size: 13px; border: 1px solid #ccc; border-radius: 6px; }
+  .field .hint { font-size: 10px; color: #888; margin-top: 2px; }
+  .btn { display: block; width: 100%; padding: 12px; background: #06C755; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 16px; }
+  .btn.secondary { background: #0B3D91; }
+  .check { font-size: 12px; color: #333; display: flex; align-items: flex-start; margin-bottom: 8px; }
+  .check input { margin-right: 6px; margin-top: 3px; }
+
+  /* QR scanner mock */
+  .qr-view { background: #111; height: calc(100% - 22px - 40px); position: relative; display: flex; align-items: center; justify-content: center; }
+  .qr-frame { width: 190px; height: 190px; border: 3px solid #06C755; border-radius: 16px; position: relative; }
+  .qr-frame::before, .qr-frame::after { content: ""; position: absolute; width: 26px; height: 26px; border: 4px solid #fff; }
+  .qr-frame::before { top: -3px; left: -3px; border-right: none; border-bottom: none; border-top-left-radius: 12px; }
+  .qr-frame::after { bottom: -3px; right: -3px; border-left: none; border-top: none; border-bottom-right-radius: 12px; }
+  .qr-hint { position: absolute; bottom: 40px; left: 0; right: 0; text-align: center; color: #fff; font-size: 12px; }
+  .qr-tag { position: absolute; top: 26px; left: 0; right: 0; text-align: center; color: #06C755; font-size: 12px; font-weight: 700; }
+
+  /* Stamp complete */
+  .stamp-card { text-align: center; padding: 24px 16px; }
+  .stamp-badge { width: 130px; height: 130px; border-radius: 50%; margin: 10px auto 16px; background: radial-gradient(circle at 30% 30%, #FFD54F, #E98B2F); display: flex; align-items: center; justify-content: center; color: #7a3e00; font-size: 42px; box-shadow: 0 4px 14px rgba(233,139,47,.4); }
+  .stamp-place { font-size: 20px; font-weight: 800; color: #0B3D91; }
+  .stamp-sub { font-size: 12px; color: #666; margin-top: 4px; }
+  .progress-pill { display:inline-block; margin-top:14px; background:#E3F2FD; color:#0B3D91; font-size:12px; font-weight:700; padding:6px 14px; border-radius:14px; }
+
+  /* Map */
+  .map-wrap { position: relative; height: calc(100% - 22px - 40px); background: linear-gradient(#cfe8f7, #a9d3ef); overflow: hidden; }
+  .map-svg { width: 100%; height: 78%; display: block; }
+  .map-legend { position:absolute; bottom:0; left:0; right:0; background:#fff; padding:10px 12px; border-top:1px solid #e0e0e0; }
+  .map-legend h3 { font-size:13px; color:#0B3D91; margin-bottom:6px; }
+  .legend-row { display:flex; justify-content:space-between; font-size:11px; color:#333; padding:3px 0; }
+  .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; }
+  .dot.visited { background:#E98B2F; }
+  .dot.unvisited { background:#9e9e9e; }
+  .pin { cursor:pointer; }
+  .pin-label { font-size:9px; fill:#0B3D91; font-weight:700; }
+
+  /* Detail content */
+  .hero { height: 150px; background: linear-gradient(135deg,#0B3D91,#2E86C1); color:#fff; display:flex; flex-direction:column; justify-content:flex-end; padding:14px; }
+  .hero .place { font-size:20px; font-weight:800; }
+  .hero .region { font-size:11px; opacity:.85; }
+  .content-body { padding:14px; }
+  .content-body p { font-size:12px; line-height:1.8; color:#333; margin-bottom:10px; }
+  .content-body h3 { font-size:13px; color:#0B3D91; margin:10px 0 6px; }
+  .visited-chip { display:inline-block; background:#E8F5E9; color:#06803a; font-size:11px; font-weight:700; padding:4px 10px; border-radius:12px; margin-bottom:8px; }
+
+  /* Shiori (itinerary) */
+  .shiori-item { display:flex; gap:10px; padding:12px 14px; border-bottom:1px solid #eee; background:#fff; align-items:center; }
+  .shiori-no { width:26px; height:26px; border-radius:50%; background:#0B3D91; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex:none; }
+  .shiori-place { font-size:13px; font-weight:700; color:#111; }
+  .shiori-date { font-size:11px; color:#888; }
+  .shiori-thumb { width:44px; height:44px; border-radius:8px; background:linear-gradient(135deg,#2E86C1,#0B3D91); flex:none; }
+
+  /* PC frame */
+  .pc { width: 100%; max-width: 1200px; margin: 0 auto; border: 8px solid #222; border-radius: 12px; background: #fafafa; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+  .pc-bar { background: #333; padding: 8px 12px; display: flex; align-items: center; gap: 6px; }
+  .pc-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .pc-dot.r { background: #ff5f57; } .pc-dot.y { background: #ffbd2e; } .pc-dot.g { background: #28c940; }
+  .pc-url { flex: 1; background: #555; color: white; border-radius: 4px; padding: 4px 10px; font-size: 11px; margin-left: 10px; }
+  .pc-body { padding: 20px; }
+  .pc-body h2 { color: #0B3D91; font-size: 18px; margin-bottom: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid #e0e0e0; text-align: left; }
+  th { background: #D9E2F3; color: #0B3D91; font-weight: 600; }
+  tr:hover { background: #f7faff; }
+  .action-btn { padding: 4px 8px; font-size: 11px; border: 1px solid #0B3D91; background: white; color: #0B3D91; border-radius: 4px; cursor: pointer; margin-right: 4px; }
+  .status { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; color: white; }
+  .status.ok { background: #06C755; } .status.pending { background: #E98B2F; }
+
+  .flow-diagram { max-width: 1400px; margin: 20px auto 40px; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+  .flow-step { display: inline-block; background: #0B3D91; color: white; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; margin: 4px; }
+  .flow-arrow { font-size: 18px; color: #06C755; margin: 0 6px; }
+  .flow-note { max-width: 1400px; margin: 30px auto; background: white; border-left: 4px solid #06C755; padding: 16px 20px; font-size: 13px; line-height: 1.8; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+  .flow-note strong { color: #0B3D91; }
+</style>
+</head>
+<body>
+
+<h1>クルーズ寄港地チェックポイント＆旅のしおり｜LINEミニアプリ モック</h1>
+<p class="subtitle">クルーズ寄港地チェックポイント＆旅のしおり ｜ QR＝チェックポイント紐付け方式（GPS不要） ｜ 作成：株式会社Mico ｜ 日付：2026年7月8日</p>
+
+<!-- Flow diagram -->
+<div class="flow-diagram">
+  <h2 style="color:#0B3D91; font-size:16px; margin-bottom:12px;">全体フロー</h2>
+  <div>
+    <span class="flow-step">LINE公式アカウント</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">乗船者登録（初回のみ）</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">寄港地でQRスキャン</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">チェックイン記録＋地点詳細</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">マップにピンが立つ</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">旅のしおり（思い出）</span>
+  </div>
+  <div style="margin-top:14px; font-size:12px; color:#555; line-height:1.7;">
+    ・各チェックポイントのQRには<strong>地点情報が事前登録</strong>（GPS特定は不要）。読み込むだけで「その地点を訪問済み」として確実に記録。<br>
+    ・国内（浅草・スカイツリー・東京タワー等）に加え、<strong>台湾・韓国の寄港地も同方式で対応</strong>。<br>
+    ・訪問地はマップにピン表示。タップで<strong>読み物コンテンツ（歴史・見どころ）</strong>を表示。<br>
+    ・旅の最後に、訪問した順の<strong>「旅のしおり」</strong>として自動でまとまる。
+  </div>
+</div>
+
+<p class="section-title">■ モバイル画面（LIFF / LINE）</p>
+
+<div class="grid">
+
+  <!-- SCR-001 Rich Menu -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-001 ｜ LINEリッチメニュー</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="line-header"><span><span class="avatar">O</span>OCEAN VOYAGE</span><span style="font-size:11px;">⋮</span></div>
+      <div class="scroll">
+        <div class="chat">
+          <div class="time">2026年7月8日</div>
+          <div class="bubble-row"><div class="avatar-small">O</div><div class="bubble bot">ご乗船ありがとうございます！寄港地でQRを読み込んで、旅の思い出を集めましょう。下のメニューからどうぞ。</div></div>
+        </div>
+        <div class="rich-menu">
+          <div class="rich-tile"><div class="icon">📷</div>QRスキャン</div>
+          <div class="rich-tile"><div class="icon">🗺️</div>寄港地マップ</div>
+          <div class="rich-tile"><div class="icon">📖</div>旅のしおり</div>
+          <div class="rich-tile"><div class="icon">🏅</div>スタンプ</div>
+          <div class="rich-tile"><div class="icon">📣</div>お知らせ</div>
+          <div class="rich-tile"><div class="icon">❓</div>ヘルプ</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-desc">6項目のリッチメニュー。QRスキャン・マップ・旅のしおりを主要導線に。</div>
+  </div>
+
+  <!-- SCR-002 QR Scan -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-002 ｜ QRスキャン</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="line-header"><span>チェックポイントQRを読み込む</span><span>×</span></div>
+      <div class="qr-view">
+        <div class="qr-tag">● 認識中：浅草チェックポイント</div>
+        <div class="qr-frame"></div>
+        <div class="qr-hint">ツアーガイドが持つQRコード、または<br>寄港地の看板QRを枠内に合わせてください</div>
+      </div>
+    </div>
+    <div class="screen-desc">カメラでチェックポイントQRを読み取り。QRに紐付いた地点を特定（位置情報の許可・GPS取得は不要）。</div>
+  </div>
+
+  <!-- SCR-003 Check-in complete -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-003 ｜ チェックイン完了</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="line-header"><span>チェックイン完了</span><span>×</span></div>
+      <div class="liff" style="padding:0;">
+        <div class="stamp-card">
+          <div class="stamp-badge">⛩️</div>
+          <div class="stamp-place">浅草</div>
+          <div class="stamp-sub">東京都 ｜ 2026/07/08 10:24 訪問</div>
+          <div class="progress-pill">寄港地スタンプ 3 / 8 個 獲得</div>
+        </div>
+        <div style="padding:0 16px 16px;">
+          <button class="btn">この地点の読み物を見る</button>
+          <button class="btn secondary">マップで確認する</button>
+        </div>
+      </div>
+    </div>
+    <div class="screen-desc">読み込むと即チェックイン記録。スタンプ獲得と進捗を表示。地点詳細・マップへ遷移。</div>
+  </div>
+
+  <!-- SCR-004 Map -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-004 ｜ 寄港地マップ（ピン表示）</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="line-header"><span>寄港地マップ</span><span>×</span></div>
+      <div class="map-wrap">
+        <svg class="map-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+          <!-- stylized land masses -->
+          <path d="M40,150 q10,-40 45,-55 q30,-12 40,10 q-5,25 -30,35 q-20,20 -55,20 z" fill="#8bc48a" opacity=".85"/>
+          <text x="55" y="120" font-size="9" fill="#37613a">韓国</text>
+          <path d="M70,230 q5,-25 30,-30 q20,-2 20,15 q-5,20 -25,25 q-20,3 -25,-10 z" fill="#8bc48a" opacity=".85"/>
+          <text x="80" y="228" font-size="9" fill="#37613a">台湾</text>
+          <path d="M150,90 q40,-25 70,10 q30,30 55,90 q10,30 -15,45 q-35,15 -70,-15 q-40,-35 -55,-75 q-8,-45 15,-60 z" fill="#a3d977" opacity=".9"/>
+          <text x="215" y="120" font-size="9" fill="#37613a">日本</text>
+          <!-- route dashed -->
+          <path d="M95,120 L120,235 L205,175 L225,150" fill="none" stroke="#0B3D91" stroke-width="1.5" stroke-dasharray="4 3" opacity=".6"/>
+          <!-- pins: visited (orange) -->
+          <g class="pin"><circle cx="225" cy="150" r="7" fill="#E98B2F" stroke="#fff" stroke-width="2"/><text class="pin-label" x="233" y="150">浅草</text></g>
+          <g class="pin"><circle cx="215" cy="168" r="7" fill="#E98B2F" stroke="#fff" stroke-width="2"/><text class="pin-label" x="223" y="170">ｽｶｲﾂﾘｰ</text></g>
+          <g class="pin"><circle cx="205" cy="175" r="7" fill="#E98B2F" stroke="#fff" stroke-width="2"/><text class="pin-label" x="180" y="192">東京ﾀﾜｰ</text></g>
+          <!-- pins: unvisited (grey) -->
+          <g class="pin"><circle cx="120" cy="235" r="6" fill="#9e9e9e" stroke="#fff" stroke-width="2"/><text class="pin-label" x="96" y="252" fill="#666">基隆(台湾)</text></g>
+          <g class="pin"><circle cx="95" cy="120" r="6" fill="#9e9e9e" stroke="#fff" stroke-width="2"/><text class="pin-label" x="60" y="112" fill="#666">釜山(韓国)</text></g>
+        </svg>
+        <div class="map-legend">
+          <h3>訪問した寄港地</h3>
+          <div class="legend-row"><span><span class="dot visited"></span>浅草・スカイツリー・東京タワー</span><span>訪問済み</span></div>
+          <div class="legend-row"><span><span class="dot unvisited"></span>基隆・釜山</span><span>これから</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-desc">訪問地はオレンジのピン、未訪問はグレー。ピンをタップで地点詳細へ。国内＋台湾・韓国を1枚のマップに。</div>
+  </div>
+
+  <!-- SCR-005 Detail content -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-005 ｜ 地点詳細（読み物コンテンツ）</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="line-header"><span>浅草</span><span>×</span></div>
+      <div class="liff" style="padding:0;">
+        <div class="hero"><div class="region">東京都 台東区</div><div class="place">浅草・雷門</div></div>
+        <div class="content-body">
+          <span class="visited-chip">✓ 2026/07/08 訪問済み</span>
+          <p>浅草は東京を代表する下町エリア。シンボルの雷門をくぐると、仲見世通りの先に都内最古の寺院・浅草寺が構えます。</p>
+          <h3>見どころ</h3>
+          <p>雷門の大提灯、仲見世の食べ歩き、浅草寺本堂と五重塔。人力車から眺める街並みも人気です。</p>
+          <h3>豆知識</h3>
+          <p>雷門の正式名称は「風雷神門」。門の左右には風神・雷神像が納められています。</p>
+        </div>
+      </div>
+    </div>
+    <div class="screen-desc">QR/ピンから遷移。歴史・見どころ・豆知識などの読み物コンテンツを表示。「訪問済み」を明示し思い出として認識。</div>
+  </div>
+
+  <!-- SCR-006 Shiori -->
+  <div class="screen-wrap">
+    <div class="screen-label">SCR-006 ｜ 旅のしおり</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="line-header"><span>旅のしおり</span><span>×</span></div>
+      <div class="liff" style="padding:0;">
+        <div style="padding:14px; background:#0B3D91; color:#fff;">
+          <div style="font-size:16px; font-weight:800;">2026 夏 日本一周クルーズ</div>
+          <div style="font-size:11px; opacity:.85; margin-top:2px;">訪問 3 / 8 か所 ｜ 2026/07/08 〜</div>
+        </div>
+        <div class="shiori-item"><div class="shiori-no">1</div><div class="shiori-thumb"></div><div><div class="shiori-place">浅草</div><div class="shiori-date">東京都 ｜ 07/08 10:24</div></div></div>
+        <div class="shiori-item"><div class="shiori-no">2</div><div class="shiori-thumb"></div><div><div class="shiori-place">東京スカイツリー</div><div class="shiori-date">東京都 ｜ 07/08 13:10</div></div></div>
+        <div class="shiori-item"><div class="shiori-no">3</div><div class="shiori-thumb"></div><div><div class="shiori-place">東京タワー</div><div class="shiori-date">東京都 ｜ 07/08 16:45</div></div></div>
+        <div style="padding:14px;"><button class="btn secondary">しおりを画像で保存・シェア</button></div>
+      </div>
+    </div>
+    <div class="screen-desc">訪問順に自動で並ぶ「旅のしおり」。旅の最後に思い出の記録として振り返り・シェアできる。</div>
+  </div>
+
+</div>
+
+<p class="section-title">■ PC管理画面（運営側）</p>
+
+<div class="screen-wrap" style="max-width:1200px; margin:0 auto 30px;">
+  <div class="screen-label" style="margin-bottom:10px;">SCR-007 ｜ 管理画面 - チェックポイント・QR・読み物コンテンツ管理</div>
+  <div class="pc">
+    <div class="pc-bar"><div class="pc-dot r"></div><div class="pc-dot y"></div><div class="pc-dot g"></div><div class="pc-url">https://admin.cruise-mock.mico.jp/checkpoints</div></div>
+    <div class="pc-body">
+      <h2>チェックポイント管理</h2>
+      <div style="margin-bottom:12px; display:flex; gap:8px;">
+        <input type="text" placeholder="地点名・エリアで検索" style="padding:6px 10px; width:320px; border:1px solid #ccc; border-radius:4px; font-size:13px;">
+        <button class="action-btn">検索</button>
+        <button class="action-btn">＋チェックポイント追加</button>
+        <button class="action-btn">QR一括発行</button>
+      </div>
+      <table>
+        <tr><th>地点名</th><th>エリア</th><th>読み物コンテンツ</th><th>QR</th><th>チェックイン数</th><th>状態</th><th>操作</th></tr>
+        <tr><td>浅草</td><td>東京都</td><td>登録済み</td><td>発行済み</td><td>1,204</td><td><span class="status ok">公開中</span></td><td><button class="action-btn">編集</button><button class="action-btn">QR</button></td></tr>
+        <tr><td>東京スカイツリー</td><td>東京都</td><td>登録済み</td><td>発行済み</td><td>980</td><td><span class="status ok">公開中</span></td><td><button class="action-btn">編集</button><button class="action-btn">QR</button></td></tr>
+        <tr><td>基隆</td><td>台湾</td><td>登録済み</td><td>発行済み</td><td>0</td><td><span class="status pending">公開待ち</span></td><td><button class="action-btn">編集</button><button class="action-btn">QR</button></td></tr>
+        <tr><td>釜山</td><td>韓国</td><td>下書き</td><td>未発行</td><td>0</td><td><span class="status pending">下書き</span></td><td><button class="action-btn">編集</button><button class="action-btn">QR発行</button></td></tr>
+      </table>
+      <p style="font-size:11px; color:#666; margin-top:12px; line-height:1.6;">各チェックポイントに地点情報・読み物コンテンツ（テキスト／画像）を登録し、QRを発行。QR＝地点の紐付けにより、GPSを使わず確実に訪問記録できる。台湾・韓国など海外寄港地も同じ方式で管理。</p>
+    </div>
+  </div>
+  <div class="screen-desc" style="margin-top:10px;">運営がチェックポイント・QR・読み物を管理。チェックイン数の集計も確認可能。</div>
+</div>
+
+<div class="flow-note">
+  <strong>📌 注記：</strong>本モックは v0.1（2026/07/08 初版）です。実画面はOCEAN VOYAGEのブランドガイドラインに合わせて配色・ロゴ・アイコン・マップ表現を調整します。マップは寄港地に応じた表示範囲（国内＋台湾・韓国等）に最適化予定。読み物コンテンツ（各地点の文章・画像）はお客様支給を想定しています。詳細な受け入れ基準・機能要件は要件定義フェーズで確定します。なお社名・ブランド名（OCEAN VOYAGE）は架空のサンプル表記です。
+</div>
+
+</body>
+</html>
