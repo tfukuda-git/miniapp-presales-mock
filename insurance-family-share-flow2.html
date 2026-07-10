@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>家族あんしん共有 — 家族あんしん共有 ミニアプリ デモ（2端末）</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#009d96; --teal-btn:#2fa39a; --teal-soft:#e3f2f0;
+    --bg:#f6f7f9; --field:#f0f1f3; --ink:#1c1c1e; --ink2:#3a3a3c;
+    --muted:#8a8a8e; --line:#ececef; --amber:#e8941f; --amber-soft:#fff6e6;
+    --red:#e0453a; --red-soft:#fdeceb; --blue:#2e6fdb; --blue-soft:#e9f1fd;
+    --brand:#e2548a; --brand-soft:#fcedf3; --line-green:#06c755;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:"Noto Sans JP",system-ui,-apple-system,sans-serif;background:radial-gradient(circle at 50% 20%,#26264a 0%,#15152b 55%,#0d0d1c 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:26px 12px;color:var(--ink);}
+  .stage{display:flex;flex-direction:row;align-items:flex-start;gap:30px;flex-wrap:wrap;justify-content:center;}
+  .device{display:flex;flex-direction:column;align-items:center;gap:12px;}
+  .devlabel{color:#e6e7f0;font-size:13px;font-weight:700;background:rgba(255,255,255,.09);padding:7px 16px;border-radius:20px;}
+  .devlabel small{font-weight:400;color:#aeb0c8;}
+  .caption{color:#aeb0c8;font-size:12.5px;text-align:center;margin-top:20px;max-width:820px;line-height:1.6;}
+  .phone{position:relative;width:378px;height:800px;background:#0a0a0a;border-radius:52px;padding:13px;box-shadow:0 30px 70px rgba(0,0,0,.55),0 0 0 2px #2a2a2e inset;}
+  .screen{position:relative;width:100%;height:100%;background:var(--bg);border-radius:40px;overflow:hidden;display:flex;flex-direction:column;}
+  .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:112px;height:32px;background:#000;border-radius:20px;z-index:50;}
+  .statusbar{height:48px;flex:0 0 48px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-size:14px;font-weight:600;color:#000;z-index:40;}
+  .statusbar .icons{display:flex;gap:6px;align-items:center;}
+  .view{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .view::-webkit-scrollbar{display:none;}
+  .pad{padding:8px 20px 28px;}
+  .h1{font-size:26px;font-weight:700;}
+  .sub{font-size:13px;color:var(--muted);margin-top:2px;}
+  .head-row{display:flex;align-items:flex-start;justify-content:space-between;padding:6px 0 14px;}
+  .card{background:#fff;border-radius:18px;padding:16px;box-shadow:0 1px 3px rgba(20,20,40,.06);margin-bottom:14px;}
+  .ins-top{display:flex;gap:12px;align-items:flex-start;}
+  .ins-ic{flex:0 0 44px;height:44px;border-radius:12px;background:var(--teal-soft);display:flex;align-items:center;justify-content:center;color:var(--teal);}
+  .ins-name{font-size:16px;font-weight:700;line-height:1.35;}
+  .ins-co{font-size:13px;color:var(--teal);margin-top:1px;}
+  .ins-kebab{margin-left:auto;color:#b5b5bb;background:none;border:none;cursor:pointer;padding:4px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+  .field{background:var(--field);border-radius:12px;padding:10px 12px;}
+  .field .lbl{font-size:11px;color:var(--muted);}
+  .field .val{font-size:15px;font-weight:500;margin-top:2px;color:var(--ink);}
+  .field.full{margin-top:10px;display:flex;align-items:center;justify-content:space-between;}
+  .callbtn{flex:0 0 40px;height:40px;border-radius:50%;background:#e6e7ea;display:flex;align-items:center;justify-content:center;color:#6a6a70;border:none;cursor:pointer;}
+  .callbtn.tealc{background:var(--teal);color:#fff;} .callbtn.greenc{background:#1a9c45;color:#fff;}
+  .share-row{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:6px;}
+  .share-row .lab{font-size:15px;font-weight:500;}
+  .tg{width:52px;height:31px;border-radius:18px;background:#d7d8dc;position:relative;cursor:pointer;transition:background .2s;flex:0 0 52px;}
+  .tg.on{background:var(--teal);}
+  .tg::after{content:"";position:absolute;top:3px;left:3px;width:25px;height:25px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s;}
+  .tg.on::after{transform:translateX(21px);}
+  .btn{border:none;border-radius:14px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;padding:14px 16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;}
+  .btn-primary{background:var(--teal-btn);color:#fff;} .btn-brand{background:var(--brand);color:#fff;}
+  .btn-ghost{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(20,20,40,.08);}
+  .btn-add{background:var(--teal-btn);color:#fff;border-radius:22px;padding:11px 18px;font-size:14px;font-weight:700;}
+  .btn-block{width:100%;}
+  .seg{display:flex;background:#e9eaed;border-radius:14px;padding:5px;margin:6px 0 16px;}
+  .seg button{flex:1;border:none;background:transparent;font-family:inherit;font-size:14px;font-weight:600;color:var(--muted);padding:9px 0;border-radius:10px;cursor:pointer;}
+  .seg button.act{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.1);}
+  .banner{background:#e8f4f3;border-radius:14px;padding:12px 14px;margin-bottom:12px;}
+  .banner .t{font-size:14px;font-weight:700;color:var(--teal);} .banner .d{font-size:12px;color:#5a7a78;margin-top:2px;}
+  .note{font-size:12px;color:var(--muted);line-height:1.6;background:var(--field);border-radius:10px;padding:10px 12px;margin-bottom:12px;}
+  .section-label{font-size:13px;color:var(--muted);margin:14px 2px 8px;display:flex;align-items:center;gap:6px;}
+  .section-label.amber{color:var(--amber);font-weight:600;}
+  .row{background:#fff;border-radius:16px;padding:14px;display:flex;align-items:center;gap:13px;box-shadow:0 1px 3px rgba(20,20,40,.06);margin-bottom:12px;cursor:pointer;}
+  .row.pending{border:1.5px solid #f4d58a;background:#fffdf8;}
+  .avatar{flex:0 0 46px;height:46px;border-radius:50%;background:#cfd3da;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:17px;}
+  .row .nm{font-size:16px;font-weight:700;} .row .st{font-size:13px;color:var(--teal);margin-top:1px;}
+  .row .st.amber{color:var(--amber);font-weight:600;} .row .st.muted{color:var(--muted);}
+  .row .chev{margin-left:auto;color:#c2c2c8;}
+  .row .kebab{margin-left:auto;color:#b5b5bb;background:none;border:none;cursor:pointer;padding:6px;}
+  .row .addbtn{margin-left:auto;background:var(--teal-btn);color:#fff;border:none;border-radius:16px;font-family:inherit;font-weight:700;font-size:13px;padding:8px 16px;cursor:pointer;}
+  .backbar{padding:6px 0 12px;}
+  .back{display:inline-flex;align-items:center;gap:7px;background:#fff;border:none;border-radius:22px;padding:9px 16px;font-family:inherit;font-size:14px;font-weight:600;color:var(--teal);box-shadow:0 1px 3px rgba(20,20,40,.08);cursor:pointer;}
+  .steps{display:flex;gap:8px;margin:6px 0 4px;} .steps .bar{flex:1;height:4px;border-radius:3px;background:#dfe1e5;} .steps .bar.on{background:var(--teal);}
+  .steplabels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:18px;padding:0 6px;} .steplabels .on{color:var(--teal);font-weight:600;}
+  .center-title{text-align:center;margin-bottom:4px;} .center-title h2{font-size:21px;font-weight:700;} .center-title p{font-size:13px;color:var(--muted);margin-top:6px;}
+  .camera{background:#16161f;border-radius:18px;height:210px;margin:16px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#6a6a78;position:relative;}
+  .camera .frame{position:absolute;inset:24px;border-radius:12px;border:2px solid rgba(255,255,255,.35);}
+  .camera .corner{position:absolute;width:26px;height:26px;border:3px solid #fff;border-radius:4px;} .camera small{font-size:12px;margin-top:12px;}
+  .ok-banner{background:#eaf7ee;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:8px;color:#1f8a43;font-size:13px;font-weight:600;margin-bottom:14px;}
+  .res-row{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line);} .res-row:last-child{border-bottom:none;}
+  .res-ic{flex:0 0 38px;height:38px;border-radius:10px;background:var(--teal-soft);display:flex;align-items:center;justify-content:center;color:var(--teal);}
+  .res-row .lbl{font-size:12px;color:var(--muted);} .res-row .val{font-size:15px;font-weight:500;margin-top:2px;}
+  .form-field{background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin-bottom:11px;}
+  .form-field .lbl{font-size:11px;color:var(--muted);} .form-field input{border:none;outline:none;font-family:inherit;font-size:15px;width:100%;margin-top:3px;color:var(--ink);background:transparent;}
+  .consent-box{border-radius:14px;padding:16px;margin-bottom:14px;} .consent-box.blue{background:var(--blue-soft);} .consent-box.brandc{background:var(--brand-soft);}
+  .consent-box .ct{font-size:14px;font-weight:700;margin-bottom:8px;} .consent-box.blue .ct{color:var(--blue);} .consent-box.brandc .ct{color:var(--brand);}
+  .consent-box li{list-style:none;font-size:13px;line-height:1.7;} .consent-box.blue li{color:#2f5aa8;} .consent-box.brandc li{color:#b03a6b;}
+  .check-row{display:flex;gap:12px;align-items:flex-start;background:var(--field);border-radius:12px;padding:14px;margin-bottom:12px;cursor:pointer;}
+  .cb{flex:0 0 22px;height:22px;border-radius:6px;border:2px solid #c2c2c8;background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;margin-top:1px;} .cb.on{background:var(--teal);border-color:var(--teal);}
+  .check-row .ctxt{font-size:13.5px;line-height:1.5;}
+  .profile{background:#fff;border-radius:18px;padding:16px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 3px rgba(20,20,40,.06);margin-bottom:8px;}
+  .profile .av{flex:0 0 52px;height:52px;border-radius:50%;background:var(--teal-soft);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;}
+  .profile .nm{font-size:18px;font-weight:700;} .profile .meta{font-size:13px;color:var(--muted);margin-top:2px;}
+  .set-group{margin-top:18px;} .set-group .gl{font-size:13px;color:var(--muted);margin:0 4px 8px;}
+  .set-list{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(20,20,40,.06);}
+  .set-item{display:flex;align-items:center;gap:13px;padding:15px 16px;border-bottom:1px solid var(--line);cursor:pointer;} .set-item:last-child{border-bottom:none;}
+  .set-ic{flex:0 0 30px;height:30px;border-radius:8px;background:var(--teal-soft);display:flex;align-items:center;justify-content:center;color:var(--teal);}
+  .set-item .lab{font-size:15px;font-weight:500;} .set-item .rt{margin-left:auto;display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;} .set-item.logout .lab{color:var(--red);}
+  .ver{text-align:center;font-size:12px;color:var(--muted);margin-top:24px;line-height:1.7;}
+  .emg{background:var(--red-soft);border-radius:18px;padding:16px;margin-bottom:18px;} .emg .et{display:flex;align-items:center;gap:8px;color:var(--red);font-weight:700;font-size:15px;} .emg .ed{font-size:13px;color:#b5564e;margin:6px 0 12px;}
+  .emg-card{background:#fff;border-radius:13px;padding:12px;display:flex;align-items:center;gap:12px;margin-bottom:10px;} .emg-card:last-child{margin-bottom:0;}
+  .emg-ic{flex:0 0 38px;height:38px;border-radius:10px;background:var(--field);display:flex;align-items:center;justify-content:center;color:var(--teal);}
+  .emg-card .lbl{font-size:12px;color:var(--muted);} .emg-card .val{font-size:15px;font-weight:600;margin-top:1px;} .emg-card .callbtn{margin-left:auto;}
+  .person-head{display:flex;align-items:center;gap:14px;margin:4px 0 18px;} .person-head .av{flex:0 0 56px;height:56px;border-radius:50%;background:#cfd3da;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;} .person-head .nm{font-size:21px;font-weight:700;}
+  .brandbar{display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:11px 14px;margin-bottom:14px;box-shadow:0 1px 3px rgba(20,20,40,.06);border-left:4px solid var(--brand);}
+  .brandbar .bmark{flex:0 0 30px;height:30px;border-radius:8px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;} .brandbar .bl{font-size:14px;font-weight:700;color:var(--brand);} .brandbar .bs{font-size:11px;color:var(--muted);margin-top:1px;}
+  .approve-head{text-align:center;padding:8px 0 6px;} .approve-head .av{width:84px;height:84px;border-radius:50%;background:#cfd3da;color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;margin:0 auto 12px;} .approve-head .nm{font-size:21px;font-weight:700;}
+  .pill{display:inline-flex;align-items:center;gap:6px;background:var(--amber-soft);color:var(--amber);font-size:13px;font-weight:600;padding:5px 12px;border-radius:16px;margin-top:8px;}
+  .approve-card .at{font-size:17px;font-weight:700;margin-bottom:8px;} .approve-card .ad{font-size:14px;color:var(--ink2);line-height:1.6;margin-bottom:16px;}
+  .approve-actions{display:flex;gap:12px;} .approve-actions .btn{flex:1;}
+  .sub-label{font-size:17px;font-weight:700;margin:4px 2px 12px;}
+  .tabbar{flex:0 0 68px;background:#fff;border-top:1px solid var(--line);display:flex;padding-bottom:10px;}
+  .tabbar button{flex:1;border:none;background:none;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;padding-top:11px;color:#b3b3b8;cursor:pointer;font-size:11px;font-weight:600;} .tabbar button.act{color:var(--teal);}
+  .toast{position:absolute;bottom:88px;left:50%;transform:translateX(-50%) translateY(20px);background:#1c1c1e;color:#fff;font-size:13px;padding:11px 18px;border-radius:22px;opacity:0;transition:all .25s;z-index:60;max-width:300px;text-align:center;line-height:1.5;pointer-events:none;} .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .fade{animation:fade .25s ease;} @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .linehead{background:var(--line-green);color:#fff;display:flex;align-items:center;gap:11px;padding:0 16px;height:50px;flex:0 0 50px;font-weight:700;font-size:15px;}
+  .linehead .lav{flex:0 0 30px;height:30px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--brand);}
+  .linechat{flex:1;overflow-y:auto;background:#93b0d3;padding:16px 14px 22px;} .linechat::-webkit-scrollbar{display:none;}
+  .daystamp{text-align:center;margin:2px 0 14px;} .daystamp span{background:rgba(0,0,0,.16);color:#fff;font-size:11px;padding:3px 12px;border-radius:12px;}
+  .msg{display:flex;gap:8px;margin-bottom:14px;align-items:flex-start;} .msg .mic{flex:0 0 34px;height:34px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--brand);}
+  .msg .wrap{max-width:80%;} .msg .who{font-size:11px;color:#f2f6fb;margin-bottom:4px;}
+  .bubble{background:#fff;border-radius:4px 16px 16px 16px;padding:11px 13px;font-size:13px;line-height:1.65;color:#1c1c1e;box-shadow:0 1px 1px rgba(0,0,0,.08);}
+  .msg.out{flex-direction:row-reverse;} .msg.out .wrap{display:flex;flex-direction:column;align-items:flex-end;}
+  .bubble.me{background:#8de055;border-radius:16px 4px 16px 16px;}
+  .linkcard2{background:#fff;border-radius:14px;overflow:hidden;margin-top:9px;box-shadow:0 1px 3px rgba(0,0,0,.14);}
+  .linkcard2 .lc-top{background:var(--brand-soft);color:var(--brand);padding:13px 14px;font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:8px;}
+  .linkcard2 .lc-d{padding:11px 14px;font-size:12px;color:var(--ink2);line-height:1.6;}
+  .linkcard2 .lc-btn{border-top:1px solid var(--line);padding:12px;text-align:center;color:var(--brand);font-weight:700;font-size:14px;cursor:pointer;}
+  .addfriend{flex:1;background:#fff;display:flex;flex-direction:column;align-items:center;padding:44px 26px;text-align:center;}
+  .addfriend .oav{width:86px;height:86px;border-radius:24px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;}
+  .addfriend .onm{font-size:20px;font-weight:700;margin-top:16px;} .addfriend .oid{font-size:12px;color:var(--muted);margin-top:3px;}
+  .addfriend .odesc{font-size:13px;color:var(--ink2);margin-top:14px;line-height:1.7;}
+  .addfriend .abtn{margin-top:28px;width:100%;background:var(--line-green);color:#fff;border:none;border-radius:14px;font-family:inherit;font-weight:700;font-size:16px;padding:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .richmenu{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:#dcdee2;border-top:1px solid #cfd1d6;}
+  .richmenu .rt{background:#fff;padding:15px 6px 12px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;color:var(--muted);font-size:11px;font-weight:600;text-align:center;line-height:1.3;}
+  .richmenu .rt.main{background:var(--brand-soft);color:var(--brand);}
+  .richmenu .rt svg{width:22px;height:22px;}
+  .rmbar{background:var(--line-green);color:#fff;font-size:11px;font-weight:600;text-align:center;padding:6px;}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="device">
+    <div class="devlabel">契約者 <small>田中 太郎さん</small></div>
+    <div class="phone"><div class="island"></div>
+      <div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="icons"><svg width="18" height="12" viewBox="0 0 18 12"><g fill="#000"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4" width="3" height="8" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></g></svg><svg width="26" height="13" viewBox="0 0 26 13"><rect x="1" y="1" width="21" height="11" rx="3" fill="none" stroke="#000" stroke-opacity=".4"/><rect x="3" y="3" width="16" height="7" rx="1.5" fill="#000"/></svg></span></div>
+        <div class="view" id="view"><div class="pad" id="content"></div></div>
+        <div class="toast" id="toast"></div>
+        <div class="tabbar" id="tabbar"></div>
+      </div>
+    </div>
+  </div>
+  <div class="device">
+    <div class="devlabel">ご家族 <small>佐藤 美咲さん（受け取る側）</small></div>
+    <div class="phone"><div class="island"></div><div class="screen" id="screenB"></div></div>
+  </div>
+</div>
+<div class="caption">家族あんしん共有サービス ／ 保険会社向け LINEミニアプリ ・ 社名/商品名はすべて架空です<br>左：契約者が「共有相手を追加」→ 右：ご家族のLINEに通知 → 友だち追加 → ミニアプリで承認申請、まで体験できます</div>
+
+<script>
+var CUST="あおば生命",COMP="みなと生命",OWNER="田中 太郎",FAM="佐藤 美咲";
+var myInsurances=[
+  {name:"あおば医療（医療保険）",co:CUST,no:"HN-2024-0831",fee:"¥8,500",agent:"田中 誠",tel:"090-1234-5678",shared:true},
+  {name:"あおばがん（がん保険）",co:CUST,no:"HN-2023-1205",fee:"¥4,200",agent:"田中 誠",tel:"090-1234-5678",shared:true},
+  {name:"まもり（死亡保険）",co:COMP,no:"DL-2021-7842",fee:"¥12,800",agent:"佐藤 雅人",tel:"090-9876-5432",shared:true},
+  {name:"メディカルプラス（医療保険）",co:COMP,no:"DL-2022-3156",fee:"¥6,300",agent:"佐藤 雅人",tel:"090-9876-5432",shared:false}];
+var members=[{name:"田中 花子",count:1,init:"花"},{name:"田中 健一",count:2,init:"健"},{name:"田中 節子",count:1,init:"節"}];
+var friends=["田中 花子","田中 一郎","田中 健一","佐藤 美咲"];
+var memberDetail={name:"田中 花子",init:"花",emergency:[{lbl:"保険会社の担当者",val:"田中 誠",green:false},{lbl:CUST,val:"0120-000-000",green:true}],insurances:[{name:"あおば医療（医療保険）",co:CUST,no:"HN-2022-0310",fee:"¥7,200",agent:"田中 誠",tel:"090-1234-5678"}]};
+var ocrResult=[{lbl:"保険会社",val:CUST},{lbl:"保険種類",val:"あおば収入保障（収入保障保険）"},{lbl:"証券番号",val:"HN-2025-0226"},{lbl:"月額保険料",val:"¥6,800"},{lbl:"契約者名",val:OWNER},{lbl:"担当者名",val:"佐藤 美咲"},{lbl:"担当者連絡先",val:"090-9876-5432"}];
+var I={
+  shield:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6l7-3z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>',
+  people:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M16 6.5a3 3 0 010 5.5M17 19c0-2.4-1.3-4.2-3-4.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
+  gear:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M12 2.5v2M12 19.5v2M21.5 12h-2M4.5 12h-2M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4M18.7 18.7l-1.4-1.4M6.7 6.7L5.3 5.3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
+  phone:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M6.5 3h3l1.5 4-2 1.5a12 12 0 005 5l1.5-2 4 1.5v3c0 1-.8 1.8-1.8 1.7C11 20.5 3.5 13 3 6.3 2.9 5.3 3.7 4.5 4.7 4.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>',
+  doc:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l4 4v14H7z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  card:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.6"/></svg>',
+  person:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.2" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 19c0-3.3 2.9-5.5 6.5-5.5s6.5 2.2 6.5 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  chev:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  kebab:'<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>',
+  plus:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  back:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  check:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  clock:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
+  bell:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 19a2 2 0 004 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  lock:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V7a4 4 0 018 0v3" stroke="currentColor" stroke-width="1.6"/></svg>',
+  link:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="6" y="3" width="12" height="18" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 18h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  help:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M9.5 9.5a2.5 2.5 0 114 2c-1 .8-1.5 1.3-1.5 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>',
+  alert:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1" fill="currentColor"/></svg>',
+  camera:'<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="18" height="13" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="13.5" r="3.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 7l1.5-2h5L16 7" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+  upload:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 16V5M8 9l4-4 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 19h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  pencil:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 20h4l10-10-4-4L4 16v4z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>',
+  trash:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  keyboard:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M7 10h.01M11 10h.01M15 10h.01M8 14h8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>'
+};
+var SB='<div class="statusbar"><span>9:41</span><span class="icons"><svg width="18" height="12" viewBox="0 0 18 12"><g fill="#000"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4" width="3" height="8" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></g></svg><svg width="26" height="13" viewBox="0 0 26 13"><rect x="1" y="1" width="21" height="11" rx="3" fill="none" stroke="#000" stroke-opacity=".4"/><rect x="3" y="3" width="16" height="7" rx="1.5" fill="#000"/></svg></span></div>';
+
+var state={tab:"home",famTab:"by",page:null,addStep:0,addMode:"camera",c1:false,c2:false,editIdx:0};
+var famB={step:"line",notified:false,mtab:"family",mfamTab:"with",mpage:null};
+var sakiPending=false;
+var sharedMembers=[["田中 花子","花"],["田中 一郎","郎"]];
+
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
+function toast(msg){toastAt("toast",msg);}
+function toastB(msg){toastAt("toastB",msg);}
+function toastAt(id,msg){var t=document.getElementById(id);if(!t)return;t.innerHTML=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("show");},2600);}
+function brandbar(sub){return '<div class="brandbar"><div class="bmark">'+I.shield+'</div><div><div class="bl">'+CUST+'</div><div class="bs">'+sub+'</div></div></div>';}
+/* data-act helper */
+function A(act,v){return 'data-act="'+act+'"'+(v!=null?' data-v="'+esc(v)+'"':'');}
+
+/* ===== 契約者 端末 ===== */
+function insCard(ins,idx){
+  return '<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div>'
+    +'<div style="flex:1"><div class="ins-name">'+esc(ins.name)+'</div><div class="ins-co">'+esc(ins.co)+'</div></div>'
+    +'<button class="ins-kebab" '+A("openEdit",idx)+'>'+I.kebab+'</button></div>'
+    +'<div class="grid2"><div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(ins.no)+'</div></div>'
+    +'<div class="field"><div class="lbl">月額</div><div class="val">'+esc(ins.fee)+'</div></div></div>'
+    +'<div class="field full"><div><div class="lbl">担当者</div><div class="val">'+esc(ins.agent)+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(ins.tel)+'</span></div></div>'
+    +'<button class="callbtn" '+A("toast","発信: "+ins.tel)+'>'+I.phone+'</button></div>'
+    +'<div class="share-row"><span class="lab">保険の共有</span><div class="tg'+(ins.shared?' on':'')+'" '+A("toggleShare",idx)+'></div></div></div>';
+}
+function screenHome(){
+  return '<div class="head-row"><div><div class="h1">マイ保険</div><div class="sub">'+myInsurances.length+'件の保険を管理中</div></div>'
+    +'<button class="btn-add" '+A("go","add")+'>'+I.plus+' 保険を追加</button></div>'
+    +'<div class="note">保険情報の追加・編集・削除は契約者ご本人のみ行えます（右上「⋮」）。共有された家族は閲覧のみ可能です。</div>'
+    +myInsurances.map(insCard).join("");
+}
+function screenFamily(){
+  var seg='<div class="seg"><button class="'+(state.famTab=="by"?"act":"")+'" '+A("setFam","by")+'>共有している</button>'
+    +'<button class="'+(state.famTab=="with"?"act":"")+'" '+A("setFam","with")+'>共有されている</button></div>';
+  var body="";
+  if(state.famTab=="by"){
+    body+='<div class="banner"><div class="t">3件の保険を共有中</div><div class="d">マイ保険タブで共有のオン・オフを切り替えられます</div></div>';
+    body+='<div class="row" style="background:var(--brand-soft)" '+A("go","invite")+'><div class="avatar" style="background:var(--brand)">'+I.plus+'</div>'
+      +'<div><div class="nm" style="color:var(--brand)">共有相手を追加</div><div class="st" style="color:#b03a6b">LINEの友だちから選択</div></div><span class="chev">'+I.chev+'</span></div>';
+    if(sakiPending){
+      body+='<div class="section-label amber">'+I.clock+' 承認待ち</div>';
+      body+='<div class="row pending" '+A("go","approve")+'><div class="avatar" style="background:#c9a25a">咲</div>'
+        +'<div><div class="nm">'+FAM+'</div><div class="st amber">承認してください</div></div><span class="chev">'+I.chev+'</span></div>';
+    }
+    body+='<div class="section-label">共有中</div>';
+    body+=sharedMembers.map(function(a){
+      return '<div class="row" '+A("toast","共有設定を表示")+'><div class="avatar">'+a[1]+'</div>'
+      +'<div><div class="nm">'+a[0]+'</div><div class="st">共有中</div></div>'
+      +'<button class="kebab" '+A("removeShare",a[0])+'>'+I.kebab+'</button></div>';}).join("");
+  } else {
+    body+='<div class="note">あなたが契約者になった場合も、「共有している」情報と「共有されている」情報の両方をここで確認できます。</div>';
+    body+=members.map(function(m){return '<div class="row" '+A("go","member")+'><div class="avatar">'+m.init+'</div>'
+      +'<div><div class="nm">'+m.name+'</div><div class="st muted">'+m.count+'件の保険</div></div><span class="chev">'+I.chev+'</span></div>';}).join("");
+  }
+  return '<div class="head-row"><div class="h1">共有相手</div></div>'+seg+body;
+}
+function screenSettings(){
+  function item(ic,lab,right){return '<div class="set-item" '+A("toast",lab)+'><div class="set-ic">'+ic+'</div><div class="lab">'+lab+'</div><div class="rt">'+(right?right:"")+I.chev+'</div></div>';}
+  return '<div class="head-row"><div class="h1">設定</div></div>'
+    +'<div class="profile"><div class="av">太</div><div><div class="nm">'+OWNER+'</div><div class="meta">契約者 ・ LINE連携済み</div></div></div>'
+    +'<div class="set-group"><div class="set-list">'+item(I.person,"プロフィール",OWNER)+item(I.help,"アプリの使い方","")+item(I.doc,"プライバシーポリシー","")+'</div></div>'
+    +'<div class="ver">家族あんしん共有 v1.0.0<br>'+CUST+'保険株式会社</div>';
+}
+function formField(lbl,ph){return '<div class="form-field"><div class="lbl">'+lbl+'</div><input type="text" placeholder="'+ph+'"></div>';}
+function formFieldVal(lbl,val){return '<div class="form-field"><div class="lbl">'+lbl+'</div><input type="text" value="'+esc(val)+'"></div>';}
+function screenAdd(){
+  var s=state.addStep;
+  var steps='<div class="steps"><div class="bar on"></div><div class="bar'+(s>=1?' on':'')+'"></div><div class="bar'+(s>=2?' on':'')+'"></div></div>'
+    +'<div class="steplabels"><span class="'+(s==0?'on':'')+'">登録</span><span class="'+(s==1?'on':'')+'">確認</span><span class="'+(s==2?'on':'')+'">同意</span></div>';
+  var bar='<div class="backbar"><button class="back" '+A("addBack")+'>'+I.back+' '+(s==0?"マイ保険に戻る":"戻る")+'</button></div>';
+  var body="";
+  if(s==0&&state.addMode=="camera"){
+    body='<div class="center-title"><h2>保険証券を登録する</h2><p>証券・名刺を撮影するか、手動で入力できます</p></div>'
+      +'<div class="camera"><div class="frame"></div><div class="corner" style="top:14px;left:14px;border-right:none;border-bottom:none"></div><div class="corner" style="top:14px;right:14px;border-left:none;border-bottom:none"></div><div class="corner" style="bottom:14px;left:14px;border-right:none;border-top:none"></div><div class="corner" style="bottom:14px;right:14px;border-left:none;border-top:none"></div>'+I.camera+'<small>枠内に証券を合わせてください</small></div>'
+      +'<div style="display:flex;gap:10px;margin-bottom:10px"><button class="btn btn-primary" style="flex:1.2" '+A("setStep","1")+'>'+I.camera.replace('width="40" height="40"','width="18" height="18"')+' 撮影する</button>'
+      +'<button class="btn btn-ghost" style="flex:1" '+A("setStep","1")+'>'+I.upload+' アルバム</button></div>'
+      +'<button class="btn btn-ghost btn-block" '+A("setMode","manual")+'>'+I.keyboard+' 手動で入力する</button>';
+  } else if(s==0&&state.addMode=="manual"){
+    body='<div class="center-title"><h2>保険情報を入力する</h2><p>証券を見ながら手入力で登録できます</p></div>'
+      +formField("保険会社","例）あおば生命")+formField("保険種類","例）あおば医療（医療保険）")+formField("証券番号","例）HN-2025-0226")+formField("月額保険料","例）¥6,800")+formField("担当者名","例）佐藤 美咲")+formField("担当者連絡先","例）090-0000-0000")
+      +'<button class="btn btn-primary btn-block" style="margin-top:4px" '+A("setStep","1")+'>入力内容を確認する</button>'
+      +'<button class="btn btn-ghost btn-block" style="margin-top:10px" '+A("setMode","camera")+'>撮影で登録に戻る</button>';
+  } else if(s==1){
+    var rows=ocrResult.map(function(r){var ic=r.lbl=="契約者名"||r.lbl=="担当者名"?I.person:(r.lbl=="証券番号"||r.lbl=="月額保険料"?I.card:I.doc);
+      return '<div class="res-row"><div class="res-ic">'+ic+'</div><div><div class="lbl">'+r.lbl+'</div><div class="val">'+esc(r.val)+'</div></div></div>';}).join("");
+    body='<div class="center-title"><h2>登録内容を確認</h2><p>内容に誤りがあれば修正してください</p></div>'
+      +(state.addMode=="camera"?'<div class="ok-banner">'+I.check+' OCRで自動読み取りが完了しました</div>':'')
+      +'<div class="card" style="padding:4px 16px">'+rows+'</div><button class="btn btn-primary btn-block" '+A("setStep","2")+'>この内容で次へ進む</button>';
+  } else {
+    body='<div class="center-title"><h2>情報の取扱いへの同意</h2><p>登録には以下2点の同意が必要です</p></div>'
+      +'<div class="consent-box blue"><div class="ct">① ご家族（第三者）への情報提供</div><ul><li>・保険会社名・保険種類 / 証券番号 / 月額保険料 / 担当者名・連絡先</li><li>・共有先はご自身が選んだご家族のみ。承認制でいつでも停止できます</li></ul></div>'
+      +'<div class="check-row" '+A("toggleC","1")+'><div class="cb'+(state.c1?' on':'')+'">'+(state.c1?I.check:"")+'</div><div class="ctxt">ご家族への情報共有（第三者提供）に同意します</div></div>'
+      +'<div class="consent-box brandc"><div class="ct">② '+CUST+'への情報提供</div><ul><li>・本サービスの提供・運営のため、登録情報を'+CUST+'に提供することへの同意</li><li>・同意文言は'+CUST+'の法務確認済みのものを表示します（本デモは仮）</li></ul></div>'
+      +'<div class="check-row" '+A("toggleC","2")+'><div class="cb'+(state.c2?' on':'')+'">'+(state.c2?I.check:"")+'</div><div class="ctxt">'+CUST+'への情報提供に同意します</div></div>'
+      +'<button class="btn btn-primary btn-block" style="opacity:'+((state.c1&&state.c2)?1:.45)+'" '+A("registerDone")+'>同意して保険を登録する</button>';
+  }
+  return bar+steps+body;
+}
+function screenEdit(){
+  var ins=myInsurances[state.editIdx];
+  return '<div class="backbar"><button class="back" '+A("go","")+'>'+I.back+' マイ保険に戻る</button></div>'
+    +'<div class="head-row"><div class="h1" style="font-size:22px">保険情報の編集</div></div>'
+    +'<div class="note">編集・削除できるのは契約者ご本人のみです。変更・削除を行っても、共有先のご家族に通知は送られません。</div>'
+    +formFieldVal("保険会社",ins.co)+formFieldVal("保険種類",ins.name)+formFieldVal("証券番号",ins.no)+formFieldVal("月額保険料",ins.fee)+formFieldVal("担当者名",ins.agent)+formFieldVal("担当者連絡先",ins.tel)
+    +'<button class="btn btn-primary btn-block" style="margin-top:4px" '+A("saveEdit")+'>'+I.pencil+' 変更を保存</button>'
+    +'<button class="btn btn-block" style="margin-top:12px;background:var(--red-soft);color:var(--red)" '+A("deleteIns")+'>'+I.trash+' この保険を削除</button>';
+}
+function screenInvite(){
+  var list=friends.map(function(n){var init=n.replace(/\s/g,"").slice(-2,-1);
+    return '<div class="row" style="cursor:default"><div class="avatar" style="background:#cfd3da">'+init+'</div>'
+      +'<div><div class="nm">'+n+'</div><div class="st muted">LINE友だち</div></div>'
+      +'<button class="addbtn" '+A("inviteSend",n)+'>追加</button></div>';}).join("");
+  return '<div class="backbar"><button class="back" '+A("goTab","family")+'>'+I.back+' 共有相手に戻る</button></div>'
+    +'<div class="head-row"><div class="h1" style="font-size:22px">共有相手を追加</div></div>'
+    +'<div class="note">LINEの友だちから共有相手を選びます。<b>追加すると相手にLINEで通知が届きます。</b>（その後の修正・削除では通知は送られません）<br>※「'+FAM+'さん」を追加すると、右の端末に通知が届きます。</div>'
+    +'<div class="section-label">LINEの友だち</div>'+list;
+}
+function screenApprove(){
+  return '<div class="backbar"><button class="back" '+A("go","")+'>'+I.back+' 共有相手に戻る</button></div>'
+    +brandbar("共有サービス ・ 承認画面")
+    +'<div class="approve-head"><div class="av" style="background:#c9a25a">咲</div><div class="nm">'+FAM+'さん</div><div class="pill">'+I.clock+' 承認待ち</div></div>'
+    +'<div class="card approve-card" style="margin-top:16px"><div class="at">共有の承認</div>'
+    +'<div class="ad">'+FAM+'さんから、あなたの保険情報の共有申請が届いています。承認すると、マイ保険で共有をオンにした保険情報が共有されます。</div>'
+    +'<div class="approve-actions"><button class="btn btn-ghost" '+A("afterApprove","ng")+'>拒否する</button><button class="btn btn-brand" '+A("afterApprove","ok")+'>承認する</button></div></div>';
+}
+function screenMember(){
+  var m=memberDetail;
+  var emg=m.emergency.map(function(e){return '<div class="emg-card"><div class="emg-ic">'+(e.green?I.shield:I.person)+'</div><div><div class="lbl">'+esc(e.lbl)+'</div><div class="val">'+esc(e.val)+'</div></div><button class="callbtn '+(e.green?'greenc':'tealc')+'" '+A("toast","発信")+'>'+I.phone+'</button></div>';}).join("");
+  var ins=m.insurances.map(function(x){return '<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div><div><div class="ins-name">'+esc(x.name)+'</div><div class="ins-co">'+esc(x.co)+'</div></div></div>'
+    +'<div class="grid2"><div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(x.no)+'</div></div><div class="field"><div class="lbl">月額</div><div class="val">'+esc(x.fee)+'</div></div></div>'
+    +'<div class="field full"><div><div class="lbl">担当者</div><div class="val">'+esc(x.agent)+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn" '+A("toast","発信")+'>'+I.phone+'</button></div></div>';}).join("");
+  return '<div class="backbar"><button class="back" '+A("go","")+'>'+I.back+' 共有相手に戻る</button></div>'
+    +'<div class="person-head"><div class="av">'+m.init+'</div><div class="nm">'+m.name+'さん</div></div>'
+    +'<div class="emg"><div class="et">'+I.alert+' 緊急連絡先</div><div class="ed">'+m.name+'さんに万一の際はこちらへ</div>'+emg+'</div>'
+    +'<div class="note">共有された情報は閲覧のみ可能です（編集・削除はできません）。</div>'
+    +'<div class="sub-label">'+m.name+'さんの保険</div>'+ins;
+}
+function tabbar(){
+  var tabs=[["home","マイ保険",I.shield],["family","共有相手",I.people],["settings","設定",I.gear]];
+  document.getElementById("tabbar").innerHTML=tabs.map(function(t){return '<button class="'+(state.tab==t[0]&&!state.page?"act":"")+'" '+A("goTab",t[0])+'>'+t[2]+'<span>'+t[1]+'</span></button>';}).join("");
+}
+function render(){
+  var c=document.getElementById("content");var html;
+  if(state.page=="add")html=screenAdd();else if(state.page=="edit")html=screenEdit();else if(state.page=="invite")html=screenInvite();
+  else if(state.page=="approve")html=screenApprove();else if(state.page=="member")html=screenMember();
+  else if(state.tab=="home")html=screenHome();else if(state.tab=="family")html=screenFamily();else html=screenSettings();
+  c.className="pad fade";c.innerHTML=html;document.getElementById("view").scrollTop=0;
+  void c.offsetWidth;c.classList.remove("fade");void c.offsetWidth;c.classList.add("fade");tabbar();
+}
+function goTab(t){state.tab=t;state.page=null;render();}
+function go(p){state.page=p||null;if(p=="add"){state.addStep=0;state.addMode="camera";state.c1=false;state.c2=false;}render();}
+function openEdit(i){state.editIdx=i;state.page="edit";render();}
+function setFam(f){state.famTab=f;render();}
+function toggleShare(i){myInsurances[i].shared=!myInsurances[i].shared;toast(myInsurances[i].shared?"共有をオンにしました":"共有をオフにしました");render();}
+function setStep(s){state.addStep=s;render();}
+function setMode(m){state.addMode=m;state.addStep=0;render();}
+function addBack(){if(state.addStep>0){state.addStep--;render();}else if(state.addMode=="manual"){setMode("camera");}else{go(null);}}
+function toggleC(n){if(n==1)state.c1=!state.c1;else state.c2=!state.c2;render();}
+function registerDone(){if(!(state.c1&&state.c2)){toast("2つの同意が必要です");return;}toast("保険を登録しました");setTimeout(function(){goTab("home");},900);}
+function saveEdit(){toast("変更を保存しました（家族には通知されません）");setTimeout(function(){goTab("home");},1000);}
+function deleteIns(){myInsurances.splice(state.editIdx,1);toast("保険を削除しました（家族には通知されません）");setTimeout(function(){goTab("home");},1000);}
+function afterApprove(v){sakiPending=false;if(v=="ok"){sharedMembers.push([FAM,"咲"]);toast("共有を承認しました");famB.step="official";renderB();toastB("あおば生命 から共有開始のお知らせが届きました");}else{toast("共有を拒否しました");}setTimeout(function(){go(null);},900);}
+function removeShare(n){toast(n+"さんへの共有を停止しました（家族に通知されません）");}
+function inviteSend(n){toast(n+"さんに共有の申請を送りました（LINEで通知）");if(n==FAM){famB.step="line";famB.notified=true;renderB();toastB(OWNER+"さんからLINEが届きました");}setTimeout(function(){goTab("family");},1100);}
+
+/* ===== 家族 端末 ===== */
+function renderB(){
+  var s=document.getElementById("screenB");var html;
+  if(famB.step=="line")html=bLine();else if(famB.step=="add")html=bAdd();else if(famB.step=="app")html=bApp();
+  else if(famB.step=="official")html=bOfficial();else if(famB.step=="miniapp")html=fRender();else html=bDone();
+  s.innerHTML=html;var body=document.getElementById("bbody");if(body){body.scrollTop=body.scrollHeight;}
+}
+function bLine(){
+  function inMsg(t,card){return '<div class="msg"><div class="mic" style="background:#cfd3da;color:#fff;font-size:14px;font-weight:700">太</div><div class="wrap"><div class="who">'+OWNER+'</div><div class="bubble">'+t+'</div>'+(card||"")+'</div></div>';}
+  function outMsg(t){return '<div class="msg out"><div class="wrap"><div class="bubble me">'+t+'</div></div></div>';}
+  var card='<div class="linkcard2"><div class="lc-top">'+I.shield+' あおば生命 家族あんしん共有</div>'
+    +'<div class="lc-d">'+OWNER+'さんから保険情報の共有が届いています。内容の確認には友だち追加が必要です。</div>'
+    +'<div class="lc-btn" '+A("famGo","add")+'>内容を確認する ›</div></div>';
+  var shareMsg = famB.notified
+    ? inMsg("ところで、この前話してた保険の件、「家族あんしん共有」ってアプリで送っておくね。もしもの時のために、確認しておいてくれると安心だよ。",card)
+    : "";
+  var hint = famB.notified ? "" : '<div class="daystamp" style="margin-top:10px"><span>契約者が「共有相手を追加」で招待すると、ここに共有メッセージが届きます</span></div>';
+  return SB
+    +'<div class="linehead"><div class="lav" style="background:#cfd3da;color:#fff;font-size:14px;font-weight:700">太</div><div>'+OWNER+'<div style="font-size:11px;font-weight:400;opacity:.9">個人トーク</div></div></div>'
+    +'<div class="linechat" id="bbody"><div class="daystamp"><span>今日</span></div>'
+    +inMsg("久しぶり！元気にしてる？")
+    +outMsg("うん、元気だよ〜！おじさんも変わりない？")
+    +inMsg("おかげさまで元気だよ。")
+    +shareMsg+hint
+    +'</div></div><div class="toast" id="toastB"></div>';
+}
+function bAdd(){
+  return SB
+    +'<div class="addfriend"><div class="oav">'+I.shield.replace('width="22" height="22"','width="44" height="44"')+'</div>'
+    +'<div class="onm">'+CUST+'</div><div class="oid">@aoba_kazoku</div>'
+    +'<div class="odesc">家族あんしん共有サービス<br>保険情報をご家族と安全に共有できる公式アカウントです。</div>'
+    +'<button class="abtn" '+A("famGo","app")+'>'+I.plus+' 追加</button>'
+    +'<div style="font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6">追加すると「家族あんしん共有」ミニアプリが開きます</div></div>'
+    +'<div class="toast" id="toastB"></div>';
+}
+function bApp(){
+  return SB+'<div class="view"><div class="pad">'
+    +brandbar("家族あんしん共有 ・ 承認申請")
+    +'<div class="approve-head"><div class="av" style="background:#7d8aa0">太</div><div class="nm">'+OWNER+'さん</div><div class="pill" style="background:var(--brand-soft);color:var(--brand)">'+I.bell+' 共有が届いています</div></div>'
+    +'<div class="card approve-card" style="margin-top:16px"><div class="at">保険情報の共有が届いています</div>'
+    +'<div class="ad">'+OWNER+'さんが、あなたと保険情報を共有しようとしています。内容を受け取るには承認申請を行ってください。<br>申請後、契約者ご本人の承認が完了すると閲覧できるようになります。</div>'
+    +'<button class="btn btn-brand btn-block" '+A("famApproveDo")+'>承認申請する</button>'
+    +'<button class="btn btn-ghost btn-block" style="margin-top:10px" '+A("toastB","あとで確認できます")+'>あとで</button></div>'
+    +'</div></div><div class="toast" id="toastB"></div>';
+}
+function bDone(){
+  return SB+'<div class="view"><div class="pad">'
+    +brandbar("家族あんしん共有")
+    +'<div class="approve-head" style="padding-top:26px"><div class="av" style="background:#2fa39a">'+I.check.replace('width="14" height="14"','width="40" height="40"')+'</div><div class="nm" style="font-size:19px">承認申請を送信しました</div><div class="pill">'+I.clock+' 契約者の承認待ち</div></div>'
+    +'<div class="card" style="margin-top:16px"><div class="ad" style="font-size:14px;color:var(--ink2);line-height:1.7">'+OWNER+'さんが承認すると、共有された保険情報と緊急連絡先がこのミニアプリで確認できるようになります。承認されると通知が届きます。</div></div>'
+    +'<button class="btn btn-ghost btn-block" '+A("famGo","line")+'>トークに戻る</button>'
+    +'</div></div><div class="toast" id="toastB"></div>';
+}
+function bOfficial(){
+  var menu='<div class="rmbar">あおば生命 リッチメニュー</div>'
+    +'<div class="richmenu">'
+    +'<div class="rt main" '+A("openMini","family")+'>'+I.shield+'<span>家族あんしん共有</span></div>'
+    +'<div class="rt" '+A("openMini","member")+'>'+I.phone+'<span>緊急連絡先</span></div>'
+    +'<div class="rt" '+A("toastB","お問い合わせ")+'>'+I.help+'<span>お問い合わせ</span></div></div>';
+  return SB
+    +'<div class="linehead"><div class="lav">'+I.shield+'</div><div>'+CUST+'<div style="font-size:11px;font-weight:400;opacity:.9">公式アカウント</div></div></div>'
+    +'<div class="linechat" id="bbody"><div class="daystamp"><span>今日</span></div>'
+    +'<div class="msg"><div class="mic">'+I.shield+'</div><div class="wrap"><div class="who">'+CUST+'</div>'
+    +'<div class="bubble"><b>【家族あんしん共有】</b><br>'+OWNER+'さんとの保険情報の共有が開始されました。下のリッチメニュー、またはこのメッセージから内容をご確認いただけます。</div>'
+    +'<div class="linkcard2"><div class="lc-top">'+I.shield+' 共有された保険を見る</div>'
+    +'<div class="lc-d">'+OWNER+'さんの保険情報と緊急連絡先が確認できます。</div>'
+    +'<div class="lc-btn" '+A("openMini","family")+'>ミニアプリで開く ›</div></div></div></div></div>'
+    +menu+'<div class="toast" id="toastB"></div>';
+}
+/* ご家族のミニアプリ本体（契約者と同じ3タブUI） */
+function closePill(){return '<div class="backbar"><button class="back" '+A("famGo","official")+'>'+I.back+' LINEトークに戻る</button></div>';}
+function sharedBody(){
+  var shared=myInsurances.filter(function(x){return x.shared;});
+  var emg='<div class="emg-card"><div class="emg-ic">'+I.person+'</div><div><div class="lbl">保険会社の担当者</div><div class="val">田中 誠</div></div><button class="callbtn tealc" '+A("toastB","発信")+'>'+I.phone+'</button></div>'
+    +'<div class="emg-card"><div class="emg-ic">'+I.shield+'</div><div><div class="lbl">'+CUST+'</div><div class="val">0120-000-000</div></div><button class="callbtn greenc" '+A("toastB","発信")+'>'+I.phone+'</button></div>';
+  var ins=shared.map(function(x){return '<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div><div><div class="ins-name">'+esc(x.name)+'</div><div class="ins-co">'+esc(x.co)+'</div></div></div>'
+    +'<div class="grid2"><div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(x.no)+'</div></div><div class="field"><div class="lbl">月額</div><div class="val">'+esc(x.fee)+'</div></div></div>'
+    +'<div class="field full"><div><div class="lbl">担当者</div><div class="val">'+esc(x.agent)+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn" '+A("toastB","発信")+'>'+I.phone+'</button></div></div>';}).join("");
+  return '<div class="person-head"><div class="av">太</div><div class="nm">'+OWNER+'さん</div></div>'
+    +'<div class="emg"><div class="et">'+I.alert+' 緊急連絡先</div><div class="ed">'+OWNER+'さんに万一の際はこちらへ</div>'+emg+'</div>'
+    +'<div class="note">共有された情報は閲覧のみ可能です（編集・削除はできません）。</div>'
+    +'<div class="sub-label">'+OWNER+'さんの保険</div>'+ins;
+}
+function fHome(){
+  return closePill()
+    +'<div class="head-row"><div><div class="h1">マイ保険</div><div class="sub">0件の保険を管理中</div></div><button class="btn-add" '+A("toastB","保険を追加")+'>'+I.plus+' 保険を追加</button></div>'
+    +'<div class="note">ご自身の保険を登録すると、あなたもご家族に共有できます。'+OWNER+'さんから共有された情報は「共有相手」タブで確認できます。</div>'
+    +'<div class="card" style="text-align:center;color:var(--muted);padding:32px 16px"><div style="color:#cfd1d6;margin-bottom:8px;display:flex;justify-content:center">'+I.shield.replace('width="22" height="22"','width="34" height="34"')+'</div>まだ登録された保険はありません</div>';
+}
+function fFamily(){
+  var seg='<div class="seg"><button class="'+(famB.mfamTab=="by"?"act":"")+'" '+A("fsetFam","by")+'>共有している</button><button class="'+(famB.mfamTab=="with"?"act":"")+'" '+A("fsetFam","with")+'>共有されている</button></div>';
+  var body="";
+  if(famB.mfamTab=="with"){
+    var cnt=myInsurances.filter(function(x){return x.shared;}).length;
+    body='<div class="banner"><div class="t">'+OWNER+'さんから共有されています</div><div class="d">タップして保険情報と緊急連絡先を確認できます</div></div>'
+      +'<div class="row" '+A("fgo","member")+'><div class="avatar">太</div><div><div class="nm">'+OWNER+'</div><div class="st muted">'+cnt+'件の保険</div></div><span class="chev">'+I.chev+'</span></div>';
+  } else {
+    body='<div class="row" style="background:var(--brand-soft)" '+A("toastB","共有相手を追加")+'><div class="avatar" style="background:var(--brand)">'+I.plus+'</div><div><div class="nm" style="color:var(--brand)">共有相手を追加</div><div class="st" style="color:#b03a6b">LINEの友だちから選択</div></div><span class="chev">'+I.chev+'</span></div>'
+      +'<div class="card" style="text-align:center;color:var(--muted);padding:26px 16px">まだ共有していません</div>';
+  }
+  return closePill()+'<div class="head-row"><div class="h1">共有相手</div></div>'+seg+body;
+}
+function fSettings(){
+  function item(ic,lab,right){return '<div class="set-item" '+A("toastB",lab)+'><div class="set-ic">'+ic+'</div><div class="lab">'+lab+'</div><div class="rt">'+(right||"")+I.chev+'</div></div>';}
+  return closePill()+'<div class="head-row"><div class="h1">設定</div></div>'
+    +'<div class="profile"><div class="av">咲</div><div><div class="nm">'+FAM+'</div><div class="meta">家族（共有された側） ・ LINE連携済み</div></div></div>'
+    +'<div class="set-group"><div class="set-list">'+item(I.person,"プロフィール",FAM)+item(I.help,"アプリの使い方","")+item(I.doc,"プライバシーポリシー","")+'</div></div>'
+    +'<div class="ver">家族あんしん共有 v1.0.0<br>'+CUST+'保険株式会社</div>';
+}
+function fMember(){
+  return '<div class="backbar"><button class="back" '+A("ftab","family")+'>'+I.back+' 共有相手に戻る</button></div>'+sharedBody();
+}
+function fRender(){
+  var body;
+  if(famB.mpage=="member")body=fMember();
+  else if(famB.mtab=="home")body=fHome();
+  else if(famB.mtab=="family")body=fFamily();
+  else body=fSettings();
+  var tabs=[["home","マイ保険",I.shield],["family","共有相手",I.people],["settings","設定",I.gear]];
+  var tb='<div class="tabbar">'+tabs.map(function(t){return '<button class="'+((famB.mtab==t[0]&&!famB.mpage)?"act":"")+'" '+A("ftab",t[0])+'>'+t[2]+'<span>'+t[1]+'</span></button>';}).join("")+'</div>';
+  return SB+'<div class="view"><div class="pad">'+body+'</div></div>'+tb+'<div class="toast" id="toastB"></div>';
+}
+function famGo(step){famB.step=step;renderB();}
+function openMini(v){famB.step="miniapp";if(v=="member"){famB.mtab="family";famB.mpage="member";}else{famB.mtab=v||"family";famB.mpage=null;}renderB();}
+function ftab(t){famB.mtab=t;famB.mpage=null;renderB();}
+function fgo(p){famB.mpage=p;renderB();}
+function fsetFam(f){famB.mfamTab=f;renderB();}
+function famApproveDo(){famB.step="done";sakiPending=true;renderB();render();toastB("承認申請を送信しました");toast(FAM+"さんから承認申請が届きました");}
+
+/* ===== event delegation (インラインonclick非依存でクリック可能) ===== */
+document.addEventListener("click",function(e){
+  var el=e.target.closest ? e.target.closest("[data-act]") : null;
+  if(!el)return;
+  var act=el.getAttribute("data-act"), v=el.getAttribute("data-v");
+  switch(act){
+    case "go": go(v?v:null); break;
+    case "goTab": goTab(v); break;
+    case "setFam": setFam(v); break;
+    case "setStep": setStep(parseInt(v,10)); break;
+    case "setMode": setMode(v); break;
+    case "toggleC": toggleC(parseInt(v,10)); break;
+    case "toggleShare": toggleShare(parseInt(v,10)); break;
+    case "openEdit": openEdit(parseInt(v,10)); break;
+    case "registerDone": registerDone(); break;
+    case "addBack": addBack(); break;
+    case "saveEdit": saveEdit(); break;
+    case "deleteIns": deleteIns(); break;
+    case "inviteSend": inviteSend(v); break;
+    case "removeShare": removeShare(v); break;
+    case "afterApprove": afterApprove(v); break;
+    case "toast": toast(v); break;
+    case "famGo": famGo(v); break;
+    case "famApproveDo": famApproveDo(); break;
+    case "openMini": openMini(v); break;
+    case "ftab": ftab(v); break;
+    case "fgo": fgo(v); break;
+    case "fsetFam": fsetFam(v); break;
+    case "toastB": toastB(v); break;
+  }
+});
+
+render();
+renderB();
+</script>
+
+<style>
+#pwgate{position:fixed;inset:0;background:radial-gradient(circle at 50% 30%,#26264a 0%,#15152b 55%,#0d0d1c 100%);display:flex;align-items:center;justify-content:center;z-index:99999;font-family:"Noto Sans JP",system-ui,sans-serif;}
+#pwgate.hide{display:none;}
+#pwgate .pwbox{background:#fff;border-radius:18px;padding:30px 26px;width:300px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.45);}
+#pwgate .pwlock{display:flex;justify-content:center;margin-bottom:12px;color:#3438F0;}
+#pwgate .pwttl{font-size:14px;font-weight:700;color:#1c1c1e;margin-bottom:4px;}
+#pwgate .pwsub{font-size:11px;color:#8a8a8e;margin-bottom:16px;}
+#pwgate input{width:100%;padding:12px 14px;border:1px solid #e6e6e6;border-radius:12px;font-size:15px;font-family:inherit;outline:none;margin-bottom:12px;}
+#pwgate button{width:100%;padding:13px;border:none;border-radius:12px;background:#3438F0;color:#fff;font-weight:700;font-size:15px;font-family:inherit;cursor:pointer;}
+#pwgate #pwerr{color:#e0453a;font-size:12px;margin-top:10px;min-height:16px;}
+</style>
+<div id="pwgate"><div class="pwbox">
+  <div class="pwlock"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 018 0v3" stroke="currentColor" stroke-width="1.7"/></svg></div>
+  <div class="pwttl">パスワードを入力してください</div>
+  <div class="pwsub">家族あんしん共有サービス デモ</div>
+  <input id="pwin" type="password" placeholder="パスワード" autocomplete="off">
+  <button id="pwbtn">表示する</button>
+  <div id="pwerr"></div>
+</div></div>
+<script>
+(function(){var PW="kazoku-anshin";var g=document.getElementById("pwgate"),i=document.getElementById("pwin"),e=document.getElementById("pwerr");
+function ok(){if(i.value===PW){g.classList.add("hide");}else{e.textContent="パスワードが違います";i.value="";}}
+document.getElementById("pwbtn").addEventListener("click",ok);
+i.addEventListener("keydown",function(ev){if(ev.key==="Enter")ok();});
+setTimeout(function(){i.focus();},100);})();
+</script>
+
+</body>
+</html>
