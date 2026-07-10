@@ -175,6 +175,13 @@
   .me-lbl.db{color:#9C8D95;background:#FBF7F9}
   .me-btn{width:100%;background:#3438F0;color:#fff;border:none;border-radius:8px;padding:9px;font-size:12px;font-weight:700;cursor:pointer}
   .me-hint{font-size:10px;color:#999;margin-top:8px;line-height:1.5}
+  /* self-hosted DB panel (separate from ME) */
+  .dbpanel{width:100%;max-width:380px;background:#fff;border:1px solid #E6E6E6;border-radius:14px;overflow:hidden;box-shadow:0 1px 2px rgba(27,29,59,.05);font-family:'Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif;color:#282829;align-self:flex-start}
+  .db-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #E6E6E6;background:#eef1f4}
+  .db-brand{font-size:13px;font-weight:700;color:#3d5566}
+  .db-tag{font-size:11px;color:#666}
+  .db-btn{width:100%;background:#3d5566;color:#fff;border:none;border-radius:8px;padding:9px;font-size:12px;font-weight:700;cursor:pointer}
+  .db-foot{padding:12px 16px 16px;font-size:11px;color:#666;border-top:1px solid #E6E6E6;background:#f7f9fa;line-height:1.6}
 </style>
 </head>
 <body>
@@ -293,7 +300,13 @@
       <span class="tag">顧客詳細</span>
     </div>
     <div id="me-body"></div>
-    <div class="me-foot">左の操作に応じてカスタム属性が自動反映されます。実際はセグメント配信・CSV出力に利用。日時は端末の現在時刻（デモ）。</div>
+    <div class="me-foot">左の操作に応じてカスタム属性が自動反映。<b>ME AIのCSV出力はカスタム属性のみ</b>。会場・日時などのイベント明細は下の「自前DB」から別途DLします。</div>
+  </div>
+
+  <div class="dbpanel">
+    <div class="db-top"><span class="db-brand">🗄 自前DB（イベント明細）</span><span class="db-tag">CSVエクスポート</span></div>
+    <div id="db-body"></div>
+    <div class="db-foot">※ ME AIとは別。スタンプの会場・獲得日時・景品交換などの明細イベントをこの自前DB（Postgres想定）に保存し、ここからCSVでダウンロードします（キャンペーン／エリア／期間で絞込）。</div>
   </div>
 </div>
 
@@ -336,18 +349,20 @@ function renderME(flashKey){
     ["最終アクセス日時",S.last_at||null],
   ];
   const attrRow=([k,v])=>`<div class="attr" data-k="${k}"><span class="k">${k}</span><span class="v ${v?'':'empty'}">${v||'—'}</span></div>`;
-  // 明細＝自前DB（属性にしない・CSVで出力）
-  S.redeem=S.redeem||{};
-  const stampLogs=(p?p.log:[]).map((e,i)=>`<div class="attr"><span class="k">スタンプ${i+1}</span><span class="v">${e.label}／${e.at}</span></div>`).join("");
-  const redLogs=Object.keys(S.redeem).filter(n=>typeof S.redeem[n]==='string').map(n=>{const t=TIERS.find(x=>String(x.n)===String(n));return `<div class="attr"><span class="k">景品交換${n}</span><span class="v">${t?t.name:''}／${S.redeem[n]}</span></div>`;}).join("");
-  const dbEmpty=(!stampLogs&&!redLogs)?`<div class="attr"><span class="k" style="color:#B3B3B3">（明細なし）</span><span class="v empty">—</span></div>`:"";
   $("me-body").innerHTML=
     `<div class="me-cust"><div class="me-ava">${initial}</div><div><div class="nm">${nm}</div><div class="sb">${sub}</div></div></div>`+
-    `<div class="me-lbl">ME AI カスタム属性（配信用・上書き）</div>${attrs.map(attrRow).join("")}`+
-    `<div class="me-lbl db">明細ログ（自前DB → CSV）</div>${stampLogs}${redLogs}${dbEmpty}`+
-    `<div style="padding:10px 16px"><button class="me-btn" id="csvbtn">CSVダウンロード</button><div class="me-hint">※ 明細（会場・日時・景品交換）はME属性ではなく自前DBに保存。配信用の属性は少数・上書きで持ち、次回キャンペーン開始時にリセット。</div></div>`;
-  const b=$("csvbtn"); if(b) b.onclick=()=>toast("⬇","CSVダウンロード（デモ）","明細を自前DBからCSVで出力します（キャンペーン・エリア・期間で絞込）。ME属性は配信用の少数のみ。");
+    `<div class="me-lbl">カスタム属性（配信用・上書き）</div>${attrs.map(attrRow).join("")}`;
   if(flashKey){const el=$("me-body").querySelector(`.attr[data-k="${flashKey}"]`);if(el)el.classList.add("flash");}
+  renderDB(flashKey);
+}
+function renderDB(flashKey){
+  const p=S.area?prog():null; S.redeem=S.redeem||{};
+  const stampLogs=(p?p.log:[]).map((e,i)=>`<div class="attr"><span class="k">スタンプ${i+1}</span><span class="v">${e.label}／${e.at}</span></div>`).join("");
+  const redLogs=Object.keys(S.redeem).filter(n=>typeof S.redeem[n]==='string').map(n=>{const t=TIERS.find(x=>String(x.n)===String(n));return `<div class="attr"><span class="k">景品交換${n}</span><span class="v">${t?t.name:''}／${S.redeem[n]}</span></div>`;}).join("");
+  const empty=(!stampLogs&&!redLogs)?`<div class="attr"><span class="k" style="color:#9aa4b2">（明細なし）</span><span class="v empty">—</span></div>`:"";
+  const el=$("db-body"); if(!el)return;
+  el.innerHTML=`<div class="me-lbl db">イベント明細（会場・獲得日時・景品交換）</div>${stampLogs}${redLogs}${empty}<div style="padding:12px 14px"><button class="db-btn" id="csvbtn">CSVダウンロード</button></div>`;
+  const b=$("csvbtn"); if(b) b.onclick=()=>toast("⬇","CSVダウンロード（デモ）","自前DBのイベント明細（会場・日時・景品交換）をCSVで出力します（キャンペーン／エリア／期間で絞込）。※ME AIのCSVはカスタム属性のみで、これとは別です。");
 }
 
 /* area (LINE talk) */
