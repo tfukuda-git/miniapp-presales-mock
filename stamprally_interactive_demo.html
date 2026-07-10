@@ -172,6 +172,9 @@
   .attr.flash{animation:mef 1.1s ease}
   @keyframes mef{0%{background:#DBE1FF}100%{background:#fff}}
   .me-foot{padding:12px 16px 16px;font-size:11px;color:#666;border-top:1px solid #E6E6E6;background:#FAF9FB;line-height:1.6}
+  .me-lbl.db{color:#9C8D95;background:#FBF7F9}
+  .me-btn{width:100%;background:#3438F0;color:#fff;border:none;border-radius:8px;padding:9px;font-size:12px;font-weight:700;cursor:pointer}
+  .me-hint{font-size:10px;color:#999;margin-top:8px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -304,9 +307,10 @@ const AREAS = {
   "九州":{eb:"九州エリア",t:"住まいフェア in 九州",grad:"135deg,#c9851f,#E8A33D",houses:[["福岡東 展示場","福岡・都市型"],["熊本 モデルハウス","熊本・大屋根"],["鹿児島 展示場","鹿児島・平屋"]]}
 };
 const TIERS=[{n:1,name:"ご来場ノベルティ"},{n:2,name:"クオカード"},{n:3,name:"カタログギフト"},{n:4,name:"特別賞（スタッフ提示）",staff:true}];
-const KEY="misawa_stamp_proto_v2";
+const GOAL=4,CAMP="2026-Q4";
+const KEY="misawa_stamp_proto_v3";
 let S=load();
-function blank(){return {area:null,member:{name:"",phone:"",email:""},survey:false,progress:{},staffOn:false,redeem:{},shown:{}};}
+function blank(){return {area:null,member:{name:"",phone:"",email:""},survey:false,progress:{},staffOn:false,redeem:{},shown:{},last_at:""};}
 function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):blank();}catch(e){return blank();}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function prog(){if(!S.progress[S.area])S.progress[S.area]={venues:[false,false,false],staff:false,log:[]};return S.progress[S.area];}
@@ -317,32 +321,38 @@ function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.remo
 
 /* ME panel */
 function renderME(flashKey){
-  const p=S.area?prog():null;
+  const p=S.area?prog():null; const c=p?p.log.length:0;
   const initial=((S.member.name||'').trim().charAt(0))||'—';
   const nm=S.member.name||'未登録ユーザー';
   const sub=[S.member.phone,S.member.email].filter(Boolean).join('　/　')||'LINE連携済み';
-  const items=[
-    ["g","エリア"],["エリア",S.area],
-    ["g","会員情報（アンケート）"],["お名前",S.member.name],["電話番号",S.member.phone],["メールアドレス",S.member.email],
-    ["g","スタンプ"]
+  // 配信用の少数・上書き属性（累積させない）
+  const attrs=[
+    ["エリア",S.area],
+    ["お名前",S.member.name],["電話番号",S.member.phone],["メールアドレス",S.member.email],
+    ["現キャンペーンID",S.area?CAMP:null],
+    ["スタンプ数（現）",S.area?String(c):null],
+    ["到達景品段",S.area?String(c):null],
+    ["完走フラグ",S.area?(c>=GOAL?"true":"false"):null],
+    ["最終アクセス日時",S.last_at||null],
   ];
-  for(let i=0;i<4;i++){const e=p&&p.log[i];items.push([(i+1)+"個目スタンプ",e?e.label:null]);items.push([(i+1)+"個目スタンプ獲得日時",e?e.at:null]);}
-  const body=items.map(([k,v])=> k==="g"
-    ? `<div class="me-lbl">${v}</div>`
-    : `<div class="attr" data-k="${k}"><span class="k">${k}</span><span class="v ${v?'':'empty'}">${v||'—'}</span></div>`).join("");
+  const attrRow=([k,v])=>`<div class="attr" data-k="${k}"><span class="k">${k}</span><span class="v ${v?'':'empty'}">${v||'—'}</span></div>`;
+  // 明細＝自前DB（属性にしない・CSVで出力）
   S.redeem=S.redeem||{};
-  let rw=`<div class="me-lbl">景品交換</div>`;
-  for(let i=1;i<=4;i++){const at=typeof S.redeem[i]==='string'?S.redeem[i]:null;const done=!!S.redeem[i];
-    rw+=`<div class="attr" data-k="${i}個目景品交換ステータス"><span class="k">${i}個目景品 交換ステータス</span><span class="v ${done?'':'empty'}">${done?'交換済み':'未交換'}</span></div>`;
-    rw+=`<div class="attr" data-k="${i}個目景品交換日時"><span class="k">${i}個目景品 交換日時</span><span class="v ${at?'':'empty'}">${at||'—'}</span></div>`;
-  }
-  $("me-body").innerHTML=`<div class="me-cust"><div class="me-ava">${initial}</div><div><div class="nm">${nm}</div><div class="sb">${sub}</div></div></div>${body}${rw}`;
+  const stampLogs=(p?p.log:[]).map((e,i)=>`<div class="attr"><span class="k">スタンプ${i+1}</span><span class="v">${e.label}／${e.at}</span></div>`).join("");
+  const redLogs=Object.keys(S.redeem).filter(n=>typeof S.redeem[n]==='string').map(n=>{const t=TIERS.find(x=>String(x.n)===String(n));return `<div class="attr"><span class="k">景品交換${n}</span><span class="v">${t?t.name:''}／${S.redeem[n]}</span></div>`;}).join("");
+  const dbEmpty=(!stampLogs&&!redLogs)?`<div class="attr"><span class="k" style="color:#B3B3B3">（明細なし）</span><span class="v empty">—</span></div>`:"";
+  $("me-body").innerHTML=
+    `<div class="me-cust"><div class="me-ava">${initial}</div><div><div class="nm">${nm}</div><div class="sb">${sub}</div></div></div>`+
+    `<div class="me-lbl">ME AI カスタム属性（配信用・上書き）</div>${attrs.map(attrRow).join("")}`+
+    `<div class="me-lbl db">明細ログ（自前DB → CSV）</div>${stampLogs}${redLogs}${dbEmpty}`+
+    `<div style="padding:10px 16px"><button class="me-btn" id="csvbtn">CSVダウンロード</button><div class="me-hint">※ 明細（会場・日時・景品交換）はME属性ではなく自前DBに保存。配信用の属性は少数・上書きで持ち、次回キャンペーン開始時にリセット。</div></div>`;
+  const b=$("csvbtn"); if(b) b.onclick=()=>toast("⬇","CSVダウンロード（デモ）","明細を自前DBからCSVで出力します（キャンペーン・エリア・期間で絞込）。ME属性は配信用の少数のみ。");
   if(flashKey){const el=$("me-body").querySelector(`.attr[data-k="${flashKey}"]`);if(el)el.classList.add("flash");}
 }
 
 /* area (LINE talk) */
 $("agrid").addEventListener("click",e=>{const c=e.target.closest(".acell");if(!c)return;
-  S.area=c.dataset.a;save();
+  S.area=c.dataset.a;S.last_at=nowStr();save();
   document.querySelectorAll("#agrid .acell").forEach(x=>x.classList.toggle("sel",x===c));
   $("area-hint").textContent="「"+S.area+"」を選択しました。下のメニュー「スタンプラリー」を押してください。";
   renderME("エリア");});
@@ -360,7 +370,7 @@ $("to-survey").addEventListener("click",()=>{ $("q-name").value=S.member.name;$(
 function validate(){const ok=$("q-name").value.trim()&&$("q-phone").value.trim()&&$("q-email").value.trim();$("survey-submit").disabled=!ok;return ok;}
 const MEMLBL={name:"お名前",phone:"電話番号",email:"メールアドレス"};
 ["q-name","q-phone","q-email"].forEach(id=>$(id).addEventListener("input",()=>{const k=id.slice(2);S.member[k]=$(id).value.trim();renderME(MEMLBL[k]);validate();save();}));
-$("survey-submit").addEventListener("click",()=>{if(!validate())return;S.survey=true;save();$("nav").classList.add("on");renderStamp();renderME();show("v-stamp");toast("✅","会員登録が完了しました","会場のQRを読み取ってスタンプを集めましょう。");});
+$("survey-submit").addEventListener("click",()=>{if(!validate())return;S.survey=true;S.last_at=nowStr();save();$("nav").classList.add("on");renderStamp();renderME();show("v-stamp");toast("✅","会員登録が完了しました","会場のQRを読み取ってスタンプを集めましょう。");});
 
 /* stamp */
 function renderStamp(){const a=AREAS[S.area],p=prog(),c=count();
@@ -377,7 +387,7 @@ $("st-venues").addEventListener("click",e=>{const b=e.target.closest(".vbtn");if
   scan(()=>{const p=prog();let label;
     if(v==="staff"){if(count()<3){toast("🔒","まだ取得できません","先に3個スタンプを集めてください。");return;}p.staff=true;label="特別賞（スタッフ提示）";}
     else{if(p.venues[+v]){toast("✅","取得済みです","この会場のスタンプは取得済みです（重複不可）。");return;}p.venues[+v]=true;label=AREAS[S.area].houses[+v][0];}
-    const idx=p.log.length;p.log.push({label:label,at:nowStr()});save();const c=count();renderStamp();renderME((idx+1)+"個目スタンプ");
+    const idx=p.log.length;p.log.push({label:label,at:nowStr()});S.last_at=nowStr();save();const c=count();renderStamp();renderME("スタンプ数（現）");
     const tier=TIERS.find(t=>t.n===c),key=S.area+":"+c;
     if(tier&&!S.shown[key]){S.shown[key]=true;save();toast(tier.staff?"🌟":"🎉",c+"個達成！景品GET",tier.name+" を獲得しました。景品交換タブで交換できます。");}
     else toast("🎫","スタンプGET！",c+" / 4 個になりました。");
@@ -394,7 +404,7 @@ function renderReward(){S.redeem=S.redeem||{};const c=count();
   const rows=TIERS.filter(t=>t.n<=c).map(t=>{const done=!!S.redeem[t.n];return `<div class="venue"><div class="vi"><b>${t.n}個：${t.name}</b><p>${done?'交換済み':'交換できます'}</p></div><button class="vbtn ${done?'done':(t.staff?'staff':'')}" data-r="${t.n}" ${done?'disabled':''}>${done?'交換済':'交換する'}</button></div>`;}).join("");
   $("rw-body").innerHTML=`<p class="lead">集めたスタンプ数に応じた景品を、会場スタッフに提示して交換できます。</p>${rows}`;
 }
-$("rw-body").addEventListener("click",e=>{const b=e.target.closest("button[data-r]");if(!b||b.disabled)return;const n=+b.dataset.r,t=TIERS.find(x=>x.n===n);S.redeem=S.redeem||{};S.redeem[n]=nowStr();save();renderReward();renderME(n+"個目景品交換ステータス");toast("🎁","景品を交換しました",`${t.name}／引換コード RD-2026-${1000+n}／会場スタッフにこの画面をご提示ください。`);});
+$("rw-body").addEventListener("click",e=>{const b=e.target.closest("button[data-r]");if(!b||b.disabled)return;const n=+b.dataset.r,t=TIERS.find(x=>x.n===n);S.redeem=S.redeem||{};S.redeem[n]=nowStr();S.last_at=nowStr();save();renderReward();renderME();toast("🎁","景品を交換しました",`${t.name}／引換コード RD-2026-${1000+n}／会場スタッフにこの画面をご提示ください。`);});
 
 /* nav / overlays / reset */
 document.querySelectorAll("#nav a").forEach(a=>a.addEventListener("click",()=>{const t=a.dataset.tab;if(t==="v-pamph")renderPamph();if(t==="v-stamp")renderStamp();if(t==="v-reward")renderReward();show(t);}));
