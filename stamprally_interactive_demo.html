@@ -3,159 +3,122 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スタンプラリー＋景品交換 触れるモック（ME属性リアルタイム）</title>
+<title>住まいスタンプラリー 触れるモック v0.4（QR紐付け／ME属性リアルタイム）</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --line:#06C755; --line-d:#05a647; --navy:#1F3864; --blue:#2E5BAB; --blue2:#3A7BCC;
-    --gold:#E8A33D; --gold-d:#c9851f; --ink:#1b2330; --sub:#5b6573; --bg:#eef1f5;
-    --card:#fff; --bd:#e4e8ee;
+    --brand:#2E6BE6; --brand-d:#1f4fb5; --gold:#E8A33D; --gold-d:#c9851f;
+    --ink:#1b2330; --sub:#5b6573; --bg:#eef1f5; --card:#fff; --bd:#e4e8ee;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
-  body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;color:var(--ink);background:#c9d2dd;line-height:1.6;-webkit-font-smoothing:antialiased}
+  body{font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;color:var(--ink);background:#c9d2dd;line-height:1.6;-webkit-font-smoothing:antialiased}
   .stage{display:flex;gap:22px;align-items:flex-start;justify-content:center;min-height:100vh;padding:22px 12px;flex-wrap:wrap}
   @media(min-width:900px){.stage{align-items:center}}
 
   .app{width:100%;max-width:400px;background:var(--bg);position:relative;display:flex;flex-direction:column;overflow:hidden;height:844px;max-height:94vh;border-radius:38px;box-shadow:0 20px 60px rgba(20,35,60,.28);border:10px solid #11161d}
   @media(max-width:479px){.app{height:auto;min-height:88vh;border-radius:24px;border-width:6px}}
 
-  .hd{background:var(--line);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:13px 15px;flex:0 0 auto;z-index:8}
+  .banner{background:#11161d;color:#dfe7f2;font-size:11px;text-align:center;padding:6px 10px}
+  .banner b{color:#7fffa8}
+  .hd{background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:13px 15px;flex:0 0 auto;z-index:8}
   .hd .t{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
   .hd .pill{font-size:10px;font-weight:700;background:rgba(255,255,255,.22);padding:2px 8px;border-radius:999px}
-  .hd .actions{display:flex;gap:14px;font-size:15px}
-  .hd .actions span{cursor:pointer;opacity:.92}
+  .hd .actions{display:flex;gap:14px;font-size:14px;align-items:center}
+  .hd .actions span{cursor:pointer;opacity:.94}
+  .hd .day{font-size:10px;background:rgba(255,255,255,.2);padding:3px 8px;border-radius:999px;cursor:pointer;font-weight:700}
   .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-  .view{display:none;padding-bottom:84px}
+  .view{display:none;padding:16px 16px 90px}
   .view.on{display:block}
-  .pad{padding:16px}
-  h1{font-size:22px;margin:0 0 4px;line-height:1.3}
+  h1{font-size:21px;margin:0 0 4px;line-height:1.3}
   p.lead{font-size:13px;color:var(--sub);margin:2px 0 14px}
-  .btn{display:block;width:100%;background:var(--line);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer}
-  .btn:active{transform:scale(.99)} .btn.ghost{background:#fff;color:var(--line);border:1.5px solid var(--line)}
-  .btn:disabled{background:#c8ced7;cursor:not-allowed}
-  .sec{padding:16px 16px 2px}
+  .btn{display:block;width:100%;background:var(--brand);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer}
+  .btn:active{transform:scale(.99)} .btn:disabled{background:#c8ced7;cursor:not-allowed}
+  .btn.scanbtn{background:var(--brand);display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;padding:16px}
+  .sec{margin:16px 0 2px}
   .sec h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:8px;color:var(--navy)}
-  .sec h2 .bar{width:4px;height:16px;background:var(--line);border-radius:2px}
+  .sec h2 .bar{width:4px;height:16px;background:var(--brand);border-radius:2px}
+  .note{font-size:11.5px;color:var(--sub);background:#f4f7fb;border:1px solid var(--bd);border-radius:10px;padding:9px 11px;margin:8px 0}
 
-  .talkwrap{padding:16px}
-  .talkcard{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(20,35,60,.08);border:1px solid var(--bd)}
-  .talkcard .cap{background:#3A7BCC;color:#fff;font-size:12px;font-weight:700;text-align:center;padding:9px}
-  .agrid{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--bd)}
-  .acell{background:#f6f9fd;color:#2E5BAB;font-weight:700;font-size:12px;text-align:center;padding:13px 4px;cursor:pointer}
-  .acell.sel{background:#2E5BAB;color:#fff}
-  .acell:active{opacity:.85}
-  /* LINE talk (area select) */
-  #v-area{padding:0;height:100%}
-  .tk{display:flex;flex-direction:column;height:100%;min-height:520px}
-  .tk-hdr{background:#3d5566;color:#fff;font-size:13px;font-weight:700;padding:12px;display:flex;align-items:center;gap:8px;flex:0 0 auto}
-  .tk-hdr .av{width:26px;height:26px;border-radius:50%;background:#fff;color:#3d5566;display:flex;align-items:center;justify-content:center;font-size:14px;flex:0 0 auto}
-  .tk-hdr .nm{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-  .tk-body{flex:1;background:#9cc0d8;padding:14px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
-  .tk-time{align-self:center;background:rgba(0,0,0,.18);color:#fff;font-size:10px;padding:2px 12px;border-radius:999px}
-  .bub{display:flex;gap:7px;align-items:flex-end}
-  .bub .ba{width:30px;height:30px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;flex:0 0 auto}
-  .bub .bx{background:#fff;border-radius:4px 16px 16px 16px;padding:9px 12px;font-size:12.5px;line-height:1.5;max-width:210px;box-shadow:0 1px 1px rgba(0,0,0,.08)}
-  .imgmsg{align-self:flex-start;margin-left:37px;width:210px;background:#fff;border-radius:4px 16px 16px 16px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.12)}
-  .imgmsg .cap{background:#3A7BCC;color:#fff;font-size:11px;font-weight:700;text-align:center;padding:7px}
-  .imgmap{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#e6e9ee}
-  .tk-input{background:#fff;border-top:1px solid #e3e7ec;padding:8px 12px;display:flex;align-items:center;gap:9px;font-size:15px;color:#aab2bd;flex:0 0 auto}
-  .tk-input .ip{flex:1;background:#f0f2f5;border-radius:999px;padding:6px 12px;font-size:11px}
-  .rmdock{display:grid;grid-template-columns:repeat(3,1fr);background:#11161d;flex:0 0 auto}
-  .rmdock .rt{border:.5px solid rgba(255,255,255,.14);color:#fff;font-size:10px;font-weight:700;text-align:center;padding:14px 4px;line-height:1.3;cursor:pointer}
-  .rmdock .rt .e{font-size:19px;display:block;margin-bottom:3px}
-  .rmdock .rt.cta{background:#173a24;box-shadow:inset 0 0 0 2px #7fffb0}
-  .rmdock .rt.wide{grid-column:1 / -1;background:#2E5BAB;padding:16px 4px}
+  /* flyer (shown in gate) */
+  .fl-inner{border:3px solid #F3C9DB;border-radius:18px;padding:16px 14px 14px;background:#fff;text-align:center;position:relative;margin-bottom:14px}
+  .fl-org{display:inline-block;background:#9C8D95;color:#fff;font-size:11px;font-weight:700;padding:4px 14px;border-radius:999px;margin-bottom:8px}
+  .fl-title{font-size:27px;font-weight:800;color:#E86BA4;margin:2px 0 0;line-height:1.05}
+  .fl-en{font-size:20px;font-weight:800;color:#F4A9C8;letter-spacing:.04em;margin-bottom:6px}
+  .fl-sub{font-size:11.5px;color:#4a3f45;font-weight:700;line-height:1.6;margin:0 0 10px}
+  .fl-term{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .fl-term .lb{background:#E86BA4;color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px}
+  .fl-term b{color:#D14F8C;font-size:14px}
+  .fl-photos{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+  .fl-photos .ph{aspect-ratio:1;border-radius:6px;background:linear-gradient(135deg,#e7edf3,#ccd8e7);display:flex;align-items:center;justify-content:center;font-size:16px;color:#9aa9bd}
 
-  .flyer{display:block;width:100%}
-  .hero{position:relative;color:#fff;padding:28px 18px 24px;overflow:hidden}
-  .hero .eyebrow{font-size:12px;font-weight:700;opacity:.95}
-  .hero h1{font-size:23px;margin:6px 0 4px}
-  .hero .term{font-size:12px;background:rgba(0,0,0,.18);padding:4px 12px;border-radius:999px;display:inline-block;margin-top:6px}
-  .hero .deco{position:absolute;right:-16px;bottom:-24px;font-size:120px;opacity:.14}
-  .mh{display:flex;gap:12px;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:11px;margin-bottom:9px;align-items:center}
-  .mh .thumb{width:54px;height:54px;flex:0 0 auto;border-radius:10px;background:linear-gradient(135deg,#dfe8f5,#c4d4ec);display:flex;align-items:center;justify-content:center;font-size:24px}
-  .mh .info b{font-size:14px}.mh .info p{margin:2px 0 0;font-size:11.5px;color:var(--sub)}
-
-  /* housemaker flyer (pamphlet) */
-  .flyer2{padding:14px;background:#fff}
-  .fl-inner{border:3px solid #F3C9DB;border-radius:18px;padding:18px 15px 16px;background:#fff;text-align:center;position:relative}
-  .fl-badge{position:absolute;top:10px;left:11px;width:50px;height:50px;border-radius:50%;background:#fff;border:2px solid #E86BA4;color:#E86BA4;font-size:10px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;box-shadow:0 2px 6px rgba(0,0,0,.1)}
-  .fl-badge b{font-size:13px}
-  .fl-org{display:inline-block;background:#9C8D95;color:#fff;font-size:11px;font-weight:700;padding:5px 15px;border-radius:999px;margin-bottom:12px}
-  .fl-lead{font-size:12px;color:#5a4a52;font-weight:700}
-  .fl-title{font-size:33px;font-weight:800;color:#E86BA4;margin:2px 0 0;line-height:1.05}
-  .fl-en{font-size:25px;font-weight:800;color:#F4A9C8;letter-spacing:.04em;margin-bottom:8px}
-  .fl-sub{font-size:11.5px;color:#4a3f45;font-weight:700;line-height:1.6;margin:0 0 12px}
-  .fl-term{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-  .fl-term .lb{background:#E86BA4;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:4px}
-  .fl-term b{color:#D14F8C;font-size:16px}
-  .fl-photos{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:16px}
-  .fl-photos .ph{aspect-ratio:1;border-radius:4px;background:linear-gradient(135deg,#e7edf3,#ccd8e7);display:flex;align-items:center;justify-content:center;font-size:16px;color:#9aa9bd}
-  .fl-copy{color:#E86BA4;font-weight:800;font-size:15.5px;line-height:1.8;margin:4px 0 8px}
-  .fl-hr{width:40px;height:3px;background:#F4A9C8;border-radius:2px;margin:8px auto 16px}
-  .fl-spots-h{font-size:16px;font-weight:800;color:#3a3238;margin:6px 0 14px;position:relative;padding-bottom:9px}
-  .fl-spots-h .u{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:36px;height:3px;background:#F4A9C8;border-radius:2px}
-  .fl-spots{display:flex;flex-direction:column;gap:8px;text-align:left}
-  .spot{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid #F3C9DB;border-radius:10px;padding:9px}
-  .spot .sthumb{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#fbe3ee,#f6c9dc);display:flex;align-items:center;justify-content:center;font-size:20px;flex:0 0 auto}
-  .spot b{font-size:13px;display:block}.spot span{font-size:11px;color:#8a7f85}
-  .btn.pink{background:#E86BA4;box-shadow:0 6px 16px rgba(232,107,164,.32)}
-
+  /* member form */
   .field{margin:14px 0}
   .field label{font-size:13px;font-weight:700;display:block;margin-bottom:6px}
   .field .req{color:#e2557b;font-size:11px;margin-left:4px}
   .field input{width:100%;padding:12px;border:1.5px solid #dfe4ec;border-radius:10px;font-size:14px;background:#fff}
-  .field input:focus{outline:none;border-color:var(--line)}
+  .field input:focus{outline:none;border-color:var(--brand)}
 
+  /* stamp */
   .progwrap{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
   .prog{height:10px;background:#e7ebf1;border-radius:8px;overflow:hidden;margin:8px 0}
-  .prog>i{display:block;height:100%;background:var(--line);transition:width .4s}
+  .prog>i{display:block;height:100%;background:var(--brand);transition:width .4s}
   .cnt{font-size:13px;font-weight:800;color:var(--navy)}
-  .stamps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
-  .st{aspect-ratio:1;border-radius:12px;border:2px dashed #cdd5e0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;color:#9aa4b2;background:#fff;text-align:center;padding:2px}
-  .st.got{border:2px solid var(--line);background:#e8f9ef;color:var(--line-d);font-weight:700}
-  .st.got .e{font-size:22px}.st .e{font-size:18px}
-  .st.staff{border-color:var(--gold);color:var(--gold-d)}
+  .stamps{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
+  .st{aspect-ratio:.82;border-radius:12px;border:2px dashed #cdd5e0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:8px;color:#9aa4b2;background:#fff;text-align:center;padding:2px;overflow:hidden}
+  .st.got{border:2px solid var(--brand);background:#eef3fe;color:var(--brand-d);font-weight:700}
+  .st.got .e{font-size:20px}.st .e{font-size:16px}
   .tier{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:8px;opacity:.55}
-  .tier.done{opacity:1;border-color:#bdeccf;background:#f2fcf6}
+  .tier.done{opacity:1;border-color:#bcd3fb;background:#f2f6fe}
   .tier .n{width:28px;height:28px;flex:0 0 auto;border-radius:50%;background:#c8ced7;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px}
-  .tier.done .n{background:var(--line)} .tier.staff.done .n{background:var(--gold)}
+  .tier.done .n{background:var(--brand)}
   .tier .txt{flex:1}.tier .txt b{font-size:13.5px}.tier .txt div{font-size:11px;color:var(--sub)}
-  .venue{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:8px}
-  .venue .vi{flex:1}.venue .vi b{font-size:13.5px}.venue .vi p{margin:1px 0 0;font-size:11px;color:var(--sub)}
-  .vbtn{border:none;background:var(--blue);color:#fff;font-size:12px;font-weight:700;border-radius:9px;padding:9px 12px;cursor:pointer;white-space:nowrap}
-  .vbtn.done{background:#e8f9ef;color:var(--line-d)} .vbtn.staff{background:var(--gold)} .vbtn:disabled{background:#c8ced7;color:#fff}
-  .staffbox{background:#fff8e8;border:1px solid #f0d9a6;border-radius:12px;padding:11px 13px;font-size:11.5px;color:#8a6a1f;margin:6px 0 10px}
-  .staffbox button{margin-top:8px;border:none;background:var(--gold);color:#fff;font-weight:700;font-size:12px;border-radius:9px;padding:9px 12px;cursor:pointer;width:100%}
 
+  /* area select (view filter in スタンプ確認) */
+  .area-sel{width:100%;padding:12px;border:1.5px solid var(--bd);border-radius:11px;font-size:15px;font-weight:700;color:var(--brand);background:#f6f9fd;font-family:inherit;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%232E6BE6' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center}
+
+  /* QR list */
+  .cat{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+  .cat .ci{width:40px;height:40px;flex:0 0 auto;border-radius:10px;background:linear-gradient(135deg,#e7edf5,#d0dcf0);display:flex;align-items:center;justify-content:center;font-size:20px}
+  .cat .cx{flex:1;min-width:0}.cat .cx b{font-size:13.5px;display:block}.cat .cx span{font-size:11px;color:var(--sub)}
+  .cat .pop{font-size:9px;font-weight:800;color:#D14F8C;background:#fdeef5;border-radius:5px;padding:1px 5px;margin-left:5px}
+  .vbtn{border:none;background:var(--brand);color:#fff;font-size:12px;font-weight:700;border-radius:9px;padding:9px 12px;cursor:pointer;white-space:nowrap}
+  .vbtn.done{background:#eef3fe;color:var(--brand-d)} .vbtn:disabled{background:#c8ced7;color:#fff;cursor:not-allowed}
+
+  /* nav */
   .nav{position:absolute;left:0;right:0;bottom:0;display:none;grid-template-columns:repeat(3,1fr);background:#fff;border-top:1px solid var(--bd);z-index:7}
   .nav.on{display:grid}
   .nav a{padding:9px 0 10px;text-align:center;font-size:10px;color:#9aa4b2;cursor:pointer;font-weight:700}
-  .nav a .e{font-size:19px;display:block}
-  .nav a.on{color:var(--line)}
+  .nav a .e{font-size:19px;display:block;margin-bottom:1px}
+  .nav a.on{color:var(--brand)}
 
   .ov{position:absolute;inset:0;background:rgba(15,27,46,.55);display:none;align-items:center;justify-content:center;z-index:20;padding:26px}
   .ov.show{display:flex}
-  .box{background:#fff;border-radius:18px;padding:24px 20px;text-align:center;max-width:290px;width:100%}
-  .box .e{font-size:40px}.box h3{margin:8px 0 4px;font-size:18px}.box p{margin:0 0 16px;font-size:13px;color:var(--sub)}
-  .box button{background:var(--line);color:#fff;border:none;border-radius:11px;padding:12px;font-size:14px;font-weight:700;width:100%;cursor:pointer}
+  .box{background:#fff;border-radius:18px;padding:24px 20px;text-align:center;max-width:300px;width:100%}
+  .box .e{font-size:38px}.box h3{margin:8px 0 4px;font-size:17px}.box p{margin:0 0 16px;font-size:13px;color:var(--sub)}
+  .box button{background:var(--brand);color:#fff;border:none;border-radius:11px;padding:12px;font-size:14px;font-weight:700;width:100%;cursor:pointer}
+  .box .opt{background:#fff;color:var(--brand);border:1.5px solid var(--brand);margin-bottom:8px}
   .scan{position:absolute;inset:0;background:#0b1016;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:25;color:#fff}
   .scan.show{display:flex}
   .frame{width:190px;height:190px;border-radius:20px;position:relative;box-shadow:0 0 0 2000px rgba(0,0,0,.55)}
-  .frame:before,.frame:after{content:"";position:absolute;width:34px;height:34px;border:3px solid var(--line)}
+  .frame:before,.frame:after{content:"";position:absolute;width:34px;height:34px;border:3px solid var(--brand)}
   .frame:before{top:-2px;left:-2px;border-right:0;border-bottom:0;border-radius:12px 0 0 0}
   .frame:after{bottom:-2px;right:-2px;border-left:0;border-top:0;border-radius:0 0 12px 0}
-  .laser{position:absolute;left:6px;right:6px;height:2px;background:var(--line);top:10px;animation:sc 1.1s ease-in-out infinite;box-shadow:0 0 12px var(--line)}
+  .laser{position:absolute;left:6px;right:6px;height:2px;background:var(--brand);top:10px;animation:sc 1.1s ease-in-out infinite;box-shadow:0 0 12px var(--brand)}
   @keyframes sc{0%{top:10px}50%{top:176px}100%{top:10px}}
   .scan p{margin-top:22px;font-size:13px;opacity:.9}
-  .banner{background:#11161d;color:#dfe7f2;font-size:11px;text-align:center;padding:6px 10px}
-  .banner b{color:#7fffa8}
+  .scan .pick{background:#fff;border-radius:14px;margin-top:20px;width:270px;max-height:230px;overflow-y:auto;text-align:left}
+  .scan .pick .ph{padding:9px 14px;font-size:11px;font-weight:700;color:#9aa4b2;border-bottom:1px solid #eef1f4}
+  .scan .pick .pk{padding:11px 14px;font-size:12.5px;color:#1b2330;border-bottom:1px solid #eef1f4;cursor:pointer;display:flex;justify-content:space-between;gap:8px}
+  .scan .pick .pk:active{background:#f2f6fe}
+  .scan .pick .pk .tag{color:var(--brand);font-weight:700;font-size:11px}
+  .scan .pick .pk.disabled{color:#b7bfca;cursor:default}
 
-  /* ME custom attribute panel — Mico Engage AI style */
-  .mepanel{width:100%;max-width:380px;background:#fff;border:1px solid #E6E6E6;border-radius:14px;overflow:hidden;box-shadow:0 1px 2px rgba(27,29,59,.05);font-family:'Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif;color:#282829;letter-spacing:-0.01em}
+  /* ME panel */
+  .mepanel{width:100%;max-width:380px;background:#fff;border:1px solid #E6E6E6;border-radius:14px;overflow:hidden;box-shadow:0 1px 2px rgba(27,29,59,.05);font-family:'Noto Sans JP',sans-serif;color:#282829;letter-spacing:-0.01em;align-self:flex-start}
   .me-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #E6E6E6}
   .me-brand{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
   .me-brand .logo{background:#3438F0;color:#fff;border-radius:999px;font-size:11px;font-weight:700;padding:3px 11px}
@@ -172,14 +135,12 @@
   .attr.flash{animation:mef 1.1s ease}
   @keyframes mef{0%{background:#DBE1FF}100%{background:#fff}}
   .me-foot{padding:12px 16px 16px;font-size:11px;color:#666;border-top:1px solid #E6E6E6;background:#FAF9FB;line-height:1.6}
-  .me-lbl.db{color:#9C8D95;background:#FBF7F9}
-  .me-btn{width:100%;background:#3438F0;color:#fff;border:none;border-radius:8px;padding:9px;font-size:12px;font-weight:700;cursor:pointer}
-  .me-hint{font-size:10px;color:#999;margin-top:8px;line-height:1.5}
-  /* self-hosted DB panel (separate from ME) */
-  .dbpanel{width:100%;max-width:380px;background:#fff;border:1px solid #E6E6E6;border-radius:14px;overflow:hidden;box-shadow:0 1px 2px rgba(27,29,59,.05);font-family:'Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif;color:#282829;align-self:flex-start}
+  /* self DB panel */
+  .dbpanel{width:100%;max-width:380px;background:#fff;border:1px solid #E6E6E6;border-radius:14px;overflow:hidden;box-shadow:0 1px 2px rgba(27,29,59,.05);font-family:'Noto Sans JP',sans-serif;color:#282829;align-self:flex-start}
   .db-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #E6E6E6;background:#eef1f4}
   .db-brand{font-size:13px;font-weight:700;color:#3d5566}
   .db-tag{font-size:11px;color:#666}
+  .me-lbl.db{color:#9C8D95;background:#FBF7F9}
   .db-btn{width:100%;background:#3d5566;color:#fff;border:none;border-radius:8px;padding:9px;font-size:12px;font-weight:700;cursor:pointer}
   .db-foot{padding:12px 16px 16px;font-size:11px;color:#666;border-top:1px solid #E6E6E6;background:#f7f9fa;line-height:1.6}
 </style>
@@ -188,117 +149,78 @@
 <div class="stage">
   <!-- PHONE -->
   <div class="app">
-    <div class="banner">プロトタイプ｜QRはタップで疑似スキャン。右上⟳でリセット</div>
-    <div class="hd" id="topbar">
+    <div class="banner">プロトタイプ｜QRはタップで疑似スキャン。<b>1日1個</b>（デモは読取ごとに翌日扱いで連続取得可）｜右上⟳でリセット</div>
+    <div class="hd">
       <span class="t">🏠 住まいスタンプラリー <span class="pill">ミニアプリ</span></span>
-      <span class="actions"><span id="reset" title="リセット">⟳</span><span>✕</span></span>
+      <span class="actions"><span class="day" id="dayb">Day 1</span><span id="reset" title="リセット">⟳</span></span>
     </div>
     <div class="scroll">
-      <!-- AREA = LINE talk -->
-      <section class="view on" id="v-area">
-        <div class="tk">
-          <div class="tk-hdr"><span>‹</span><span class="av">🏠</span><span class="nm">○○ホーム 住まいの相談</span><span>☰</span></div>
-          <div class="tk-body">
-            <div class="tk-time">14:30</div>
-            <div class="bub"><span class="ba">🏠</span><span class="bx">こんにちは！お住まいのエリアを選んでください👇（画像をタップ）</span></div>
-            <div class="imgmsg">
-              <div class="cap">📍 エリアを選択</div>
-              <div class="imgmap" id="agrid">
-                <div class="acell" data-a="近畿">近畿</div>
-                <div class="acell" data-a="首都圏">首都圏</div>
-                <div class="acell" data-a="中部">中部</div>
-                <div class="acell" data-a="東北">東北</div>
-                <div class="acell" data-a="中国・四国">中国・四国</div>
-                <div class="acell" data-a="九州">九州</div>
-              </div>
-            </div>
-            <div class="bub"><span class="ba">🏠</span><span class="bx" id="area-hint">エリアを選んだら、下のメニュー「スタンプラリー」を押してください🎫</span></div>
-          </div>
-          <div class="tk-input"><span>＋</span><span class="ip">メッセージを入力</span><span>☺</span></div>
-          <div class="rmdock">
-            <div class="rt wide"><span class="e">🏡</span>来場予約</div>
-            <div class="rt cta" data-act="stamp"><span class="e">🎫</span>スタンプ<br>ラリー</div>
-            <div class="rt"><span class="e">📖</span>パンフ<br>レット</div>
-            <div class="rt"><span class="e">💬</span>相談</div>
-          </div>
-        </div>
-      </section>
-      <!-- PAMPHLET = housemaker flyer -->
-      <section class="view" id="v-pamph">
-        <div class="flyer2">
+      <!-- COLLECT (ためる) : gate(survey) or main(QRを読む) -->
+      <section class="view on" id="v-collect">
+        <!-- GATE: 会員登録アンケート -->
+        <div id="gate">
           <div class="fl-inner">
-            <div class="fl-badge">スマホ<b>de</b></div>
-            <div class="fl-org" id="fl-org">エリアのみなさまへ</div>
-            <div class="fl-lead">夢のマイホームづくりに役立つ!</div>
-            <div class="fl-title">ハウスメーカー</div>
+            <div class="fl-org">エリアのみなさまへ</div>
+            <div class="fl-title">住まい</div>
             <div class="fl-en">STAMP RALLY</div>
-            <p class="fl-sub">モデルハウスは何ヵ所ご見学いただいてもOK!!<br>一流ハウスメーカーの家づくりを体感しよう!</p>
-            <div class="fl-term"><span class="lb">開催期間</span><b id="fl-dates">10月1日(水)〜12月31日(水)</b></div>
-            <div class="fl-photos">
-              <div class="ph">🏠</div><div class="ph">🛋️</div><div class="ph">🪟</div><div class="ph">🚪</div>
-              <div class="ph">🏡</div><div class="ph">🧱</div><div class="ph">🛁</div><div class="ph">🪴</div>
-            </div>
-            <div class="fl-copy">期間中、会場を3ヶ所以上周って<br>スタンプを3つ集め<br>アンケートに答えて<br>景品をGETしよう!</div>
-            <div class="fl-hr"></div>
-            <div class="fl-spots-h">対象スポット<span class="u"></span></div>
-            <div class="fl-spots" id="p-houses"></div>
-            <button class="btn pink" id="to-survey" style="margin-top:16px">アンケートに進む →</button>
+            <p class="fl-sub">展示場・相談・イベントをめぐってスタンプを集めよう!<br>5つ集めて景品をGET🎁</p>
+            <div class="fl-term"><span class="lb">開催期間</span><b>10月1日(水)〜12月31日(水)</b></div>
+            <div class="fl-photos"><div class="ph">🏠</div><div class="ph">🛋️</div><div class="ph">🪟</div><div class="ph">🚪</div></div>
           </div>
-        </div>
-      </section>
-      <!-- SURVEY (form) -->
-      <section class="view" id="v-survey">
-        <div class="pad">
           <h1>会員登録アンケート</h1>
-          <p class="lead">ご入力内容はMEカスタム属性に保存されます（右のパネルに反映）</p>
+          <p class="lead">スタンプを集めるには、まず会員情報のご登録をお願いします（入力内容はME AIのカスタム属性に反映）。</p>
           <div class="field"><label>お名前<span class="req">必須</span></label><input id="q-name" type="text" placeholder="山田 太郎" autocomplete="off"></div>
           <div class="field"><label>電話番号<span class="req">必須</span></label><input id="q-phone" type="tel" placeholder="090-0000-0000" autocomplete="off"></div>
           <div class="field"><label>メールアドレス<span class="req">必須</span></label><input id="q-email" type="email" placeholder="taro@example.com" autocomplete="off"></div>
-          <button class="btn" id="survey-submit" disabled>登録してスタンプへ</button>
+          <button class="btn" id="member-save" disabled>登録して「ためる」を始める</button>
+          <div class="note" style="margin-top:14px">来場アンケートは、スタンプ獲得当日の<b>固定時刻（例：毎日17時）</b>に配信されます（獲得直後ではなく、後追い配信）。</div>
+        </div>
+        <!-- MAIN: QRを読む -->
+        <div id="collect-main" style="display:none">
+          <h1>ためる</h1>
+          <p class="lead">めぐった会場のQRを読み取るだけ。<b>エリア・会場はQRから自動判定</b>されます。獲得状況は「スタンプ確認」タブでエリアごとに確認できます。</p>
+          <div class="note" id="ch-hint"></div>
+          <button class="btn scanbtn" id="scanbtn">📷 QRコードを読み取る</button>
         </div>
       </section>
-      <!-- STAMP -->
+
+      <!-- STAMP CARD (スタンプ確認) -->
       <section class="view" id="v-stamp">
-        <div class="pad">
-          <div class="progwrap">
-            <span class="cnt" id="st-cnt">0 / 4 個</span> <span style="font-size:11px;color:var(--sub)" id="st-area"></span>
-            <div class="prog"><i id="st-bar" style="width:0%"></i></div>
-            <div class="stamps" id="st-grid"></div>
-          </div>
-          <div class="sec" style="padding:0"><h2><span class="bar"></span>段階的景品</h2><div id="st-tiers"></div></div>
-          <div class="sec" style="padding:12px 0 0"><h2><span class="bar"></span>スタンプが押せる場所（<span id="st-areaname"></span>）</h2>
-            <div id="st-venues"></div>
-            <div class="staffbox" id="staffbox">
-              4個目「特別賞」は、会場スタッフにご相談後に提示されるQRからのみ取得できます（状態別QR制御）。
-              <button id="staff-enable">［デモ］スタッフが特別賞QRを提示する</button>
-            </div>
-          </div>
+        <h1>スタンプ確認</h1>
+        <p class="lead">スタンプカードは<b>エリアごと</b>にあります。確認したいエリアを選んでください。</p>
+        <div class="sec"><h2><span class="bar"></span>① 確認するエリアを選択</h2>
+          <select id="area-sel" class="area-sel"></select>
         </div>
+        <div class="progwrap" style="margin-top:12px">
+          <span class="cnt" id="st-cnt">0 / 5 個</span> <span style="font-size:11px;color:var(--sub)" id="st-area"></span>
+          <div class="prog"><i id="st-bar" style="width:0%"></i></div>
+          <div class="stamps" id="st-grid"></div>
+        </div>
+        <div class="sec"><h2><span class="bar"></span>段階的景品（このエリア）</h2><div id="st-tiers"></div></div>
+        <div class="sec"><h2><span class="bar"></span>このエリアで押せる場所</h2><div id="area-spots"></div></div>
       </section>
-      <!-- REWARD EXCHANGE -->
+
+      <!-- PRESENT (プレゼント) -->
       <section class="view" id="v-reward">
-        <div class="pad">
-          <h1>景品交換</h1>
-          <p class="lead">集めたスタンプ数に応じた景品を交換できます</p>
-          <div id="rw-body"></div>
-        </div>
+        <h1>プレゼント</h1>
+        <p class="lead">景品はエリアごとの獲得数に応じて交換できます。エリアを選んでください。</p>
+        <div class="sec"><h2><span class="bar"></span>エリアを選択</h2><select id="rw-sel" class="area-sel"></select></div>
+        <div id="rw-body" style="margin-top:12px"></div>
       </section>
     </div>
+
     <div class="nav" id="nav">
-      <a data-tab="v-pamph"><span class="e">📖</span>パンフ</a>
-      <a data-tab="v-stamp"><span class="e">🎫</span>スタンプ</a>
-      <a data-tab="v-reward"><span class="e">🎁</span>景品交換</a>
+      <a data-tab="v-collect"><span class="e">🎯</span>ためる</a>
+      <a data-tab="v-stamp"><span class="e">🎫</span>スタンプ確認</a>
+      <a data-tab="v-reward"><span class="e">🎁</span>プレゼント</a>
     </div>
-    <div class="ov" id="ov"><div class="box"><div class="e" id="ov-e">🎉</div><h3 id="ov-h"></h3><p id="ov-p"></p><button id="ov-btn">OK</button></div></div>
-    <div class="scan" id="scan"><div class="frame"><div class="laser"></div></div><p id="scan-t">QRコードを読み取り中…</p></div>
+    <div class="ov" id="ov"><div class="box"><div class="e" id="ov-e">🎉</div><h3 id="ov-h"></h3><p id="ov-p"></p><div id="ov-opts"></div><button id="ov-btn">OK</button></div></div>
+    <div class="scan" id="scan"><div class="frame"><div class="laser"></div></div><p id="scan-t">QRコードを読み取り中…</p><div class="pick" id="pick" style="display:none"></div></div>
   </div>
 
   <!-- ME CUSTOM ATTRIBUTE PANEL -->
   <div class="mepanel">
-    <div class="me-top">
-      <span class="me-brand"><span class="logo">Mico</span> Engage AI</span>
-      <span class="tag">顧客詳細</span>
-    </div>
+    <div class="me-top"><span class="me-brand"><span class="logo">Mico</span> Engage AI</span><span class="tag">顧客詳細</span></div>
     <div id="me-body"></div>
     <div class="me-foot">左の操作に応じてカスタム属性が自動反映。<b>ME AIのCSV出力はカスタム属性のみ</b>。会場・日時などのイベント明細は下の「自前DB」から別途DLします。</div>
   </div>
@@ -306,46 +228,106 @@
   <div class="dbpanel">
     <div class="db-top"><span class="db-brand">🗄 自前DB（イベント明細）</span><span class="db-tag">CSVエクスポート</span></div>
     <div id="db-body"></div>
-    <div class="db-foot">※ ME AIとは別。スタンプの会場・獲得日時・景品交換などの明細イベントをこの自前DB（Postgres想定）に保存し、ここからCSVでダウンロードします（キャンペーン／エリア／期間で絞込）。</div>
+    <div class="db-foot">※ ME AIとは別。スタンプの種別・会場・獲得日時・選択メニュー・景品交換などの明細イベントをこの自前DB（Postgres想定）に保存し、ここからCSVでダウンロードします（キャンペーン／エリア／期間で絞込）。</div>
   </div>
 </div>
 
 <script>
-const AREAS = {
-  "近畿":{eb:"近畿エリア",t:"秋の住まいフェア 2026",grad:"135deg,#2E5BAB,#3A7BCC",houses:[["さくら台 展示場","大阪・3棟のモデルハウス"],["みどり台 展示場","京都・省エネ住宅"],["あおば台 モデルハウス","奈良・平屋プラン"]]},
-  "首都圏":{eb:"首都圏エリア",t:"秋の住まい見学キャンペーン",grad:"135deg,#1F3864,#2E5BAB",houses:[["たまプラーザ 展示場","神奈川・二世帯"],["武蔵小杉 モデルハウス","東京近郊・都市型"],["大宮 総合展示場","埼玉・大型展示場"]]},
-  "中部":{eb:"中部エリア",t:"住まいづくりフェア 秋",grad:"135deg,#0E7C86,#1d9e75",houses:[["名古屋北 展示場","愛知・大空間LDK"],["岡崎 モデルハウス","愛知・自然素材"],["豊田 展示場","愛知・平屋"]]},
-  "東北":{eb:"東北エリア",t:"あったか住まいフェア",grad:"135deg,#4C6B82,#6c8ba3",houses:[["仙台泉 展示場","宮城・高断熱"],["郡山 モデルハウス","福島・寒冷地仕様"],["盛岡 展示場","岩手・薪ストーブ"]]},
-  "中国・四国":{eb:"中国・四国エリア",t:"秋の住まい相談フェア",grad:"135deg,#7A4D8C,#9a6db0",houses:[["広島東 展示場","広島・耐震"],["高松 モデルハウス","香川・平屋＋ロフト"],["岡山 展示場","岡山・二世帯"]]},
-  "九州":{eb:"九州エリア",t:"住まいフェア in 九州",grad:"135deg,#c9851f,#E8A33D",houses:[["福岡東 展示場","福岡・都市型"],["熊本 モデルハウス","熊本・大屋根"],["鹿児島 展示場","鹿児島・平屋"]]}
+/* ---- master data ---- */
+// スタンプ種別（popup=獲得後に「資金計画/FP/その他」を選択）
+const CATS=[
+  {id:"soten", name:"総合展示場", emoji:"🏘️", popup:false},
+  {id:"bunten",name:"分譲展示場", emoji:"🏠", popup:true},
+  {id:"owner", name:"オーナー宅訪問", emoji:"🏡", popup:false},
+  {id:"factory",name:"ミサワファクトリー（工場見学）", emoji:"🏭", popup:false},
+  {id:"fund",  name:"資金相談", emoji:"💰", popup:true},
+  {id:"screen",name:"事前審査申込", emoji:"📝", popup:false},
+  {id:"land",  name:"土地相談", emoji:"🗺️", popup:true},
+  {id:"plan",  name:"プラン相談", emoji:"📐", popup:false},
+  {id:"other1",name:"その他イベント①", emoji:"🎪", popup:true},
+  {id:"other2",name:"その他イベント②", emoji:"🎫", popup:true},
+];
+// config：エリアごとに「スタンプを押せる場所（QR）」を定義。
+// QR読取時、そのエリアが「書き込むカスタム属性（attrs）」としてMEへ入る（今回はエリアのみ。関心種別など後から追加可）。
+// 会場（QR）を詳細定義したエリア（デモで実際に読み取れる）
+const AREA_SPOTS={
+  "首都圏":[
+    {key:"soten-omiya", cat:"soten", venue:"大宮 総合展示場"},
+    {key:"soten-tama",  cat:"soten", venue:"たまプラーザ 総合展示場"},
+    {key:"bunten-st1",  cat:"bunten",venue:"分譲展示場 ①（1回目）"},
+    {key:"bunten-st2",  cat:"bunten",venue:"分譲展示場 ②（2回目）"},
+    {key:"fund-st",     cat:"fund",  venue:"資金相談カウンター"},
+    {key:"land-st",     cat:"land",  venue:"土地相談カウンター"},
+    {key:"factory-st",  cat:"factory",venue:"ミサワファクトリー（工場見学）"},
+  ],
+  "近畿":[
+    {key:"soten-sakura",cat:"soten", venue:"さくら台 総合展示場"},
+    {key:"bunten-kk1",  cat:"bunten",venue:"分譲展示場 ①（1回目）"},
+    {key:"fund-kk",     cat:"fund",  venue:"資金相談カウンター"},
+    {key:"plan-kk",     cat:"plan",  venue:"プラン相談カウンター"},
+  ],
+  "南東北":[
+    {key:"soten-sendai",cat:"soten", venue:"仙台 総合展示場"},
+    {key:"factory-th",  cat:"factory",venue:"ミサワファクトリー（工場見学）"},
+    {key:"screen-th",   cat:"screen",venue:"事前審査申込カウンター"},
+    {key:"other1-th",   cat:"other1",venue:"住まいづくりイベント"},
+  ],
 };
-const TIERS=[{n:1,name:"ご来場ノベルティ"},{n:2,name:"クオカード"},{n:3,name:"カタログギフト"},{n:4,name:"特別賞（スタッフ提示）",staff:true}];
-const GOAL=4,CAMP="2026-Q4";
-const KEY="misawa_stamp_proto_v3";
-let S=load();
-function blank(){return {area:null,member:{name:"",phone:"",email:""},survey:false,progress:{},staffOn:false,redeem:{},shown:{},last_at:""};}
-function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):blank();}catch(e){return blank();}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
-function prog(){if(!S.progress[S.area])S.progress[S.area]={venues:[false,false,false],staff:false,log:[]};return S.progress[S.area];}
-function count(){return prog().log.length;}
-function nowStr(){const d=new Date(),z=n=>String(n).padStart(2,'0');return `${d.getFullYear()}/${z(d.getMonth()+1)}/${z(d.getDate())} ${z(d.getHours())}:${z(d.getMinutes())}`;}
-const $=id=>document.getElementById(id);
-function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));$(id).classList.add("on");document.querySelector(".scroll").scrollTo({top:0});document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.tab===id));$("topbar").style.display=id==="v-area"?"none":"flex";}
+// スタンプ確認のプルダウン用：全エリア（約20拠点想定）。詳細未定義のエリアは標準テンプレの会場を表示
+const AREAS=["北海道","北東北","南東北","北関東","栃木","首都圏","南関東","甲信","北陸","北越","東海","静岡","中部","近畿","中国","四国","九州北部","九州南部","佐賀","沖縄"];
+const DEFAULT_SPOTS=[
+  {cat:"soten",venue:"総合展示場"},{cat:"bunten",venue:"分譲展示場 ①"},{cat:"bunten",venue:"分譲展示場 ②"},
+  {cat:"fund",venue:"資金相談カウンター"},{cat:"land",venue:"土地相談カウンター"},{cat:"screen",venue:"事前審査申込"},
+  {cat:"plan",venue:"プラン相談"},{cat:"factory",venue:"ミサワファクトリー（工場見学）"},
+];
+function spotsOf(area){return AREA_SPOTS[area]||DEFAULT_SPOTS.map((s,i)=>({key:area+"-"+i,cat:s.cat,venue:s.venue}));}
+// QR一覧（詳細定義エリアのみ、ためるのQRピッカー用）。attrs エリア = 所属エリア
+const QRS=[];
+Object.entries(AREA_SPOTS).forEach(([area,spots])=>spots.forEach(s=>QRS.push(Object.assign({area:area,attrs:{"エリア":area}},s))));
+const POPUP_OPTS=["資金計画","FP相談","その他"];
+const TIERS=[
+  {n:1,name:"ご来場ノベルティ"},{n:2,name:"クオカード500円"},{n:3,name:"カタログギフト"},
+  {n:4,name:"QUOカード2,000円"},{n:5,name:"コンプリート賞"}
+];
+const GOAL=5, CAMP="2026-Q4";
+const KEY="misawa_stamp_proto_v7";
 
-/* ME panel */
+/* ---- state ---- */
+let S=load();
+function blank(){return {area:null,viewArea:null,rwSel:null,member:{name:"",phone:"",email:""},registered:false,
+  day:1,lastStampDay:0,stamps:[],redeem:{},shownTier:{},lastMenu:"",last_at:""};}
+function load(){try{const r=localStorage.getItem(KEY);return r?Object.assign(blank(),JSON.parse(r)):blank();}catch(e){return blank();}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const $=id=>document.getElementById(id);
+function nowStr(){const d=new Date(),z=n=>String(n).padStart(2,'0');return `${d.getFullYear()}/${z(d.getMonth()+1)}/${z(d.getDate())} ${z(d.getHours())}:${z(d.getMinutes())}`;}
+function count(){return S.stamps.length;}
+function areaCount(a){return S.stamps.filter(s=>s.area===a).length;} // エリアごとの獲得数（カードはエリア単位）
+function hasStamp(key){return S.stamps.some(s=>s.key===key);}
+function gotToday(){return S.lastStampDay===S.day;}
+function catOf(id){return CATS.find(c=>c.id===id);}
+// configの属性マッピングをMEへ書き込む（今回はエリアのみ対象。汎用化）
+function applyAttrs(attrs){if(!attrs)return;Object.entries(attrs).forEach(([k,v])=>{if(k==="エリア")S.area=v;});}
+function attrText(attrs){return Object.entries(attrs||{}).map(([k,v])=>k+"＝"+v).join("・");}
+function qArea(q){return (q.attrs&&q.attrs["エリア"])||"";}
+
+function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));$(id).classList.add("on");
+  document.querySelector(".scroll").scrollTo({top:0});
+  document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.tab===id));}
+
+/* ---- ME panel ---- */
 function renderME(flashKey){
-  const p=S.area?prog():null; const c=p?p.log.length:0;
+  const c=count();
   const initial=((S.member.name||'').trim().charAt(0))||'—';
   const nm=S.member.name||'未登録ユーザー';
   const sub=[S.member.phone,S.member.email].filter(Boolean).join('　/　')||'LINE連携済み';
-  // 配信用の少数・上書き属性（累積させない）
   const attrs=[
     ["エリア",S.area],
     ["お名前",S.member.name],["電話番号",S.member.phone],["メールアドレス",S.member.email],
-    ["現キャンペーンID",S.area?CAMP:null],
-    ["スタンプ数（現）",S.area?String(c):null],
-    ["到達景品段",S.area?String(c):null],
-    ["完走フラグ",S.area?(c>=GOAL?"true":"false"):null],
+    ["現キャンペーンID",S.registered?CAMP:null],
+    ["スタンプ数（現エリア）",S.registered&&S.area?String(areaCount(S.area)):null],
+    ["到達景品段（現エリア）",S.registered&&S.area?String(areaCount(S.area)):null],
+    ["完走フラグ（現エリア）",S.registered?(S.area&&areaCount(S.area)>=GOAL?"true":"false"):null],
+    ["最終選択メニュー",S.lastMenu||null],
     ["最終アクセス日時",S.last_at||null],
   ];
   const attrRow=([k,v])=>`<div class="attr" data-k="${k}"><span class="k">${k}</span><span class="v ${v?'':'empty'}">${v||'—'}</span></div>`;
@@ -353,86 +335,136 @@ function renderME(flashKey){
     `<div class="me-cust"><div class="me-ava">${initial}</div><div><div class="nm">${nm}</div><div class="sb">${sub}</div></div></div>`+
     `<div class="me-lbl">カスタム属性（配信用・上書き）</div>${attrs.map(attrRow).join("")}`;
   if(flashKey){const el=$("me-body").querySelector(`.attr[data-k="${flashKey}"]`);if(el)el.classList.add("flash");}
-  renderDB(flashKey);
+  renderDB();
 }
-function renderDB(flashKey){
-  const p=S.area?prog():null; S.redeem=S.redeem||{};
-  const stampLogs=(p?p.log:[]).map((e,i)=>`<div class="attr"><span class="k">スタンプ${i+1}</span><span class="v">${e.label}／${e.at}</span></div>`).join("");
-  const redLogs=Object.keys(S.redeem).filter(n=>typeof S.redeem[n]==='string').map(n=>{const t=TIERS.find(x=>String(x.n)===String(n));return `<div class="attr"><span class="k">景品交換${n}</span><span class="v">${t?t.name:''}／${S.redeem[n]}</span></div>`;}).join("");
+function renderDB(){
+  const stampLogs=S.stamps.map((e,i)=>`<div class="attr"><span class="k">スタンプ${i+1}</span><span class="v">${e.label}${e.area?'（'+e.area+'）':''}${e.menu?'／'+e.menu:''}／${e.at}</span></div>`).join("");
+  const redLogs=Object.entries(S.redeem||{}).flatMap(([area,tiers])=>Object.keys(tiers).map(n=>{const t=TIERS.find(x=>String(x.n)===String(n));return `<div class="attr"><span class="k">景品交換</span><span class="v">${area}／${t?t.name:''}／${tiers[n]}</span></div>`;})).join("");
   const empty=(!stampLogs&&!redLogs)?`<div class="attr"><span class="k" style="color:#9aa4b2">（明細なし）</span><span class="v empty">—</span></div>`:"";
   const el=$("db-body"); if(!el)return;
-  el.innerHTML=`<div class="me-lbl db">イベント明細（会場・獲得日時・景品交換）</div>${stampLogs}${redLogs}${empty}<div style="padding:12px 14px"><button class="db-btn" id="csvbtn">CSVダウンロード</button></div>`;
-  const b=$("csvbtn"); if(b) b.onclick=()=>toast("⬇","CSVダウンロード（デモ）","自前DBのイベント明細（会場・日時・景品交換）をCSVで出力します（キャンペーン／エリア／期間で絞込）。※ME AIのCSVはカスタム属性のみで、これとは別です。");
+  el.innerHTML=`<div class="me-lbl db">イベント明細（種別・会場・獲得日時・選択メニュー・景品交換）</div>${stampLogs}${redLogs}${empty}<div style="padding:12px 14px"><button class="db-btn" id="csvbtn">CSVダウンロード</button></div>`;
+  const b=$("csvbtn"); if(b) b.onclick=()=>toast("⬇","CSVダウンロード（デモ）","自前DBのイベント明細（種別・会場・日時・選択メニュー・景品交換）をCSVで出力します。※ME AIのCSVはカスタム属性のみで、これとは別です。");
 }
 
-/* area (LINE talk) */
-$("agrid").addEventListener("click",e=>{const c=e.target.closest(".acell");if(!c)return;
-  S.area=c.dataset.a;S.last_at=nowStr();save();
-  document.querySelectorAll("#agrid .acell").forEach(x=>x.classList.toggle("sel",x===c));
-  $("area-hint").textContent="「"+S.area+"」を選択しました。下のメニュー「スタンプラリー」を押してください。";
-  renderME("エリア");});
-document.querySelectorAll(".rmdock .rt").forEach(t=>t.addEventListener("click",()=>{
-  if(t.dataset.act!=="stamp"){toast("ℹ️","このデモでは","「スタンプラリー」からお進みください。");return;}
-  if(!S.area){toast("📍","エリアを選択","上の画像からお住まいのエリアを選んでください。");return;}
-  renderPamph();show("v-pamph");}));
+/* ---- collect (gate / main) ---- */
+function renderCollect(){
+  if(!S.registered){$("gate").style.display="block";$("collect-main").style.display="none";return;}
+  $("gate").style.display="none";$("collect-main").style.display="block";
+  $("ch-hint").textContent="会場のQRを読み取ってスタンプを集めましょう（スタンプカードはエリアごと・各エリア最大5個・1日1個。エリア/会場はQRから自動判定。デモは読取ごとに翌日として加算します）。";
+  $("scanbtn").disabled=false;
+}
 
-function renderPamph(){const a=AREAS[S.area];
-  $("fl-org").textContent=a.eb+"のみなさまへ";
-  $("p-houses").innerHTML=a.houses.map(h=>`<div class="spot"><div class="sthumb">🏠</div><div><b>${h[0]}</b><span>${h[1]}</span></div></div>`).join("");}
+/* QRを読み取る → デモ用に「どのQRか」を選ぶピッカー */
+$("scanbtn").addEventListener("click",()=>{openPicker();});
+function openPicker(){
+  const s=$("scan"),pick=$("pick");
+  s.classList.add("show");$("scan-t").textContent="読み取るQRを選んでください（デモ）";
+  pick.style.display="block";
+  pick.innerHTML=`<div class="ph">拠点に貼られたQR（configで書込むカスタム属性を紐付け）</div>`+
+    QRS.map(q=>{const cat=catOf(q.cat);const done=hasStamp(q.key);
+      return `<div class="pk ${done?'disabled':''}" data-q="${q.key}">`+
+        `<span>${cat.emoji} ${cat.name}<br><span style="font-size:11px;color:#9aa4b2">${q.venue}｜属性: ${attrText(q.attrs)}</span></span>`+
+        `<span class="tag">${done?'取得済':'読取'}</span></div>`;}).join("");
+}
+$("pick").addEventListener("click",e=>{const row=e.target.closest(".pk");if(!row||row.classList.contains("disabled"))return;
+  const q=QRS.find(x=>x.key===row.dataset.q);if(!q)return;const cat=catOf(q.cat);
+  $("pick").style.display="none";$("scan-t").textContent="QRコードを読み取り中…";
+  setTimeout(()=>{
+    $("scan").classList.remove("show");
+    // configの属性マッピングをMEへ書き込む（エリア等）
+    applyAttrs(q.attrs);save();renderME("エリア");
+    if(hasStamp(q.key)){toast("✅","取得済みです","このQR（会場）は取得済みです（重複不可）。");return;}
+    if(areaCount(qArea(q))>=GOAL){toast("🏁","このエリアは上限です",qArea(q)+"エリアのスタンプは最大"+GOAL+"個です。別エリアで集められます。");return;}
+    if(cat.popup){const opts=POPUP_OPTS.map(o=>({t:o,menu:o,qkey:q.key,label:cat.name,area:qArea(q)}));
+      toast("📋",cat.name+"（"+qArea(q)+"）で獲得","ご相談・ご希望のメニューを選択してください。",opts,true);}
+    else{commit(q.key,cat.name,"",qArea(q));}
+  },1000);
+});
+function commit(key,label,menu,area){
+  const a=area||S.area;
+  S.area=a;
+  S.stamps.push({key,label,menu,area:a,at:nowStr(),day:S.day});
+  S.lastStampDay=S.day;S.last_at=nowStr();if(menu)S.lastMenu=menu;
+  S.day++; // デモ：読取ごとに翌日として扱い、連続で読み取れるようにする（実運用は1日1個）
+  S.viewArea=a; S.rwSel=a; // 直近スキャンしたエリアを確認/交換の表示対象に
+  save();$("dayb").textContent="Day "+S.day;
+  const ac=areaCount(a);
+  renderCollect();renderStamp();renderME("スタンプ数（現エリア）");
+  const tier=TIERS.find(t=>t.n===ac),tk=a+":"+ac;
+  if(tier&&!S.shownTier[tk]){S.shownTier[tk]=true;save();toast("🎉",a+"で"+ac+"個達成！景品GET",tier.name+" を獲得しました。プレゼントタブで交換できます。");}
+  else toast("🎫","スタンプGET！",label+"（"+a+"）／"+a+"エリア "+ac+" / "+GOAL+" 個"+(menu?"（選択："+menu+"）":""));
+}
 
-/* survey */
-$("to-survey").addEventListener("click",()=>{ $("q-name").value=S.member.name;$("q-phone").value=S.member.phone;$("q-email").value=S.member.email;validate();show("v-survey");});
-function validate(){const ok=$("q-name").value.trim()&&$("q-phone").value.trim()&&$("q-email").value.trim();$("survey-submit").disabled=!ok;return ok;}
+/* ---- stamp card (エリアごと) ---- */
+function renderStamp(){
+  if(!S.viewArea)S.viewArea=S.area||AREAS[0];
+  $("area-sel").innerHTML=AREAS.map(a=>`<option value="${a}" ${S.viewArea===a?'selected':''}>${a}${AREA_SPOTS[a]?'（読取対応）':''}</option>`).join("");
+  const area=S.viewArea, ac=areaCount(area), spots=spotsOf(area);
+  // このエリアのスタンプカード（最大5個）
+  $("st-area").textContent=area+"エリア";
+  $("st-cnt").textContent=ac+" / "+GOAL+" 個";$("st-bar").style.width=(Math.min(ac,GOAL)/GOAL*100)+"%";
+  const areaStamps=S.stamps.filter(s=>s.area===area);
+  let cells="";
+  for(let i=0;i<GOAL;i++){const s=areaStamps[i];
+    cells+=`<div class="st ${s?'got':''}"><span class="e">${s?'🏠':'？'}</span>${s?s.label.replace(/（.*/,'').slice(0,5):(i+1)+'個目'}</div>`;}
+  $("st-grid").innerHTML=cells;
+  $("st-tiers").innerHTML=TIERS.map(t=>`<div class="tier ${ac>=t.n?'done':''}"><div class="n">${t.n}</div><div class="txt"><b>${t.name}</b><div>${ac>=t.n?'獲得済み':'スタンプ'+t.n+'個で解放'}</div></div><div style="font-size:18px">${ac>=t.n?'✅':'🔒'}</div></div>`).join("");
+  // このエリアで押せる場所
+  const got=spots.filter(s=>hasStamp(s.key)).length;
+  $("area-spots").innerHTML=`<div class="note"><b>${area}</b>エリア：${got} / ${spots.length} か所で獲得（スタンプ ${ac}/${GOAL} 個）</div>`+
+    spots.map(s=>{const cat=catOf(s.cat);const done=hasStamp(s.key);
+      return `<div class="cat"><div class="ci">${cat.emoji}</div><div class="cx"><b>${cat.name}${cat.popup?'<span class="pop">獲得後選択</span>':''}</b><span>${s.venue}</span></div><span class="vbtn ${done?'done':''}" style="pointer-events:none">${done?'取得済':'未取得'}</span></div>`;}).join("");
+}
+document.getElementById("area-sel").addEventListener("change",e=>{S.viewArea=e.target.value;save();renderStamp();});
+
+/* ---- member form (gate) ---- */
+function validate(){const ok=$("q-name").value.trim()&&$("q-phone").value.trim()&&$("q-email").value.trim();$("member-save").disabled=!ok;return ok;}
 const MEMLBL={name:"お名前",phone:"電話番号",email:"メールアドレス"};
 ["q-name","q-phone","q-email"].forEach(id=>$(id).addEventListener("input",()=>{const k=id.slice(2);S.member[k]=$(id).value.trim();renderME(MEMLBL[k]);validate();save();}));
-$("survey-submit").addEventListener("click",()=>{if(!validate())return;S.survey=true;S.last_at=nowStr();save();$("nav").classList.add("on");renderStamp();renderME();show("v-stamp");toast("✅","会員登録が完了しました","会場のQRを読み取ってスタンプを集めましょう。");});
+$("member-save").addEventListener("click",()=>{if(!validate())return;S.registered=true;S.last_at=nowStr();save();renderME();renderCollect();
+  toast("✅","会員登録が完了しました","「QRコードを読み取る」から、めぐった会場のQRを読み取ってスタンプを集めましょう。");});
 
-/* stamp */
-function renderStamp(){const a=AREAS[S.area],p=prog(),c=count();
-  $("st-area").textContent=S.area+"エリア";$("st-areaname").textContent=S.area;$("st-cnt").textContent=c+" / 4 個";$("st-bar").style.width=(c/4*100)+"%";
-  let cells=a.houses.map((h,i)=>`<div class="st ${p.venues[i]?'got':''}"><span class="e">🏠</span>${p.venues[i]?h[0].slice(0,4):'？'}</div>`).join("");
-  cells+=`<div class="st staff ${p.staff?'got':''}"><span class="e">${p.staff?'🌟':'🧑‍💼'}</span>特別賞</div>`;
-  $("st-grid").innerHTML=cells;
-  $("st-tiers").innerHTML=TIERS.map(t=>`<div class="tier ${t.staff?'staff':''} ${c>=t.n?'done':''}"><div class="n">${t.n}</div><div class="txt"><b>${t.name}</b><div>${c>=t.n?'獲得済み':'スタンプ'+t.n+'個で解放'}</div></div><div style="font-size:18px">${c>=t.n?'✅':(t.staff?'🌟':'🔒')}</div></div>`).join("");
-  $("st-venues").innerHTML=a.houses.map((h,i)=>`<div class="venue"><div class="vi"><b>${h[0]}</b><p>${h[1]}</p></div><button class="vbtn ${p.venues[i]?'done':''}" data-v="${i}" ${p.venues[i]?'disabled':''}>${p.venues[i]?'取得済':'QR読取'}</button></div>`).join("");
-  $("staffbox").style.display=c>=3?'block':'none';$("staff-enable").style.display=S.staffOn?'none':'block';
-  if(S.staffOn&&c>=3&&!p.staff)$("st-venues").insertAdjacentHTML("beforeend",`<div class="venue"><div class="vi"><b>特別賞QR</b><p>スタッフ提示</p></div><button class="vbtn staff" data-v="staff">QR読取</button></div>`);
+/* ---- reward exchange (エリアごと) ---- */
+function renderReward(){
+  if(!S.rwSel)S.rwSel=S.viewArea||S.area||AREAS[0];
+  $("rw-sel").innerHTML=AREAS.map(a=>`<option value="${a}" ${S.rwSel===a?'selected':''}>${a}（${areaCount(a)}個）</option>`).join("");
+  const area=S.rwSel, ac=areaCount(area); S.redeem=S.redeem||{}; const rd=S.redeem[area]||{};
+  if(ac===0){$("rw-body").innerHTML=`<div class="progwrap" style="text-align:center;padding:24px"><div style="font-size:34px">🎁</div><p style="font-size:13px;margin:8px 0 12px"><b>${area}</b>エリアはまだスタンプがありません。<br>「ためる」でこのエリアのQRを読み取りましょう。</p><button class="btn" onclick="document.querySelector('#nav a[data-tab=v-collect]').click()">スタンプを集める</button></div>`;return;}
+  const rows=TIERS.filter(t=>t.n<=ac).map(t=>{const done=!!rd[t.n];return `<div class="cat"><div class="ci">🎁</div><div class="cx"><b>${t.n}個：${t.name}</b><span>${done?'交換済み':'交換できます'}</span></div><button class="vbtn ${done?'done':''}" data-r="${t.n}" ${done?'disabled':''}>${done?'交換済':'交換する'}</button></div>`;}).join("");
+  $("rw-body").innerHTML=`<div class="note"><b>${area}</b>エリア：スタンプ ${ac} / ${GOAL} 個</div>`+rows;
 }
-$("st-venues").addEventListener("click",e=>{const b=e.target.closest(".vbtn");if(!b||b.disabled)return;const v=b.dataset.v;
-  scan(()=>{const p=prog();let label;
-    if(v==="staff"){if(count()<3){toast("🔒","まだ取得できません","先に3個スタンプを集めてください。");return;}p.staff=true;label="特別賞（スタッフ提示）";}
-    else{if(p.venues[+v]){toast("✅","取得済みです","この会場のスタンプは取得済みです（重複不可）。");return;}p.venues[+v]=true;label=AREAS[S.area].houses[+v][0];}
-    const idx=p.log.length;p.log.push({label:label,at:nowStr()});S.last_at=nowStr();save();const c=count();renderStamp();renderME("スタンプ数（現）");
-    const tier=TIERS.find(t=>t.n===c),key=S.area+":"+c;
-    if(tier&&!S.shown[key]){S.shown[key]=true;save();toast(tier.staff?"🌟":"🎉",c+"個達成！景品GET",tier.name+" を獲得しました。景品交換タブで交換できます。");}
-    else toast("🎫","スタンプGET！",c+" / 4 個になりました。");
-  });
-});
-$("staff-enable").addEventListener("click",()=>{S.staffOn=true;save();renderStamp();toast("🧑‍💼","特別賞QRを提示しました","「特別賞QR」を読み取れるようになりました（デモ）。");});
+document.getElementById("rw-sel").addEventListener("change",e=>{S.rwSel=e.target.value;save();renderReward();});
+$("rw-body").addEventListener("click",e=>{const b=e.target.closest("button[data-r]");if(!b||b.disabled)return;const n=+b.dataset.r,t=TIERS.find(x=>x.n===n);const area=S.rwSel;
+  S.redeem=S.redeem||{};S.redeem[area]=S.redeem[area]||{};S.redeem[area][n]=nowStr();S.last_at=nowStr();save();renderReward();renderME();
+  toast("🎁","景品を交換しました",`${area}／${t.name}／引換コード RD-2026-${1000+n}／会場スタッフにこの画面をご提示ください。`);});
 
-/* scanner */
-function scan(cb){const s=$("scan");s.classList.add("show");$("scan-t").textContent="QRコードを読み取り中…";setTimeout(()=>{s.classList.remove("show");cb();},1100);}
-
-/* reward exchange */
-function renderReward(){S.redeem=S.redeem||{};const c=count();
-  if(c===0){$("rw-body").innerHTML=`<div class="progwrap" style="text-align:center;padding:24px"><div style="font-size:34px">🎫</div><p style="font-size:13px;margin:8px 0 12px">まだ交換できる景品がありません。<br>会場のQRを読み取ってスタンプを集めましょう。</p><button class="btn" onclick="document.querySelector('#nav a[data-tab=v-stamp]').click()">スタンプを集める</button></div>`;return;}
-  const rows=TIERS.filter(t=>t.n<=c).map(t=>{const done=!!S.redeem[t.n];return `<div class="venue"><div class="vi"><b>${t.n}個：${t.name}</b><p>${done?'交換済み':'交換できます'}</p></div><button class="vbtn ${done?'done':(t.staff?'staff':'')}" data-r="${t.n}" ${done?'disabled':''}>${done?'交換済':'交換する'}</button></div>`;}).join("");
-  $("rw-body").innerHTML=`<p class="lead">集めたスタンプ数に応じた景品を、会場スタッフに提示して交換できます。</p>${rows}`;
+/* ---- overlay ---- */
+function toast(e,h,p,opts,keepAfter){
+  $("ov-e").textContent=e;$("ov-h").textContent=h;$("ov-p").textContent=p;
+  const box=$("ov-opts");box.innerHTML="";
+  $("ov-btn").style.display=(opts&&keepAfter)?"none":"block";
+  if(opts&&opts.length){opts.forEach(o=>{const btn=document.createElement("button");btn.className="opt";btn.textContent=o.t;
+    btn.onclick=()=>{$("ov").classList.remove("show");if(o.menu){commit(o.qkey,o.label,o.menu,o.area);}else if(o.go){show(o.go);}};box.appendChild(btn);});}
+  $("ov").classList.add("show");
 }
-$("rw-body").addEventListener("click",e=>{const b=e.target.closest("button[data-r]");if(!b||b.disabled)return;const n=+b.dataset.r,t=TIERS.find(x=>x.n===n);S.redeem=S.redeem||{};S.redeem[n]=nowStr();S.last_at=nowStr();save();renderReward();renderME();toast("🎁","景品を交換しました",`${t.name}／引換コード RD-2026-${1000+n}／会場スタッフにこの画面をご提示ください。`);});
-
-/* nav / overlays / reset */
-document.querySelectorAll("#nav a").forEach(a=>a.addEventListener("click",()=>{const t=a.dataset.tab;if(t==="v-pamph")renderPamph();if(t==="v-stamp")renderStamp();if(t==="v-reward")renderReward();show(t);}));
-function toast(e,h,p){$("ov-e").textContent=e;$("ov-h").textContent=h;$("ov-p").textContent=p;$("ov").classList.add("show");}
 $("ov-btn").addEventListener("click",()=>$("ov").classList.remove("show"));
 $("ov").addEventListener("click",e=>{if(e.target.id==="ov")$("ov").classList.remove("show");});
-$("reset").addEventListener("click",()=>{S=blank();save();$("nav").classList.remove("on");renderME();show("v-area");});
 
-/* boot */
-renderME();
-if(S.area&&S.survey){$("nav").classList.add("on");renderStamp();show("v-stamp");}
-else if(S.area){renderPamph();show("v-pamph");}
-else show("v-area");
+/* ---- nav / day / reset ---- */
+document.querySelectorAll("#nav a").forEach(a=>a.addEventListener("click",()=>{const t=a.dataset.tab;
+  if(t==="v-collect")renderCollect();if(t==="v-stamp")renderStamp();if(t==="v-reward")renderReward();show(t);}));
+$("dayb").addEventListener("click",()=>{S.day++;save();$("dayb").textContent="Day "+S.day;renderCollect();
+  toast("📅","翌日になりました（デモ）","本日分のスタンプ枠がリセットされました。続けてQRを読み取れます。");});
+$("reset").addEventListener("click",()=>{S=blank();save();$("dayb").textContent="Day 1";
+  $("q-name").value="";$("q-phone").value="";$("q-email").value="";validate();
+  renderME();renderCollect();renderStamp();show("v-collect");});
+
+/* ---- boot ---- */
+$("dayb").textContent="Day "+S.day;
+$("q-name").value=S.member.name;$("q-phone").value=S.member.phone;$("q-email").value=S.member.email;validate();
+$("nav").classList.add("on");
+renderME();renderCollect();renderStamp();
+show("v-collect");
 </script>
 </body>
 </html>
