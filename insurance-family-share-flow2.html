@@ -323,9 +323,17 @@ function screenApprove(){
     +'<div class="ad">'+FAM+'さんから、あなたの保険情報の共有申請が届いています。承認すると、マイ保険で共有をオンにした保険情報が共有されます。</div>'
     +'<div class="approve-actions"><button class="btn btn-ghost" '+A("afterApprove","ng")+'>拒否する</button><button class="btn btn-brand" '+A("afterApprove","ok")+'>承認する</button></div></div>';
 }
+function deskFor(co){var d={};d[CUST]="0120-101-101";d[COMP]="0120-202-202";return d[co]||"0120-000-000";}
+function emgType(name){var m=name.match(/（([^）]+)）/);return m?m[1]:name;}
+function emgBlock(insArr,act){
+  if(!insArr||!insArr.length)return "";
+  var agents=insArr.map(function(x){return '<div class="emg-card"><div class="emg-ic">'+I.person+'</div><div><div class="lbl">'+esc(emgType(x.name))+'</div><div class="val">'+esc(x.agent)+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn tealc" '+A(act,"発信")+'>'+I.phone+'</button></div>';}).join("");
+  var desks=insArr.map(function(x){return '<div class="emg-card"><div class="emg-ic">'+I.shield+'</div><div><div class="lbl">'+esc(emgType(x.name))+' ・ '+esc(x.co)+'</div><div class="val">会社窓口 <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(deskFor(x.co))+'</span></div></div><button class="callbtn greenc" '+A(act,"発信")+'>'+I.phone+'</button></div>';}).join("");
+  return '<div style="font-size:12px;font-weight:700;color:var(--ink2);margin:2px 2px 8px">担当者（保険ごと）</div>'+agents+'<div style="height:1px;background:#e9e9ee;margin:14px 2px"></div><div style="font-size:12px;font-weight:700;color:var(--ink2);margin:2px 2px 8px">保険会社の窓口</div>'+desks;
+}
 function screenMember(){
   var m=memberDetail;
-  var emg=m.emergency.map(function(e){return '<div class="emg-card"><div class="emg-ic">'+(e.green?I.shield:I.person)+'</div><div><div class="lbl">'+esc(e.lbl)+'</div><div class="val">'+esc(e.val)+'</div></div><button class="callbtn '+(e.green?'greenc':'tealc')+'" '+A("toast","発信")+'>'+I.phone+'</button></div>';}).join("");
+  var emg=emgBlock(m.insurances,"toast");
   var ins=m.insurances.map(function(x){return '<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div><div><div class="ins-name">'+esc(x.name)+'</div><div class="ins-co">'+esc(x.co)+'</div></div></div>'
     +'<div class="grid2"><div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(x.no)+'</div></div><div class="field"><div class="lbl">月額</div><div class="val">'+esc(x.fee)+'</div></div></div>'
     +'<div class="field full"><div><div class="lbl">担当者</div><div class="val">'+esc(x.agent)+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn" '+A("toast","発信")+'>'+I.phone+'</button></div></div>';}).join("");
@@ -436,8 +444,7 @@ function bOfficial(){
 function closePill(){return '<div class="backbar"><button class="back" '+A("famGo","official")+'>'+I.back+' LINEトークに戻る</button></div>';}
 function sharedBody(){
   var shared=myInsurances.filter(function(x){return x.shared;});
-  var emg='<div class="emg-card"><div class="emg-ic">'+I.person+'</div><div><div class="lbl">保険会社の担当者</div><div class="val">田中 誠</div></div><button class="callbtn tealc" '+A("toastB","発信")+'>'+I.phone+'</button></div>'
-    +'<div class="emg-card"><div class="emg-ic">'+I.shield+'</div><div><div class="lbl">'+CUST+'</div><div class="val">0120-000-000</div></div><button class="callbtn greenc" '+A("toastB","発信")+'>'+I.phone+'</button></div>';
+  var emg=emgBlock(shared,"toastB");
   var ins=shared.map(function(x){return '<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div><div><div class="ins-name">'+esc(x.name)+'</div><div class="ins-co">'+esc(x.co)+'</div></div></div>'
     +'<div class="grid2"><div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(x.no)+'</div></div><div class="field"><div class="lbl">月額</div><div class="val">'+esc(x.fee)+'</div></div></div>'
     +'<div class="field full"><div><div class="lbl">担当者</div><div class="val">'+esc(x.agent)+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn" '+A("toastB","発信")+'>'+I.phone+'</button></div></div>';}).join("");
