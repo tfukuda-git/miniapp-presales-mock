@@ -323,11 +323,6 @@ function renderME(flashKey){
   const attrs=[
     ["エリア",S.area],
     ["お名前",S.member.name],["電話番号",S.member.phone],["メールアドレス",S.member.email],
-    ["現キャンペーンID",S.registered?CAMP:null],
-    ["スタンプ数（現エリア）",S.registered&&S.area?String(areaCount(S.area)):null],
-    ["到達景品段（現エリア）",S.registered&&S.area?String(areaCount(S.area)):null],
-    ["完走フラグ（現エリア）",S.registered?(S.area&&areaCount(S.area)>=GOAL?"true":"false"):null],
-    ["最終選択メニュー",S.lastMenu||null],
     ["最終アクセス日時",S.last_at||null],
   ];
   const attrRow=([k,v])=>`<div class="attr" data-k="${k}"><span class="k">${k}</span><span class="v ${v?'':'empty'}">${v||'—'}</span></div>`;
