@@ -98,7 +98,7 @@
   .vbtn.done{background:#eef3fe;color:var(--brand-d)}
 
   /* nav */
-  .nav{position:absolute;left:0;right:0;bottom:0;display:none;grid-template-columns:repeat(4,1fr);background:#fff;border-top:1px solid var(--bd);z-index:7}
+  .nav{position:absolute;left:0;right:0;bottom:0;display:none;grid-template-columns:repeat(3,1fr);background:#fff;border-top:1px solid var(--bd);z-index:7}
   .nav.on{display:grid}
   .nav a{padding:9px 0 10px;text-align:center;font-size:10px;color:#9aa4b2;cursor:pointer;font-weight:700}
   .nav a .e{font-size:19px;display:block;margin-bottom:1px}
@@ -194,15 +194,6 @@
         <button class="btn scanbtn" id="top-cta" style="margin-top:12px">📷 スタンプをためる</button>
       </section>
 
-      <!-- ためる（カメラ） -->
-      <section class="view" id="v-collect">
-        <h1>ためる</h1>
-        <p class="lead">カメラをかざして会場のQRを読み取ってください。エリア・会場はQRから自動判定されます。</p>
-        <div class="cambox"><div class="cem">📷</div><div style="font-size:12px">カメラ起動中…</div></div>
-        <button class="btn scanbtn" id="scanbtn">📷 QRコードを読み取る</button>
-        <div class="note" id="ch-hint" style="margin-top:12px"></div>
-      </section>
-
       <!-- スタンプ確認 -->
       <section class="view" id="v-stamp">
         <h1>スタンプ確認</h1>
@@ -228,7 +219,6 @@
 
     <div class="nav" id="nav">
       <a data-tab="v-top"><span class="e">🏠</span>TOP</a>
-      <a data-tab="v-collect"><span class="e">📷</span>ためる</a>
       <a data-tab="v-stamp"><span class="e">🎫</span>スタンプ確認</a>
       <a data-tab="v-reward"><span class="e">🎁</span>プレゼント</a>
     </div>
@@ -366,10 +356,8 @@ function renderTop(){const area=S.area||AREAS[0];
   $("top-spots").innerHTML=spots.map(s=>{const c=catOf(s.cat);return `<div class="cat"><div class="ci">${c.emoji}</div><div class="cx"><b>${c.name}</b><span>${s.venue}</span></div></div>`;}).join("");
 }
 
-/* ---- ためる（カメラ） ---- */
-function renderCollect(){$("ch-hint").textContent="スタンプカードはエリアごと・各エリア最大5個。分譲展示場は展示場名を入力して何度でも、その他は1会場1回。";}
-$("scanbtn").addEventListener("click",()=>{openPicker();});
-$("top-cta").addEventListener("click",()=>{renderCollect();show("v-collect");openPicker();});
+/* ---- ためる（TOPのボタンからカメラ起動） ---- */
+$("top-cta").addEventListener("click",()=>{openPicker();});
 function openPicker(){
   const s=$("scan"),pick=$("pick");
   s.classList.add("show");$("scan-t").textContent="読み取るQRを選んでください（デモ）";
@@ -411,7 +399,7 @@ function commit(key,label,menu,area){
   S.viewArea=a; S.rwSel=a;
   save();
   const ac=areaCount(a);
-  renderCollect();renderStamp();renderTop();renderME("エリア");
+  renderStamp();renderTop();renderME("エリア");show("v-stamp"); // 読み取ったらスタンプ確認へ
   const tier=TIERS.find(t=>t.n===ac),tk=a+":"+ac;
   if(tier&&!S.shownTier[tk]){S.shownTier[tk]=true;save();toast("🎉",a+"で"+ac+"個達成！景品GET",tier.name+" を獲得しました。プレゼントタブで交換できます。");}
   else toast("🎫","スタンプGET！",label+"（"+a+"）"+(menu?"／"+menu:"")+"／"+a+"エリア "+ac+" / "+GOAL+" 個");
@@ -447,7 +435,7 @@ $("q-zip").addEventListener("input",()=>{S.zip=$("q-zip").value.trim();renderME(
 $("member-save").addEventListener("click",()=>{if(!validate())return;
   S.registered=true; S.zip=$("q-zip").value.trim();
   S.area=postalToArea(S.zip); S.viewArea=S.area; S.rwSel=S.area; S.last_at=nowStr(); save();
-  $("nav").classList.add("on"); renderME(); renderTop(); renderStamp(); renderReward(); renderCollect();
+  $("nav").classList.add("on"); renderME(); renderTop(); renderStamp(); renderReward();
   show("v-top");
   toast("✅","会員登録が完了しました","郵便番号から「"+S.area+"エリア」をデフォルト拠点に設定しました。TOPからスタンプ集めを始めましょう。");});
 
@@ -456,7 +444,7 @@ function renderReward(){
   if(!S.rwSel)S.rwSel=S.viewArea||S.area||AREAS[0];
   $("rw-sel").innerHTML=AREAS.map(a=>`<option value="${a}" ${S.rwSel===a?'selected':''}>${a}（${areaCount(a)}個）</option>`).join("");
   const area=S.rwSel, ac=areaCount(area); S.redeem=S.redeem||{}; const rd=S.redeem[area]||{};
-  if(ac===0){$("rw-body").innerHTML=`<div class="progwrap" style="text-align:center;padding:24px"><div style="font-size:34px">🎁</div><p style="font-size:13px;margin:8px 0 12px"><b>${area}</b>エリアはまだスタンプがありません。<br>「ためる」でこのエリアのQRを読み取りましょう。</p><button class="btn" onclick="document.querySelector('#nav a[data-tab=v-collect]').click()">スタンプを集める</button></div>`;return;}
+  if(ac===0){$("rw-body").innerHTML=`<div class="progwrap" style="text-align:center;padding:24px"><div style="font-size:34px">🎁</div><p style="font-size:13px;margin:8px 0 12px"><b>${area}</b>エリアはまだスタンプがありません。<br>TOPの「ためる」からこのエリアのQRを読み取りましょう。</p><button class="btn" onclick="document.querySelector('#nav a[data-tab=v-top]').click()">TOPへ</button></div>`;return;}
   const rows=TIERS.filter(t=>t.n<=ac).map(t=>{const done=!!rd[t.n];return `<div class="cat"><div class="ci">🎁</div><div class="cx"><b>${t.n}個：${t.name}</b><span>${done?'交換済み':'交換できます'}</span></div><button class="vbtn ${done?'done':''}" data-r="${t.n}" ${done?'disabled':''}>${done?'交換済':'交換する'}</button></div>`;}).join("");
   $("rw-body").innerHTML=`<div class="note"><b>${area}</b>エリア：スタンプ ${ac} / ${GOAL} 個</div>`+rows;
 }
@@ -475,7 +463,6 @@ document.querySelectorAll("#nav a").forEach(a=>a.addEventListener("click",()=>{c
   if(t==="v-top")renderTop();
   if(t==="v-stamp")renderStamp();
   if(t==="v-reward")renderReward();
-  if(t==="v-collect"){renderCollect();show(t);openPicker();return;}
   show(t);}));
 $("reset").addEventListener("click",()=>{S=blank();save();
   ["q-name","q-zip","q-phone","q-email"].forEach(id=>$(id).value="");validate();
@@ -484,7 +471,7 @@ $("reset").addEventListener("click",()=>{S=blank();save();
 /* ---- boot ---- */
 $("q-name").value=S.member.name;$("q-zip").value=S.zip;$("q-phone").value=S.member.phone;$("q-email").value=S.member.email;validate();
 renderME();
-if(S.registered){$("nav").classList.add("on");renderTop();renderStamp();renderReward();renderCollect();show("v-top");}
+if(S.registered){$("nav").classList.add("on");renderTop();renderStamp();renderReward();show("v-top");}
 else{show("v-gate");}
 </script>
 </body>
