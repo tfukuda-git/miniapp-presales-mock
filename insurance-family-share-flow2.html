@@ -202,7 +202,7 @@ var I={
 };
 var SB='<div class="statusbar"><span>9:41</span><span class="icons"><svg width="18" height="12" viewBox="0 0 18 12"><g fill="#000"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4" width="3" height="8" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></g></svg><svg width="26" height="13" viewBox="0 0 26 13"><rect x="1" y="1" width="21" height="11" rx="3" fill="none" stroke="#000" stroke-opacity=".4"/><rect x="3" y="3" width="16" height="7" rx="1.5" fill="#000"/></svg></span></div>';
 
-var state={tab:"home",page:null,famTab:"by",addStep:0,addMode:"manual",c1:false,editIdx:0,memberIdx:0,profileDone:false,newIns:{},photo:false};
+var state={tab:"home",page:null,famTab:"by",addStep:0,addMode:"manual",c1:false,editIdx:0,memberIdx:0,tutorialDone:false,tuStep:0,tuReplay:false,profileDone:false,newIns:{},photo:false};
 var famB={step:"line",notified:false,mtab:"family",mfamTab:"with",mpage:null};
 var sharedMembers=[["田中 花子","花"],["田中 一郎","郎"]];
 
@@ -252,11 +252,41 @@ function screenFamily(){
   return '<div class="head-row"><div class="h1">共有相手</div></div>'+seg+body;
 }
 function screenSettings(){
-  function item(ic,lab,right){return '<div class="set-item" '+A("toast",lab)+'><div class="set-ic">'+ic+'</div><div class="lab">'+lab+'</div><div class="rt">'+(right?right:"")+I.chev+'</div></div>';}
+  function item(ic,lab,right,act){return '<div class="set-item" '+(act||A("toast",lab))+'><div class="set-ic">'+ic+'</div><div class="lab">'+lab+'</div><div class="rt">'+(right?right:"")+I.chev+'</div></div>';}
+  var nm=state.pname||OWNER;
   return '<div class="head-row"><div class="h1">設定</div></div>'
-    +'<div class="profile"><div class="av">太</div><div><div class="nm">'+OWNER+'</div><div class="meta">契約者 ・ LINE連携済み</div></div></div>'
-    +'<div class="set-group"><div class="set-list">'+item(I.person,"プロフィール",OWNER)+item(I.help,"アプリの使い方","")+item(I.doc,"プライバシーポリシー","")+'</div></div>'
+    +'<div class="profile"><div class="av">太</div><div><div class="nm">'+esc(nm)+'</div><div class="meta">契約者 ・ LINE連携済み</div></div></div>'
+    +'<div class="set-group"><div class="set-list">'+item(I.person,"プロフィール",nm,A("openProfileEdit"))+item(I.help,"アプリの使い方","",A("openTutorial"))+item(I.doc,"プライバシーポリシー","")+'</div></div>'
     +'<div class="ver">家族あんしん共有 v1.0.0<br>'+CUST+'保険株式会社</div>';
+}
+function screenTutorial(){
+  var steps=[
+    {ic:I.shield,t:"保険をかんたん登録",d:"保険会社名を入れるだけ。証券や名刺を見ながら、ご自身の保険をまとめて登録できます。"},
+    {ic:I.people,t:"ご家族と安全に共有",d:"登録した保険情報を、LINEでつながるご家族と共有。共有先は承認制で、いつでも停止できます。"},
+    {ic:I.phone,t:"もしもの時は緊急連絡先へ",d:"担当者や保険会社の窓口にワンタップで発信。ご家族が困ったときに、すぐ確認・連絡できます。"}
+  ];
+  var s=state.tuStep||0;var st=steps[s];var last=(s===steps.length-1);
+  var dots=steps.map(function(_,i){return '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+(i===s?'var(--brand)':'#d8dae0')+'"></span>';}).join(" ");
+  var top=state.tuReplay
+    ? '<div class="backbar"><button class="back" '+A("tuClose")+'>'+I.back+' 設定に戻る</button></div>'
+    : '<div style="text-align:right;padding:2px 2px 0"><span style="color:var(--muted);font-size:13px;cursor:pointer" '+A("tuSkip")+'>スキップ</span></div>';
+  var ic=st.ic.replace('width="22" height="22"','width="46" height="46"').replace('width="19" height="19"','width="44" height="44"');
+  return top
+    +'<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 10px 8px">'
+    +'<div style="width:100px;height:100px;border-radius:30px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;margin-bottom:26px">'+ic+'</div>'
+    +'<h2 style="font-size:22px;margin:0 0 14px">'+st.t+'</h2>'
+    +'<p style="color:var(--ink2);line-height:1.8;font-size:15px;max-width:290px;margin:0">'+st.d+'</p></div>'
+    +'<div style="text-align:center;margin:22px 0 18px">'+dots+'</div>'
+    +'<button class="btn btn-primary btn-block" '+A("tuNext")+'>'+(last?(state.tuReplay?'閉じる':'はじめる'):'次へ')+'</button>';
+}
+function screenProfileEdit(){
+  return '<div class="backbar"><button class="back" '+A("goTab","settings")+'>'+I.back+' 設定に戻る</button></div>'
+    +'<div class="head-row"><div class="h1" style="font-size:22px">プロフィール編集</div></div>'
+    +formFieldId("pe_name","お名前","例）田中 太郎",state.pname)
+    +formFieldId("pe_tel","電話番号","例）090-0000-0000",state.ptel)
+    +formFieldId("pe_bd","生年月日","例）1980/01/01",state.pbd)
+    +'<div class="note">正式なお名前・連絡先をご登録ください。生年月日は同姓同名の識別に使用します。</div>'
+    +'<button class="btn btn-primary btn-block" style="margin-top:4px" '+A("saveProfileEdit")+'>変更を保存</button>';
 }
 function formField(lbl,ph){return '<div class="form-field"><div class="lbl">'+lbl+'</div><input type="text" placeholder="'+ph+'"></div>';}
 function formFieldId(id,lbl,ph,val){return '<div class="form-field"><div class="lbl">'+lbl+'</div><input id="'+id+'" type="text" placeholder="'+esc(ph)+'" value="'+esc(val||"")+'"></div>';}
@@ -339,13 +369,16 @@ function screenMember(){
 }
 function tabbar(){
   var tb=document.getElementById("tabbar");if(!tb)return;
-  if(!state.profileDone){tb.innerHTML="";return;}
+  if(!state.tutorialDone||!state.profileDone||state.page=="tutorial"){tb.innerHTML="";return;}
   var tabs=[["home","マイ保険",I.shield],["family","共有相手",I.people],["settings","設定",I.gear]];
   tb.innerHTML=tabs.map(function(t){return '<button class="'+(state.tab==t[0]&&!state.page?"act":"")+'" '+A("goTab",t[0])+'>'+t[2]+'<span>'+t[1]+'</span></button>';}).join("");
 }
 function render(){
   var c=document.getElementById("content");var html;
-  if(!state.profileDone)html=screenProfile();
+  if(!state.tutorialDone)html=screenTutorial();
+  else if(!state.profileDone)html=screenProfile();
+  else if(state.page=="tutorial")html=screenTutorial();
+  else if(state.page=="profileEdit")html=screenProfileEdit();
   else if(state.page=="add")html=screenAdd();else if(state.page=="edit")html=screenEdit();else if(state.page=="invite")html=screenInvite();
   else if(state.page=="member")html=screenMember();
   else if(state.tab=="home")html=screenHome();else if(state.tab=="family")html=screenFamily();else html=screenSettings();
@@ -365,6 +398,13 @@ function screenProfile(){
 function saveProfile(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var nm=g("p_name");if(!nm){toast("お名前を入力してください");return;}state.pname=nm;state.ptel=g("p_tel");state.pbd=g("p_bd");state.profileDone=true;toast("プロフィールを登録しました");render();}
 function confirmManual(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var co=g("f_co");if(!co){toast("保険会社を入力してください");return;}state.newIns={co:co,name:g("f_name"),no:g("f_no"),fee:g("f_fee"),agent:g("f_agent"),tel:g("f_tel")};state.addStep=1;render();}
 function attachPhoto(){state.photo=true;toast("証券写真を添付しました（自動入力は今後対応）");render();}
+function tuNext(){if((state.tuStep||0)<2){state.tuStep=(state.tuStep||0)+1;render();}else{tuFinish();}}
+function tuFinish(){if(state.tuReplay){state.tuReplay=false;state.tuStep=0;state.page=null;state.tab="settings";}else{state.tutorialDone=true;state.tuStep=0;}render();}
+function tuSkip(){state.tutorialDone=true;state.tuStep=0;render();}
+function tuClose(){state.tuReplay=false;state.tuStep=0;state.page=null;state.tab="settings";render();}
+function openTutorial(){state.tuReplay=true;state.tuStep=0;state.page="tutorial";render();}
+function openProfileEdit(){state.page="profileEdit";render();}
+function saveProfileEdit(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var nm=g("pe_name");if(!nm){toast("お名前を入力してください");return;}state.pname=nm;state.ptel=g("pe_tel");state.pbd=g("pe_bd");toast("プロフィールを更新しました");state.page=null;state.tab="settings";render();}
 function openEdit(i){state.editIdx=i;state.page="edit";render();}
 function openMember(i){state.memberIdx=i;state.page="member";render();}
 function setFam(f){state.famTab=f;render();}
@@ -518,6 +558,12 @@ document.addEventListener("click",function(e){
     case "confirmManual": confirmManual(); break;
     case "attachPhoto": attachPhoto(); break;
     case "saveProfile": saveProfile(); break;
+    case "tuNext": tuNext(); break;
+    case "tuSkip": tuSkip(); break;
+    case "tuClose": tuClose(); break;
+    case "openTutorial": openTutorial(); break;
+    case "openProfileEdit": openProfileEdit(); break;
+    case "saveProfileEdit": saveProfileEdit(); break;
     case "addBack": addBack(); break;
     case "saveEdit": saveEdit(); break;
     case "deleteIns": deleteIns(); break;
