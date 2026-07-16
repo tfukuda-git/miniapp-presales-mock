@@ -338,8 +338,10 @@ function screenMember(){
     +'<div class="sub-label">'+m.name+'さんの保険</div>'+ins;
 }
 function tabbar(){
+  var tb=document.getElementById("tabbar");if(!tb)return;
+  if(!state.profileDone){tb.innerHTML="";return;}
   var tabs=[["home","マイ保険",I.shield],["family","共有相手",I.people],["settings","設定",I.gear]];
-  document.getElementById("tabbar").innerHTML=tabs.map(function(t){return '<button class="'+(state.tab==t[0]&&!state.page?"act":"")+'" '+A("goTab",t[0])+'>'+t[2]+'<span>'+t[1]+'</span></button>';}).join("");
+  tb.innerHTML=tabs.map(function(t){return '<button class="'+(state.tab==t[0]&&!state.page?"act":"")+'" '+A("goTab",t[0])+'>'+t[2]+'<span>'+t[1]+'</span></button>';}).join("");
 }
 function render(){
   var c=document.getElementById("content");var html;
