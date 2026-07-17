@@ -203,7 +203,7 @@ var I={
 var SB='<div class="statusbar"><span>9:41</span><span class="icons"><svg width="18" height="12" viewBox="0 0 18 12"><g fill="#000"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4" width="3" height="8" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></g></svg><svg width="26" height="13" viewBox="0 0 26 13"><rect x="1" y="1" width="21" height="11" rx="3" fill="none" stroke="#000" stroke-opacity=".4"/><rect x="3" y="3" width="16" height="7" rx="1.5" fill="#000"/></svg></span></div>';
 
 var state={tab:"home",page:null,famTab:"by",addStep:0,addMode:"manual",c1:false,editIdx:0,memberIdx:0,tutorialDone:false,tuStep:0,tuReplay:false,profileDone:false,newIns:{},photo:false};
-var famB={step:"line",notified:false,mtab:"family",mfamTab:"with",mpage:null};
+var famB={step:"line",notified:false,mtab:"family",mfamTab:"with",mpage:null,tuDone:false,tuStep:0,tuReplay:false,pname:"",ptel:"",pbd:""};
 var sharedMembers=[["田中 花子","花"],["田中 一郎","郎"]];
 
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
@@ -513,25 +513,64 @@ function fFamily(){
   return closePill()+'<div class="head-row"><div class="h1">共有相手</div></div>'+seg+body;
 }
 function fSettings(){
-  function item(ic,lab,right){return '<div class="set-item" '+A("toastB",lab)+'><div class="set-ic">'+ic+'</div><div class="lab">'+lab+'</div><div class="rt">'+(right||"")+I.chev+'</div></div>';}
+  function item(ic,lab,right,act){return '<div class="set-item" '+(act||A("toastB",lab))+'><div class="set-ic">'+ic+'</div><div class="lab">'+lab+'</div><div class="rt">'+(right||"")+I.chev+'</div></div>';}
+  var nm=famB.pname||FAM;
   return closePill()+'<div class="head-row"><div class="h1">設定</div></div>'
-    +'<div class="profile"><div class="av">咲</div><div><div class="nm">'+FAM+'</div><div class="meta">家族（共有された側） ・ LINE連携済み</div></div></div>'
-    +'<div class="set-group"><div class="set-list">'+item(I.person,"プロフィール",FAM)+item(I.help,"アプリの使い方","")+item(I.doc,"プライバシーポリシー","")+'</div></div>'
+    +'<div class="profile"><div class="av">咲</div><div><div class="nm">'+esc(nm)+'</div><div class="meta">家族（共有された側） ・ LINE連携済み</div></div></div>'
+    +'<div class="set-group"><div class="set-list">'+item(I.person,"プロフィール",nm,A("fopenProfileEdit"))+item(I.help,"アプリの使い方","",A("fopenTutorial"))+item(I.doc,"プライバシーポリシー","")+'</div></div>'
     +'<div class="ver">家族あんしん共有 v1.0.0<br>'+CUST+'保険株式会社</div>';
+}
+function fTutorial(){
+  var steps=[
+    {ic:I.shield,t:"共有された保険を確認",d:"ご家族が共有した保険情報を、このアプリでいつでも確認できます。"},
+    {ic:I.phone,t:"もしもの時は緊急連絡先へ",d:"担当者や保険会社の窓口にワンタップで発信。いざというときにすぐ連絡できます。"},
+    {ic:I.people,t:"ご自身の保険も共有できます",d:"あなた自身の保険を登録して、ご家族と共有することもできます。"}
+  ];
+  var s=famB.tuStep||0;var st=steps[s];var last=(s===steps.length-1);
+  var dots=steps.map(function(_,i){return '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+(i===s?'var(--brand)':'#d8dae0')+'"></span>';}).join(" ");
+  var top=famB.tuReplay
+    ? '<div class="backbar"><button class="back" '+A("ftuClose")+'>'+I.back+' 設定に戻る</button></div>'
+    : '<div style="text-align:right;padding:2px 2px 0"><span style="color:var(--muted);font-size:13px;cursor:pointer" '+A("ftuSkip")+'>スキップ</span></div>';
+  var ic=st.ic.replace('width="22" height="22"','width="46" height="46"').replace('width="19" height="19"','width="44" height="44"');
+  return top
+    +'<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 10px 8px">'
+    +'<div style="width:100px;height:100px;border-radius:30px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;margin-bottom:26px">'+ic+'</div>'
+    +'<h2 style="font-size:22px;margin:0 0 14px">'+st.t+'</h2>'
+    +'<p style="color:var(--ink2);line-height:1.8;font-size:15px;max-width:290px;margin:0">'+st.d+'</p></div>'
+    +'<div style="text-align:center;margin:22px 0 18px">'+dots+'</div>'
+    +'<button class="btn btn-primary btn-block" '+A("ftuNext")+'>'+(last?(famB.tuReplay?'閉じる':'はじめる'):'次へ')+'</button>';
+}
+function fProfileEdit(){
+  return '<div class="backbar"><button class="back" '+A("ftab","settings")+'>'+I.back+' 設定に戻る</button></div>'
+    +'<div class="head-row"><div class="h1" style="font-size:22px">プロフィール編集</div></div>'
+    +formFieldId("fpe_name","お名前","例）佐藤 美咲",famB.pname||FAM)
+    +formFieldId("fpe_tel","電話番号","例）090-0000-0000",famB.ptel)
+    +formFieldId("fpe_bd","生年月日","例）1990/01/01",famB.pbd)
+    +'<div class="note">正式なお名前・連絡先をご登録ください。生年月日は同姓同名の識別に使用します。</div>'
+    +'<button class="btn btn-primary btn-block" style="margin-top:4px" '+A("fsaveProfileEdit")+'>変更を保存</button>';
 }
 function fMember(){
   return '<div class="backbar"><button class="back" '+A("ftab","family")+'>'+I.back+' 共有相手に戻る</button></div>'+sharedBody();
 }
 function fRender(){
-  var body;
-  if(famB.mpage=="member")body=fMember();
+  var body,noTabs=false;
+  if(!famB.tuDone||famB.mpage=="tutorial"){body=fTutorial();noTabs=true;}
+  else if(famB.mpage=="profileEdit")body=fProfileEdit();
+  else if(famB.mpage=="member")body=fMember();
   else if(famB.mtab=="home")body=fHome();
   else if(famB.mtab=="family")body=fFamily();
   else body=fSettings();
   var tabs=[["home","マイ保険",I.shield],["family","共有相手",I.people],["settings","設定",I.gear]];
-  var tb='<div class="tabbar">'+tabs.map(function(t){return '<button class="'+((famB.mtab==t[0]&&!famB.mpage)?"act":"")+'" '+A("ftab",t[0])+'>'+t[2]+'<span>'+t[1]+'</span></button>';}).join("")+'</div>';
+  var tb=noTabs?'':'<div class="tabbar">'+tabs.map(function(t){return '<button class="'+((famB.mtab==t[0]&&!famB.mpage)?"act":"")+'" '+A("ftab",t[0])+'>'+t[2]+'<span>'+t[1]+'</span></button>';}).join("")+'</div>';
   return SB+'<div class="view"><div class="pad">'+body+'</div></div>'+tb+'<div class="toast" id="toastB"></div>';
 }
+function ftuNext(){if((famB.tuStep||0)<2){famB.tuStep=(famB.tuStep||0)+1;renderB();}else{ftuFinish();}}
+function ftuFinish(){if(famB.tuReplay){famB.tuReplay=false;famB.tuStep=0;famB.mpage=null;famB.mtab="settings";}else{famB.tuDone=true;famB.tuStep=0;}renderB();}
+function ftuSkip(){famB.tuDone=true;famB.tuStep=0;renderB();}
+function ftuClose(){famB.tuReplay=false;famB.tuStep=0;famB.mpage=null;famB.mtab="settings";renderB();}
+function fopenTutorial(){famB.tuReplay=true;famB.tuStep=0;famB.mpage="tutorial";renderB();}
+function fopenProfileEdit(){famB.mpage="profileEdit";renderB();}
+function fsaveProfileEdit(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var nm=g("fpe_name");if(!nm){toastB("お名前を入力してください");return;}famB.pname=nm;famB.ptel=g("fpe_tel");famB.pbd=g("fpe_bd");toastB("プロフィールを更新しました");famB.mpage=null;famB.mtab="settings";renderB();}
 function famGo(step){famB.step=step;renderB();}
 function openMini(v){famB.step="miniapp";if(v=="member"){famB.mtab="family";famB.mpage="member";}else{famB.mtab=v||"family";famB.mpage=null;}renderB();}
 function ftab(t){famB.mtab=t;famB.mpage=null;renderB();}
@@ -576,6 +615,12 @@ document.addEventListener("click",function(e){
     case "ftab": ftab(v); break;
     case "fgo": fgo(v); break;
     case "fsetFam": fsetFam(v); break;
+    case "ftuNext": ftuNext(); break;
+    case "ftuSkip": ftuSkip(); break;
+    case "ftuClose": ftuClose(); break;
+    case "fopenTutorial": fopenTutorial(); break;
+    case "fopenProfileEdit": fopenProfileEdit(); break;
+    case "fsaveProfileEdit": fsaveProfileEdit(); break;
     case "toastB": toastB(v); break;
   }
 });
