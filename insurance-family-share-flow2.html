@@ -164,10 +164,7 @@
 <script>
 var CUST="あおば生命",COMP="みなと生命",OWNER="田中 太郎",FAM="佐藤 美咲";
 var myInsurances=[
-  {name:"あおば医療（医療保険）",co:CUST,no:"HN-2024-0831",fee:"¥8,500",agent:"田中 誠",tel:"090-1234-5678",shared:true},
-  {name:"あおばがん（がん保険）",co:CUST,no:"HN-2023-1205",fee:"¥4,200",agent:"田中 誠",tel:"090-1234-5678",shared:true},
-  {name:"まもり（死亡保険）",co:COMP,no:"DL-2021-7842",fee:"¥12,800",agent:"佐藤 雅人",tel:"090-9876-5432",shared:true},
-  {name:"メディカルプラス（医療保険）",co:COMP,no:"DL-2022-3156",fee:"¥6,300",agent:"佐藤 雅人",tel:"090-9876-5432",shared:false}];
+  {name:"あおば医療（医療保険）",co:CUST,no:"HN-2024-0831",fee:"¥2,340",agent:"田中 誠",tel:"090-1234-5678",shared:true}];
 var members=[
   {name:"田中 花子",init:"花",insurances:[{name:"あおば医療（医療保険）",co:CUST,no:"HN-2022-0310",fee:"¥7,200",agent:"田中 誠",tel:"090-1234-5678"}]},
   {name:"田中 健一",init:"健",insurances:[{name:"あおば医療（医療保険）",co:CUST,no:"HN-2020-5521",fee:"¥5,400",agent:"田中 誠",tel:"090-1234-5678"},{name:"まもり（死亡保険）",co:COMP,no:"DL-2019-3092",fee:"¥9,800",agent:"佐藤 雅人",tel:"090-9876-5432"}]},
@@ -236,7 +233,7 @@ function screenFamily(){
     +'<button class="'+(state.famTab=="with"?"act":"")+'" '+A("setFam","with")+'>共有されている</button></div>';
   var body="";
   if(state.famTab=="by"){
-    body+='<div class="banner"><div class="t">3件の保険を共有中</div><div class="d">マイ保険タブで共有のオン・オフを切り替えられます</div></div>';
+    body+='<div class="banner"><div class="t">'+myInsurances.filter(function(x){return x.shared;}).length+'件の保険を共有中</div><div class="d">マイ保険タブで共有のオン・オフを切り替えられます</div></div>';
     body+='<div class="row" style="background:var(--brand-soft)" '+A("go","invite")+'><div class="avatar" style="background:var(--brand)">'+I.plus+'</div>'
       +'<div><div class="nm" style="color:var(--brand)">共有相手を追加</div><div class="st" style="color:#b03a6b">LINEの友だちから選択</div></div><span class="chev">'+I.chev+'</span></div>';
     body+='<div class="section-label">共有中</div>';
@@ -256,7 +253,7 @@ function screenSettings(){
   var nm=state.pname||OWNER;
   return '<div class="head-row"><div class="h1">設定</div></div>'
     +'<div class="profile"><div class="av">太</div><div><div class="nm">'+esc(nm)+'</div><div class="meta">契約者 ・ LINE連携済み</div></div></div>'
-    +'<div class="set-group"><div class="set-list">'+item(I.person,"プロフィール",nm,A("openProfileEdit"))+item(I.help,"アプリの使い方","",A("openTutorial"))+item(I.doc,"プライバシーポリシー","")+'</div></div>'
+    +'<div class="set-group"><div class="set-list">'+item(I.person,"プロフィール編集",nm,A("openProfileEdit"))+item(I.help,"アプリの使い方","",A("openTutorial"))+item(I.doc,"プライバシーポリシー","")+'</div></div>'
     +'<div class="ver">家族あんしん共有 v1.0.0<br>'+CUST+'保険株式会社</div>';
 }
 function screenTutorial(){
@@ -517,7 +514,7 @@ function fSettings(){
   var nm=famB.pname||FAM;
   return closePill()+'<div class="head-row"><div class="h1">設定</div></div>'
     +'<div class="profile"><div class="av">咲</div><div><div class="nm">'+esc(nm)+'</div><div class="meta">家族（共有された側） ・ LINE連携済み</div></div></div>'
-    +'<div class="set-group"><div class="set-list">'+item(I.person,"プロフィール",nm,A("fopenProfileEdit"))+item(I.help,"アプリの使い方","",A("fopenTutorial"))+item(I.doc,"プライバシーポリシー","")+'</div></div>'
+    +'<div class="set-group"><div class="set-list">'+item(I.person,"プロフィール編集",nm,A("fopenProfileEdit"))+item(I.help,"アプリの使い方","",A("fopenTutorial"))+item(I.doc,"プライバシーポリシー","")+'</div></div>'
     +'<div class="ver">家族あんしん共有 v1.0.0<br>'+CUST+'保険株式会社</div>';
 }
 function fTutorial(){
