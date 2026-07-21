@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"/>
-<title>アパレル試着メモ×未購入フォロー LINEミニアプリ モック v0.2</title>
+<title>アパレル試着メモ×未購入フォロー LINEミニアプリ モック v0.3</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -359,21 +359,22 @@ font-size: 13px; line-height: 1.8; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
 </head>
 <body>
 <div class="page">
-<h1>アパレル 試着メモ×未購入フォロー ミニアプリ モック v0.2</h1>
-<div class="subtitle">試着メモ（商品QRスキャン）× 購買突合 × 未購入フォロー配信 ｜ 作成：株式会社Mico ｜ 2026年7月16日 ｜ ※ブランド名「MERIA」は説明用の架空ブランドです</div>
+<h1>アパレル 試着メモ×未購入フォロー ミニアプリ モック v0.3</h1>
+<div class="subtitle">試着メモ（商品バーコードスキャン）× 購買突合 × 未購入フォロー配信 ｜ 作成：株式会社Mico ｜ 2026年7月21日 ｜ ※ブランド名「MERIA」は説明用の架空ブランドです</div>
 
 <div class="flow-box">
 <h2>全体フロー</h2>
 <div>
 <span class="flow-step">来店・試着</span><span class="flow-arrow">→</span>
-<span class="flow-step brand">ミニアプリで商品QRスキャン</span><span class="flow-arrow">→</span>
+<span class="flow-step brand">ミニアプリで商品バーコードをスキャン</span><span class="flow-arrow">→</span>
 <span class="flow-step brand">試着メモがLINEに残る</span><span class="flow-arrow">→</span>
 <span class="flow-step">会計時 仮会員証バーコード提示</span><span class="flow-arrow">→</span>
 <span class="flow-step">購買情報と試着メモを突合</span><span class="flow-arrow">→</span>
 <span class="flow-step brand">未購入者へ自動LINE配信</span>
 </div>
 <div class="flow-notes">
-・お客様が<strong>スタッフに声をかけずに</strong>試着商品名・サイズをLINEに保存（商品情報は<strong>データフィード連携</strong>で自動取得＝店員作業は最小限）<br>
+・お客様が<strong>スタッフに声をかけずに</strong>、既存の商品タグの<strong>バーコード</strong>を読むだけで試着商品名・サイズをLINEに保存<br>
+・バーコードは<strong>SKU単位（サイズ・カラー等のユニーク情報を含む）前提</strong>＝サイズ・カラーも自動判定、お客様の操作は保存の1タップのみ（商品情報は<strong>データフィード連携</strong>で自動取得＝店員作業は最小限）<br>
 ・購買の有無は<strong>仮会員証ポイント（会計時バーコード提示）</strong>で把握し、試着メモと自動突合<br>
 ・「試着したが購入しなかった」お客様にだけ、試着商品を添えた<strong>フォロー配信</strong>を自動実行
 </div>
@@ -382,7 +383,7 @@ font-size: 13px; line-height: 1.8; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
 <div class="gallery" id="mount"></div>
 
 <div class="note-box">
-<strong>📌 注記：</strong>本モックは v0.2（2026/07/16）のドラフトです。実画面はクライアント様のブランドガイドラインに合わせて調整します。ブランド名「MERIA」は架空です。商品QRの規格（既存タグQR流用可否）・データフィード形式・購買データ（POS）連携方式は要件定義で確定します。
+<strong>📌 注記：</strong>本モックは v0.3（2026/07/21）のドラフトです。実画面はクライアント様のブランドガイドラインに合わせて調整します。ブランド名「MERIA」は架空です。<strong>商品バーコードはサイズ・カラー等のユニーク情報を含むSKU単位（JAN等）を前提</strong>としており、品番単位のバーコードの場合はサイズ・カラーをお客様が手動選択するフォールバックで対応します。データフィード形式・購買データ（POS）連携方式は要件定義で確定します。
 </div>
 </div>
 
@@ -1058,7 +1059,7 @@ return (
 <LineRichMenuPrimary
 eyebrow="FITTING LOG" eyebrowIcon="checkroom"
 title={<>試着メモを<br/>のこす</>}
-foot="商品タグのQRをスキャン"
+foot="商品タグのバーコードをスキャン"
 decoration={<span className="material-symbols-rounded" style={{ fontSize: 96, color: ROSE_LINE }}>qr_code_scanner</span>}
 />
 <LineRichMenuCol>
@@ -1077,7 +1078,7 @@ decoration={<span className="material-symbols-rounded" style={{ fontSize: 96, co
 function ScrEntry() {
 const MESSAGES = [
 { from: 'them', text: <>ご来店ありがとうございます👗<br/>試着した商品は、スタッフに声をかけなくてもLINEに保存できます。</>, delay: 700, showTyping: 700, time: '14:02' },
-{ from: 'them', text: <>下のメニュー「試着メモをのこす」から、商品タグのQRコードを読み取ってください。</>, delay: 2400, showTyping: 900, time: '14:02' },
+{ from: 'them', text: <>下のメニュー「試着メモをのこす」から、商品タグのバーコードを読み取ってください。</>, delay: 2400, showTyping: 900, time: '14:02' },
 ];
 return (
 <IOSDevice width={390} height={844}>
@@ -1091,20 +1092,20 @@ menuToggle="open"
 );
 }
 
-// ---------- SCR-102: QR scan ----------
+// ---------- SCR-102: barcode scan ----------
 function ScrScan() {
 return (
 <IOSDevice width={390} height={844} dark>
-<MiniAppScreen title="試着メモ｜QRスキャン" dark>
+<MiniAppScreen title="試着メモ｜バーコードスキャン" dark>
 <div style={{ position: 'absolute', inset: 0, background:
 'radial-gradient(circle at 50% 36%, #3a3a44 0%, #1a1a20 70%)' }}/>
-<div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 46 }}>
-<div style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13, marginBottom: 22 }}>
-商品タグのQRコードを枠に合わせてください
+<div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 56 }}>
+<div style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13, marginBottom: 26 }}>
+商品タグのバーコードを枠に合わせてください
 </div>
-<div style={{ width: 230, height: 230, position: 'relative' }}>
+<div style={{ width: 290, height: 160, position: 'relative' }}>
 {[{t:0,l:0,bt:1,bl:1},{t:0,r:0,bt:1,br:1},{b:0,l:0,bb:1,bl:1},{b:0,r:0,bb:1,br:1}].map((c,i)=>(
-<div key={i} style={{ position: 'absolute', width: 34, height: 34,
+<div key={i} style={{ position: 'absolute', width: 30, height: 30,
 top: c.t, left: c.l, right: c.r, bottom: c.b,
 borderTop: c.bt ? '3.5px solid #fff' : 'none',
 borderLeft: c.bl ? '3.5px solid #fff' : 'none',
@@ -1112,23 +1113,28 @@ borderRight: c.br ? '3.5px solid #fff' : 'none',
 borderBottom: c.bb ? '3.5px solid #fff' : 'none',
 borderRadius: 4 }}/>
 ))}
-<div style={{ position: 'absolute', inset: 26, background: '#fff', borderRadius: 8,
-display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-<div style={{ width: '78%', height: '78%',
-backgroundImage: `
-linear-gradient(90deg, #111 25%, transparent 25%, transparent 50%, #111 50%, #111 62%, transparent 62%, transparent 87%, #111 87%),
-linear-gradient(0deg, #111 20%, transparent 20%, transparent 45%, #111 45%, #111 60%, transparent 60%, transparent 90%, #111 90%)`,
-backgroundSize: '46px 46px', opacity: 0.88, borderRadius: 4 }}/>
+<div style={{ position: 'absolute', inset: 20, background: '#fff', borderRadius: 8,
+display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+<div style={{ width: '82%', height: 58,
+background: `repeating-linear-gradient(90deg,
+#111 0 2px, #fff 2px 4px, #111 4px 5px, #fff 5px 9px,
+#111 9px 12px, #fff 12px 14px, #111 14px 15px, #fff 15px 18px,
+#111 18px 20px, #fff 20px 23px)` }}/>
+<div style={{ fontSize: 10.5, color: '#333', letterSpacing: 1.5 }}>4 902510 476205</div>
 </div>
-<div style={{ position: 'absolute', left: 10, right: 10, top: '46%', height: 2.5,
+<div style={{ position: 'absolute', left: 8, right: 8, top: '50%', height: 2.5,
 background: 'linear-gradient(90deg, transparent, #06C755, transparent)' }}/>
 </div>
-<div style={{ marginTop: 30, width: 320, background: 'rgba(255,255,255,0.96)', borderRadius: 14, padding: '14px 16px' }}>
+<div style={{ marginTop: 14, background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.25)',
+borderRadius: 999, padding: '6px 14px', color: '#fff', fontSize: 11, fontWeight: 600 }}>
+バーコードはサイズ・カラー込みのSKU単位を想定
+</div>
+<div style={{ marginTop: 18, width: 320, background: 'rgba(255,255,255,0.96)', borderRadius: 14, padding: '14px 16px' }}>
 <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
 <span className="material-symbols-rounded" style={{ fontSize: 22, color: ROSE }}>rss_feed</span>
 <div style={{ fontSize: 12, color: '#333', lineHeight: 1.6 }}>
-スキャンすると<b>データフィード</b>から商品名・サイズ・カラー・価格を自動取得します。<br/>
-<span style={{ color: '#888', fontSize: 11 }}>店舗スタッフの操作は不要です</span>
+既存の商品タグのバーコードを読むと、<b>データフィード</b>から商品名・サイズ・カラー・価格を自動取得します。<br/>
+<span style={{ color: '#888', fontSize: 11 }}>タグの変更・QR貼付や店舗スタッフの操作は不要です</span>
 </div>
 </div>
 </div>
@@ -1161,16 +1167,25 @@ return (
 display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
 <span className="material-symbols-rounded" style={{ fontSize: 84, color: 'rgba(255,255,255,0.85)' }}>checkroom</span>
 <span style={{ position: 'absolute', top: 12, left: 12, background: 'rgba(255,255,255,0.92)', color: ROSE_DARK,
-fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 999 }}>QRスキャン完了</span>
+fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 999 }}>スキャン完了</span>
 </div>
 <div style={{ padding: 16 }}>
-<div style={{ fontSize: 11, color: '#999', letterSpacing: 0.4 }}>BRB476-RO ｜ MERIA 銀座店</div>
+<div style={{ fontSize: 11, color: '#999', letterSpacing: 0.4 }}>JAN 4902510476205 ｜ BRB476-RO-B75 ｜ MERIA 銀座店</div>
 <div style={{ fontSize: 17, fontWeight: 700, margin: '4px 0 2px', color: '#111' }}>リフトアップブラ〈ローズ〉</div>
 <div style={{ fontSize: 15, fontWeight: 700, color: ROSE_DARK, marginBottom: 14 }}>¥8,690<span style={{ fontSize: 11, color: '#999', fontWeight: 500 }}>（税込）</span></div>
-<div style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6 }}>試着サイズ</div>
-<div><Chip>B70</Chip><Chip on>B75</Chip><Chip>C70</Chip></div>
-<div style={{ fontSize: 12, fontWeight: 700, color: '#555', margin: '8px 0 6px' }}>カラー</div>
-<div><Chip on>ローズ</Chip><Chip>ブラック</Chip><Chip>ベージュ</Chip></div>
+<div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+<span style={{ fontSize: 12, fontWeight: 700, color: '#555' }}>試着サイズ</span>
+<span style={{ fontSize: 9.5, fontWeight: 700, color: '#06803c', background: '#E6F9EC',
+border: '1px solid #b9ecc9', borderRadius: 999, padding: '2px 8px' }}>バーコードから自動判定</span>
+</div>
+<div><Chip on>B75</Chip></div>
+<div style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '8px 0 6px' }}>
+<span style={{ fontSize: 12, fontWeight: 700, color: '#555' }}>カラー</span>
+<span style={{ fontSize: 9.5, fontWeight: 700, color: '#06803c', background: '#E6F9EC',
+border: '1px solid #b9ecc9', borderRadius: 999, padding: '2px 8px' }}>バーコードから自動判定</span>
+</div>
+<div><Chip on>ローズ</Chip></div>
+<div style={{ fontSize: 10.5, color: '#999', marginTop: 10 }}>※ サイズ・カラーが異なる場合はタップして変更できます</div>
 </div>
 </div>
 <button style={{ display: 'block', width: '100%', marginTop: 16, padding: 15, background: ROSE, color: '#fff',
@@ -1295,13 +1310,13 @@ menuToggle="closed"
 function Page() {
 return (
 <>
-<Frame label="SCR-101 ｜ LINE入口（リッチメニュー）" desc="来店時の入口。リッチメニュー「試着メモをのこす」からミニアプリのQRスキャンを起動。スタッフへの声かけは不要。">
+<Frame label="SCR-101 ｜ LINE入口（リッチメニュー）" desc="来店時の入口。リッチメニュー「試着メモをのこす」からミニアプリのバーコードスキャンを起動。スタッフへの声かけは不要。">
 <ScrEntry/>
 </Frame>
-<Frame label="SCR-102 ｜ 商品QRスキャン" desc="商品タグのQRを読み取り。商品名・サイズ・カラー・価格はデータフィード連携で自動取得（店員作業は最小限）。">
+<Frame label="SCR-102 ｜ 商品バーコードスキャン" desc="既存の商品タグのバーコード（SKU単位）を読み取り。商品名・サイズ・カラー・価格はデータフィード連携で自動取得（タグ変更・店員作業は不要）。">
 <ScrScan/>
 </Frame>
-<Frame label="SCR-103 ｜ 商品確認・試着メモ保存" desc="スキャン結果を確認し、試着サイズ・カラーを選んで保存。保存記録はLINEトークにも届く。">
+<Frame label="SCR-103 ｜ 商品確認・試着メモ保存" desc="サイズ・カラーはバーコードから自動判定済み。お客様は内容を確認して保存の1タップだけ。保存記録はLINEトークにも届く。">
 <ScrSave/>
 </Frame>
 <Frame label="SCR-104 ｜ 試着クローゼット" desc="試着メモの一覧。購入済み／未購入のステータスは購買情報との突合で自動更新。">
