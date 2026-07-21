@@ -199,7 +199,7 @@ var I={
 };
 var SB='<div class="statusbar"><span>9:41</span><span class="icons"><svg width="18" height="12" viewBox="0 0 18 12"><g fill="#000"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4" width="3" height="8" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></g></svg><svg width="26" height="13" viewBox="0 0 26 13"><rect x="1" y="1" width="21" height="11" rx="3" fill="none" stroke="#000" stroke-opacity=".4"/><rect x="3" y="3" width="16" height="7" rx="1.5" fill="#000"/></svg></span></div>';
 
-var state={tab:"home",page:null,famTab:"by",addStep:0,addMode:"manual",c1:false,editIdx:0,memberIdx:0,tutorialDone:false,tuStep:0,tuReplay:false,profileDone:false,newIns:{},photo:false};
+var state={tab:"home",page:null,famTab:"by",addStep:0,addMode:"manual",c1:false,editIdx:0,memberIdx:0,tutorialDone:false,tuStep:0,tuReplay:false,profileDone:false,pconsent:false,newIns:{},photo:false};
 var famB={step:"line",notified:false,mtab:"family",mfamTab:"with",mpage:null,tuDone:false,tuStep:0,tuReplay:false,pname:"",ptel:"",pbd:""};
 var sharedMembers=[["田中 花子","花"],["田中 一郎","郎"]];
 
@@ -216,10 +216,11 @@ function insCard(ins,idx){
   return '<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div>'
     +'<div style="flex:1"><div class="ins-name">'+esc(ins.name)+'</div><div class="ins-co">'+esc(ins.co)+'</div></div>'
     +'<button class="ins-kebab" '+A("openEdit",idx)+'>'+I.kebab+'</button></div>'
-    +'<div class="grid2"><div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(ins.no)+'</div></div>'
-    +'<div class="field"><div class="lbl">月額</div><div class="val">'+esc(ins.fee)+'</div></div></div>'
+    +'<div class="grid2"><div class="field"><div class="lbl">保険料</div><div class="val">'+esc(ins.fee)+'</div></div>'
+    +'<div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(ins.no||"—")+'</div></div></div>'
     +'<div class="field full"><div><div class="lbl">担当者</div><div class="val">'+esc(ins.agent)+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(ins.tel)+'</span></div></div>'
     +'<button class="callbtn" '+A("toast","発信: "+ins.tel)+'>'+I.phone+'</button></div>'
+    +(ins.memo?'<div class="field full"><div><div class="lbl">メモ</div><div class="val">'+esc(ins.memo)+'</div></div></div>':'')
     +'<div class="share-row"><span class="lab">保険の共有</span><div class="tg'+(ins.shared?' on':'')+'" '+A("toggleShare",idx)+'></div></div></div>';
 }
 function screenHome(){
@@ -286,7 +287,7 @@ function screenProfileEdit(){
     +'<button class="btn btn-primary btn-block" style="margin-top:4px" '+A("saveProfileEdit")+'>変更を保存</button>';
 }
 function formField(lbl,ph){return '<div class="form-field"><div class="lbl">'+lbl+'</div><input type="text" placeholder="'+ph+'"></div>';}
-function formFieldId(id,lbl,ph,val){return '<div class="form-field"><div class="lbl">'+lbl+'</div><input id="'+id+'" type="text" placeholder="'+esc(ph)+'" value="'+esc(val||"")+'"></div>';}
+function formFieldId(id,lbl,ph,val,ml){return '<div class="form-field"><div class="lbl">'+lbl+'</div><input id="'+id+'" type="text"'+(ml?' maxlength="'+ml+'"':'')+' placeholder="'+esc(ph)+'" value="'+esc(val||"")+'"></div>';}
 function formFieldVal(lbl,val){return '<div class="form-field"><div class="lbl">'+lbl+'</div><input type="text" value="'+esc(val)+'"></div>';}
 function screenAdd(){
   var s=state.addStep;
@@ -297,19 +298,19 @@ function screenAdd(){
   if(s==0){
     var ni=state.newIns||{};
     body='<div class="center-title"><h2>保険情報を入力する</h2><p>保険会社名は必須です。証券を見ながら手入力で登録できます</p></div>'
-      +formFieldId("f_co","保険会社（必須）","例）あおば生命",ni.co)
-      +formFieldId("f_name","保険種類","例）あおば医療（医療保険）",ni.name)
-      +formFieldId("f_no","証券番号","例）HN-2025-0226",ni.no)
-      +formFieldId("f_fee","月額保険料","例）¥6,800",ni.fee)
-      +formFieldId("f_agent","担当者名","例）佐藤 美咲",ni.agent)
-      +formFieldId("f_tel","担当者連絡先","例）090-0000-0000",ni.tel)
+      +formFieldId("f_co","保険会社（必須）","例）あおば生命",ni.co,75)
+      +formFieldId("f_name","保険の種類","例）あおば医療（医療保険）",ni.name,75)
+      +formFieldId("f_fee","保険料","例）月額 ¥6,800 / 年払い など",ni.fee,75)
+      +formFieldId("f_agent","担当者名","例）佐藤 美咲",ni.agent,75)
+      +formFieldId("f_tel","連絡先","例）担当者または請求窓口の電話番号",ni.tel,75)
+      +formFieldId("f_memo","自由記入欄","例）更新時期・受取人・家族へのメモ など",ni.memo,120)
       +'<button class="btn btn-primary btn-block" style="margin-top:4px" '+A("confirmManual")+'>入力内容を確認する</button>'
       +'<button class="btn btn-ghost btn-block" style="margin-top:10px" '+A("attachPhoto")+'>'+I.camera.replace('width="40" height="40"','width="18" height="18"')+' 証券を撮影する（任意）'+(state.photo?'　✓ 添付済み':'')+'</button>'
       +'<div style="text-align:center;color:#98a2b3;font-size:12px;margin-top:10px;line-height:1.5">撮影した写真からの自動入力（OCR）は今後対応予定です</div>';
   } else if(s==1){
     var ni2=state.newIns||{};
-    var fields=[["保険会社",ni2.co],["保険種類",ni2.name],["証券番号",ni2.no],["月額保険料",ni2.fee],["担当者名",ni2.agent],["担当者連絡先",ni2.tel]];
-    var rows=fields.map(function(f){var ic=(f[0]=="担当者名"?I.person:(f[0]=="証券番号"||f[0]=="月額保険料"?I.card:I.doc));
+    var fields=[["保険会社",ni2.co],["保険の種類",ni2.name],["保険料",ni2.fee],["担当者名",ni2.agent],["連絡先",ni2.tel],["自由記入欄",ni2.memo]];
+    var rows=fields.map(function(f){var ic=(f[0]=="担当者名"?I.person:(f[0]=="保険料"?I.card:I.doc));
       return '<div class="res-row"><div class="res-ic">'+ic+'</div><div><div class="lbl">'+f[0]+'</div><div class="val">'+esc(f[1]||"（未入力）")+'</div></div></div>';}).join("");
     body='<div class="center-title"><h2>登録内容を確認</h2><p>内容に誤りがあれば戻って修正してください</p></div>'
       +(state.photo?'<div class="ok-banner">'+I.check+' 証券写真を添付済み（自動入力は今後対応）</div>':'')
@@ -330,7 +331,7 @@ function screenEdit(){
   return '<div class="backbar"><button class="back" '+A("go","")+'>'+I.back+' マイ保険に戻る</button></div>'
     +'<div class="head-row"><div class="h1" style="font-size:22px">保険情報の編集</div></div>'
     +'<div class="note">編集・削除できるのは契約者ご本人のみです。変更・削除を行っても、共有先のご家族に通知は送られません。</div>'
-    +formFieldVal("保険会社",ins.co)+formFieldVal("保険種類",ins.name)+formFieldVal("証券番号",ins.no)+formFieldVal("月額保険料",ins.fee)+formFieldVal("担当者名",ins.agent)+formFieldVal("担当者連絡先",ins.tel)
+    +formFieldVal("保険会社",ins.co)+formFieldVal("保険の種類",ins.name)+formFieldVal("保険料",ins.fee)+formFieldVal("担当者名",ins.agent)+formFieldVal("連絡先",ins.tel)+formFieldVal("自由記入欄",ins.memo||"")
     +'<button class="btn btn-primary btn-block" style="margin-top:4px" '+A("saveEdit")+'>'+I.pencil+' 変更を保存</button>'
     +'<button class="btn btn-block" style="margin-top:12px;background:var(--red-soft);color:var(--red)" '+A("deleteIns")+'>'+I.trash+' この保険を削除</button>';
 }
@@ -356,7 +357,7 @@ function screenMember(){
   var m=members[state.memberIdx||0];
   var emg=emgBlock(m.insurances,"toast");
   var ins=m.insurances.map(function(x){return '<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div><div><div class="ins-name">'+esc(x.name)+'</div><div class="ins-co">'+esc(x.co)+'</div></div></div>'
-    +'<div class="grid2"><div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(x.no)+'</div></div><div class="field"><div class="lbl">月額</div><div class="val">'+esc(x.fee)+'</div></div></div>'
+    +'<div class="grid2"><div class="field"><div class="lbl">保険料</div><div class="val">'+esc(x.fee)+'</div></div><div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(x.no||"—")+'</div></div></div>'
     +'<div class="field full"><div><div class="lbl">担当者</div><div class="val">'+esc(x.agent)+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn" '+A("toast","発信")+'>'+I.phone+'</button></div></div>';}).join("");
   return '<div class="backbar"><button class="back" '+A("go","")+'>'+I.back+' 共有相手に戻る</button></div>'
     +'<div class="person-head"><div class="av">'+m.init+'</div><div class="nm">'+m.name+'さん</div></div>'
@@ -390,10 +391,13 @@ function screenProfile(){
     +formFieldId("p_tel","電話番号","例）090-0000-0000",state.ptel)
     +formFieldId("p_bd","生年月日","例）1980/01/01",state.pbd)
     +'<div class="note">LINEのお名前のみ取得しているため、正式なお名前をご登録ください。生年月日は同姓同名の識別に使用します。</div>'
-    +'<button class="btn btn-primary btn-block" style="margin-top:4px" '+A("saveProfile")+'>この内容ではじめる</button>';
+    +'<div class="consent-box blue" style="margin-top:4px"><div class="ct">プライバシーポリシー・利用規約への同意</div><ul><li>・本サービスのご利用にあたり、'+CUST+'のプライバシーポリシーおよび利用規約への同意が必要です。</li><li>・同意文言は確定後に差し替えます（本デモは一般的な仮文言）。</li></ul></div>'
+    +'<div class="check-row" '+A("toggleP")+'><div class="cb'+(state.pconsent?' on':'')+'">'+(state.pconsent?I.check:"")+'</div><div class="ctxt">プライバシーポリシー・利用規約に同意します</div></div>'
+    +'<button class="btn btn-primary btn-block" style="margin-top:4px;opacity:'+(state.pconsent?1:.45)+'" '+A("saveProfile")+'>この内容ではじめる</button>';
 }
-function saveProfile(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var nm=g("p_name");if(!nm){toast("お名前を入力してください");return;}state.pname=nm;state.ptel=g("p_tel");state.pbd=g("p_bd");state.profileDone=true;toast("プロフィールを登録しました");render();}
-function confirmManual(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var co=g("f_co");if(!co){toast("保険会社を入力してください");return;}state.newIns={co:co,name:g("f_name"),no:g("f_no"),fee:g("f_fee"),agent:g("f_agent"),tel:g("f_tel")};state.addStep=1;render();}
+function toggleP(){state.pconsent=!state.pconsent;render();}
+function saveProfile(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var nm=g("p_name");if(!nm){toast("お名前を入力してください");return;}if(!state.pconsent){toast("プライバシーポリシー・利用規約への同意が必要です");return;}state.pname=nm;state.ptel=g("p_tel");state.pbd=g("p_bd");state.profileDone=true;toast("プロフィールを登録しました");render();}
+function confirmManual(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var co=g("f_co");if(!co){toast("保険会社を入力してください");return;}state.newIns={co:co,name:g("f_name"),fee:g("f_fee"),agent:g("f_agent"),tel:g("f_tel"),memo:g("f_memo")};state.addStep=1;render();}
 function attachPhoto(){state.photo=true;toast("証券写真を添付しました（自動入力は今後対応）");render();}
 function tuNext(){if((state.tuStep||0)<2){state.tuStep=(state.tuStep||0)+1;render();}else{tuFinish();}}
 function tuFinish(){if(state.tuReplay){state.tuReplay=false;state.tuStep=0;state.page=null;state.tab="settings";}else{state.tutorialDone=true;state.tuStep=0;}render();}
@@ -410,7 +414,7 @@ function setStep(s){state.addStep=s;render();}
 function setMode(m){state.addMode=m;state.addStep=0;render();}
 function addBack(){if(state.addStep>0){state.addStep--;render();}else{go(null);}}
 function toggleC(n){state.c1=!state.c1;render();}
-function registerDone(){if(!state.c1){toast("同意が必要です");return;}var n=state.newIns||{};myInsurances.push({name:n.name||"（保険種類未入力）",co:n.co||"—",no:n.no||"—",fee:n.fee||"—",agent:n.agent||"—",tel:n.tel||"—",shared:false});toast("保険を登録しました");setTimeout(function(){goTab("home");},900);}
+function registerDone(){if(!state.c1){toast("同意が必要です");return;}var n=state.newIns||{};myInsurances.push({name:n.name||"（保険の種類未入力）",co:n.co||"—",no:"",fee:n.fee||"—",agent:n.agent||"—",tel:n.tel||"—",memo:n.memo||"",shared:false});toast("保険を登録しました");setTimeout(function(){goTab("home");},900);}
 function saveEdit(){toast("変更を保存しました（家族には通知されません）");setTimeout(function(){goTab("home");},1000);}
 function deleteIns(){myInsurances.splice(state.editIdx,1);toast("保険を削除しました（家族には通知されません）");setTimeout(function(){goTab("home");},1000);}
 function removeShare(n){toast(n+"さんへの共有を停止しました（家族に通知されません）");}
@@ -483,7 +487,7 @@ function sharedBody(){
   var shared=myInsurances.filter(function(x){return x.shared;});
   var emg=emgBlock(shared,"toastB");
   var ins=shared.map(function(x){return '<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div><div><div class="ins-name">'+esc(x.name)+'</div><div class="ins-co">'+esc(x.co)+'</div></div></div>'
-    +'<div class="grid2"><div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(x.no)+'</div></div><div class="field"><div class="lbl">月額</div><div class="val">'+esc(x.fee)+'</div></div></div>'
+    +'<div class="grid2"><div class="field"><div class="lbl">保険料</div><div class="val">'+esc(x.fee)+'</div></div><div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(x.no||"—")+'</div></div></div>'
     +'<div class="field full"><div><div class="lbl">担当者</div><div class="val">'+esc(x.agent)+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn" '+A("toastB","発信")+'>'+I.phone+'</button></div></div>';}).join("");
   return '<div class="person-head"><div class="av">太</div><div class="nm">'+OWNER+'さん</div></div>'
     +'<div class="emg"><div class="et">'+I.alert+' 緊急連絡先</div><div class="ed">'+OWNER+'さんに万一の際はこちらへ</div>'+emg+'</div>'
@@ -587,6 +591,7 @@ document.addEventListener("click",function(e){
     case "setStep": setStep(parseInt(v,10)); break;
     case "setMode": setMode(v); break;
     case "toggleC": toggleC(parseInt(v,10)); break;
+    case "toggleP": toggleP(); break;
     case "toggleShare": toggleShare(parseInt(v,10)); break;
     case "openEdit": openEdit(parseInt(v,10)); break;
     case "openMember": openMember(parseInt(v,10)); break;
