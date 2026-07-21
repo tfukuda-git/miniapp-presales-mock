@@ -7,7 +7,7 @@
 <style>
 :root{
 --line:#06C755; --navy:#0B3D4F; --teal:#0E7C86; --coral:#EE7B3C; --gold:#E8B23A; --plum:#7A4D8C;
---ink:#16242B; --muted:#6B7C84; --bg:#EEF2F3; --bd:#DBE4E6;
+--brand:#2E6BE6; --ink:#16242B; --muted:#6B7C84; --bg:#EEF2F3; --bd:#DBE4E6;
 }
 *{box-sizing:border-box; margin:0; padding:0;}
 body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif; color:var(--ink); background:var(--bg); -webkit-font-smoothing:antialiased;}
@@ -20,6 +20,7 @@ h1{font-size:28px; margin:8px 0 6px;}
 a.item{display:flex; align-items:center; gap:15px; text-decoration:none; color:inherit; background:#fff; border:1px solid var(--bd);
 border-radius:13px; padding:15px 17px; margin-bottom:11px; transition:.15s; box-shadow:0 1px 2px rgba(0,0,0,.04);}
 a.item:hover{border-color:var(--teal); box-shadow:0 6px 18px rgba(11,61,79,.10); transform:translateY(-1px);}
+a.item.feature{border-color:var(--brand); background:#F5F8FF;}
 .ic{width:46px; height:46px; border-radius:11px; flex:0 0 auto; display:flex; align-items:center; justify-content:center; font-size:22px; color:#fff;}
 .it-body{flex:1 1 auto; min-width:0;}
 .it-title{font-size:15px; font-weight:700; display:flex; align-items:center; gap:9px; flex-wrap:wrap;}
@@ -34,6 +35,19 @@ a.item:hover{border-color:var(--teal); box-shadow:0 6px 18px rgba(11,61,79,.10);
 <div class="eyebrow">MICO ｜ PRE-SALES MOCK</div>
 <h1>ミニアプリ 提案モック 一覧</h1>
 <p class="lead">LINEミニアプリ／LINE完結フローの提案資料・画面モックの一覧です。各ページは商談・社内ディスカッション・開発チーム連携用のドラフトです。</p>
+
+<div class="group">
+<div class="ghead">触れるデモ（最新・インタラクティブ）</div>
+
+<a class="item feature" href="./stamprally_interactive_demo.html">
+<div class="ic" style="background:var(--brand)">🎫</div>
+<div class="it-body">
+<div class="it-title">住まいスタンプラリー｜触れるモック（最新 v0.6）<span class="badge" style="background:var(--brand)">最新DEMO</span></div>
+<div class="it-desc">実際に触れる通しプロトタイプ。会員登録（郵便番号→既定拠点）→TOP→QR読取→エリア別スタンプカード→段階景品→プレゼント。右側にME属性＋自前DB（CSV）をリアルタイム表示。ミサワ／汎用スタンプラリーの最新モックはこちら。</div>
+</div>
+<div class="arrow">→</div>
+</a>
+</div>
 
 <div class="group">
 <div class="ghead">業種別 提案モック</div>
@@ -133,10 +147,10 @@ a.item:hover{border-color:var(--teal); box-shadow:0 6px 18px rgba(11,61,79,.10);
 <div class="ghead">スタンプラリー パッケージ（開発検討・インド連携用）</div>
 
 <a class="item" href="./package1_ME_stamprally_for_dev.html">
-<div class="ic" style="background:var(--line)">🏠</div>
+<div class="ic" style="background:var(--muted)">🏠</div>
 <div class="it-body">
-<div class="it-title">ME連携 スタンプラリー＋抽選（モデルハウス）<span class="badge" style="background:var(--line)">PKG①</span></div>
-<div class="it-desc">ME導入済みクライアント向けオプション。スタンプラリーに抽選を統合し、来場〜抽選〜再来場をLINEで一本化。MVP＝先方データ基盤と連携なし（ME相乗り）。初期30万／月額15万。</div>
+<div class="it-title">【旧版】ME連携 スタンプラリー＋抽選（モデルハウス）<span class="badge" style="background:var(--muted)">旧 PKG①</span></div>
+<div class="it-desc">初期の抽選統合版（参考）。最新の設計・仕様は上の「触れるモック（最新 v0.6）」を参照。※抽選→段階的景品／エリア別カード／郵便番号→既定拠点などに更新済み。</div>
 </div>
 <div class="arrow">→</div>
 </a>
