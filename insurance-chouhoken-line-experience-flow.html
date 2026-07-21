@@ -234,8 +234,7 @@
     ・かんたん診断 → 別途対応（本モックでは対象外）<br>
     ・Q&Aエージェント（明治安田方式：ナレッジ回答・関連URL・ガード文言・知識外応答）<br>
     <hr>
-    <span style="color:#9a3412;"><b>1to1は非搭載</b></span>：本OAでは1対1チャットは行わず、相談は<b>担当代理店へのハンドオフ</b>で受ける設計です。<br>
-    <span style="color:#8a93a1;">※点線枠は実装時の裏側処理（代理店連携フラグ等）の説明用注記で、実画面には表示されません。</span>
+    <span style="color:#9a3412;"><b>1to1は非搭載</b></span>：本OAでは1対1チャットは行わず、ご相談は<b>担当代理店へのご案内</b>で受ける設計です。
   </div>
 </div>
 
@@ -5574,9 +5573,8 @@ function askQA(i){
 }
 function agentHandoffPrompt(){
   clearQR();
-  botMsg('担当代理店へのご相談を承ります。ご希望の受け方をお選びください。');
+  botMsg('より詳しいご相談は、担当の代理店にて承ります。お近くの代理店・担当者よりご案内いたします。<div class="kbref">本アカウントでは1対1のチャット対応は行っておりません。</div>');
   qrRow([
-    {label:'担当代理店に相談する',act:'openDest("handoff")'},
     {label:'ほかの質問をする',act:'qaChips()',alt:true},
   ]);
 }
@@ -5609,20 +5607,6 @@ const DEST={
       <h3 style="margin:0 0 8px;font-size:17px;">かんたん診断</h3>
       <p style="font-size:12.5px;color:var(--sub);line-height:1.8;">診断コンテンツは<b>別途ご用意予定</b>です。<br>本モックでは対象外としています。</p>
       <button class="btn btn-ghost" onclick="closeOv()" style="margin-top:18px;">トークに戻る</button>
-    </div></div>`,
-  handoff:()=>`
-    <div class="ov-head"><div class="row"><div class="hbtn" onclick="closeOv()">✕</div>
-      <div class="tt">担当代理店に相談</div></div></div>
-    <div class="ov-body"><div class="handoff">
-      <h3>担当代理店におつなぎします</h3>
-      <div class="lead">ご相談内容に応じて、担当代理店が対応します。ご希望の受け方をお選びください。</div>
-      <div class="no1to1">ℹ️ 本アカウントでは<b>1対1のチャット対応は行っておりません</b>。ご相談は担当代理店が、お電話またはご来店・オンライン面談にて承ります。</div>
-      <div class="opt" onclick="selOpt(this)"><span class="em">📞</span><span>電話でのコールバックを希望</span></div>
-      <div class="opt" onclick="selOpt(this)"><span class="em">🗓️</span><span>面談（来店／オンライン）を予約</span></div>
-      <div class="opt" onclick="selOpt(this)"><span class="em">✉️</span><span>メールで資料を受け取る</span></div>
-      <button class="btn btn-red" onclick="submitHandoff()" style="margin-top:8px;">この内容で依頼する</button>
-      <button class="btn btn-ghost" onclick="closeOv()" style="margin-top:10px;">トークに戻る</button>
-      <div class="internal"><b>［実装メモ・非表示］</b> 相談依頼を担当代理店へトスアップ（BizClo経由）。誰の・どの契約からの相談かをID連携情報とともに連携。1to1チャットは持たず、代理店の商談へ引き渡す設計。</div>
     </div></div>`,
 };
 /* 外部ブラウザ遷移（貴社ご作成ページ）の見せ方 */
@@ -5677,14 +5661,6 @@ function loadShindanPage(key){
   f.srcdoc=src;
 }
 
-function selOpt(e){ document.querySelectorAll('.handoff .opt').forEach(o=>o.classList.remove('selected')); e.classList.add('selected'); }
-function submitHandoff(){
-  if(!document.querySelector('.handoff .opt.selected')){ toast('受け方を選択してください'); return; }
-  closeOv();
-  clearQR();
-  setTimeout(()=>{ botMsg('ご依頼ありがとうございます。<b>担当代理店より後日ご連絡</b>いたします。'); },250);
-  setTimeout(()=>toast('担当代理店へ連携しました'),300);
-}
 
 /* ===== toast / layout ===== */
 let toastT;
