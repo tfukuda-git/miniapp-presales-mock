@@ -225,7 +225,7 @@
     <div style="margin:10px 0 4px;"><b>体験の流れ</b></div>
     <div class="step"><span class="n">1</span><span>あいさつ＋<b>通知メッセージ</b>（更新・アップセル案内）</span></div>
     <div class="step"><span class="n">2</span><span><b>リッチメニュー（RM設計）</b>から各機能へ回遊</span></div>
-    <div class="step"><span class="n">3</span><span><b>Q&Aエージェント</b>でナレッジ回答→代理店へハンドオフ</span></div>
+    <div class="step"><span class="n">3</span><span><b>Q&Aエージェント</b>でナレッジ回答</span></div>
     <hr>
     <b>リッチメニューの遷移先</b><br>
     ・マイページ／ソリューションLP／リスクマップ<br>
@@ -1141,25 +1141,10 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:26px; he
       <a class="hero__cta" href="https://daiichi-line-miniapp.vercel.app/wave1_shindan-intro.html">かんたん保障診断 <i class="ico ico--sm ico-arrow-right"></i></a>
     </div>
 
-    <div class="sec">
-      <div class="sec__h"><b>ご契約者の方</b><span></span></div>
-      <div class="list">
-        <a class="row" href="https://daiichi-line-miniapp.vercel.app/wave1_notices.html">
-          <div class="ic-chip"><i class="ico ico-bell"></i></div>
-          <div class="row__main"><b>お知らせ・重要連絡</b><span>あなたに関係する情報だけ</span></div>
-          <span class="badge badge--solid">2</span>
-        </a>
-        <a class="row" href="https://daiichi-line-miniapp.vercel.app/wave1_celebrate.html">
-          <div class="ic-chip ic-chip--accent"><i class="ico ico-gift"></i></div>
-          <div class="row__main"><b>お祝いを受け取る</b><span>結婚・出産・入学などにギフト</span></div>
-          <i class="ico ico-chevron row__chev"></i>
-        </a>
-        <a class="row" href="https://daiichi-line-miniapp.vercel.app/wave1_lifeevent.html">
-          <div class="ic-chip"><i class="ico ico-home"></i></div>
-          <div class="row__main"><b>ライフイベントから見直す</b><span>住宅購入・結婚・出産などの備え</span></div>
-          <i class="ico ico-chevron row__chev"></i>
-        </a>
-      </div>
+    <div class="hero" style="margin-top:var(--space-4);">
+      <div class="hero__eyebrow"><i class="ico ico--sm ico-home"></i> ライフイベントに合わせて</div>
+      <div class="hero__title">結婚・出産・住宅購入…<br>いまの補償を見直す</div>
+      <a class="hero__cta" href="https://daiichi-line-miniapp.vercel.app/wave1_lifeevent.html">ライフイベントから見直す <i class="ico ico--sm ico-arrow-right"></i></a>
     </div>
 
     <div style="height: var(--space-8);"></div>
@@ -2866,6 +2851,30 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:26px; he
   .fade-1{ animation-delay:.1s; } .fade-2{ animation-delay:.22s; } .fade-3{ animation-delay:.34s; } .fade-4{ animation-delay:.46s; }
   @keyframes leUp { from { transform: translateY(10px); } to { transform: none; } }
   .btn[aria-disabled="true"]{ background:var(--color-bg-sink); color:var(--color-ink-mute); box-shadow:none; pointer-events:none; }
+
+  .intro-hero {
+    margin: var(--space-5) var(--space-5) 0; border-radius: var(--radius-xl);
+    padding: var(--space-8) var(--space-6); position: relative; overflow: hidden;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: #fff; box-shadow: var(--shadow-cta); text-align: center;
+  }
+  .intro-hero::after { content:""; position:absolute; right:-50px; top:-50px; width:180px; height:180px; border-radius:50%; background:rgba(255,255,255,.10); }
+  .intro-hero::before { content:""; position:absolute; left:-30px; bottom:-50px; width:140px; height:140px; border-radius:50%; background:rgba(255,255,255,.06); }
+  .intro-hero__ic { width:64px; height:64px; border-radius:var(--radius-lg); background:rgba(255,255,255,.18); display:grid; place-items:center; margin:0 auto var(--space-4); position:relative; z-index:1; color:#fff; }
+  .intro-hero h1 { font-size: 24px; font-weight: 800; line-height: 1.45; position: relative; z-index: 1; }
+  .intro-hero p { font-size: 15px; opacity: .92; margin-top: var(--space-3); position: relative; z-index: 1; }
+  .feat { display:flex; gap: var(--space-4); align-items:flex-start; padding: var(--space-4) 0; border-bottom:1px solid var(--color-line-border); }
+  .feat:last-of-type { border-bottom:none; }
+  .feat__txt b { font-size: 16px; font-weight: 700; display:block; }
+  .feat__txt span { font-size: 14px; color: var(--color-ink-sub); display:block; margin-top:2px; line-height:1.7; }
+  .q-num { font-size: 13px; color: var(--color-primary); font-weight: 700; letter-spacing: .04em; margin-top: var(--space-5); }
+  .q-title { font-size: 22px; font-weight: 800; line-height: 1.45; margin: var(--space-2) 0 var(--space-6); }
+  .opt { display:flex; align-items:center; gap: var(--space-4); width:100%; text-align:left; background: var(--color-bg); border:none; border-radius: var(--radius-lg); padding: var(--space-4); font-size: 16px; font-family:var(--font-base); cursor:pointer; margin-bottom: var(--space-3); color: var(--color-ink); box-shadow: var(--shadow-card); transition: box-shadow .15s, background .15s; }
+  .opt:hover { box-shadow: var(--shadow-lift); }
+  .opt.on { background: var(--color-primary-soft); box-shadow: inset 0 0 0 2px var(--color-primary); font-weight:700; }
+  .opt__txt { flex:1; }
+  .opt .rd { margin-left:auto; width:24px; height:24px; border-radius:var(--radius-full); box-shadow: inset 0 0 0 2px var(--color-line-border); flex:0 0 24px; }
+  .opt.on .rd { background: var(--color-primary); box-shadow: inset 0 0 0 5px #fff, 0 0 0 2px var(--color-primary); }
 </style>
 <style id="embed-override">
   html,body{background:#F5F6F8 !important;height:100%;margin:0;}
@@ -2878,123 +2887,195 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:26px; he
 <body>
 <div class="liff-frame">
   <div class="liff-statusbar"><span class="num">9:41</span><span class="dots">5G ●●●● 100%</span></div>
-
   <header class="appbar">
     <a class="appbar__icon" id="backBtn" href="https://daiichi-line-miniapp.vercel.app/index.html"><i class="ico ico-arrow-left"></i></a>
-    <div class="appbar__title" id="pageTitle">ライフイベント</div>
+    <div class="appbar__title" id="pageTitle">ライフイベントから見直す</div>
     <a class="appbar__icon" href="https://daiichi-line-miniapp.vercel.app/index.html" aria-label="ホームに戻る"><i class="ico ico-home"></i></a>
   </header>
 
   <div class="body">
-    <div id="leView">
-    <div class="pad">
-
-      <div class="card detect">
-        <span class="ic-chip ic-chip--brand ic-chip--lg"><i class="ico ico--lg ico-home"></i></span>
-        <div class="detect__title">気になるライフイベントを<br>選んでください</div>
-        <p>選んだ内容に合わせて、見直したい補償のポイントをご案内します。</p>
+    <div id="introView">
+      <div class="intro-hero">
+        <div class="intro-hero__ic"><i class="ico ico--xl ico-home"></i></div>
+        <h1>1分で、ライフイベントに<br>合わせた見直しポイントを</h1>
+        <p>登録不要・無料。4つの質問に答えるだけ。</p>
       </div>
-
-      <div class="section-label mt-6">あてはまるものを選ぶ</div>
-      <div class="caption mb-2" style="margin-bottom:var(--space-2);">あてはまるものを選べます（複数可）</div>
-      <div class="chip-wrap" id="eventChips">
-        <span class="chip" data-key="housing" onclick="toggleChip(this)"><i class="ico ico-home" style="width:16px;height:16px"></i>住宅購入</span>
-        <span class="chip" data-key="marriage" onclick="toggleChip(this)"><i class="ico ico-heart" style="width:16px;height:16px"></i>結婚</span>
-        <span class="chip" data-key="birth" onclick="toggleChip(this)"><i class="ico ico-gift" style="width:16px;height:16px"></i>出産</span>
-        <span class="chip" data-key="study" onclick="toggleChip(this)"><i class="ico ico-star" style="width:16px;height:16px"></i>進学</span>
-        <span class="chip" data-key="job" onclick="toggleChip(this)"><i class="ico ico-user" style="width:16px;height:16px"></i>転職</span>
-        <span class="chip" data-key="retire" onclick="toggleChip(this)"><i class="ico ico-clock" style="width:16px;height:16px"></i>退職</span>
+      <div class="pad">
+        <div class="card">
+          <div class="feat">
+            <div class="ic-chip ic-chip--brand"><i class="ico ico-clock"></i></div>
+            <div class="feat__txt"><b>約1分・全4問</b><span>かんたんな選択式。途中で戻れます。</span></div>
+          </div>
+          <div class="feat">
+            <div class="ic-chip ic-chip--brand"><i class="ico ico-lock"></i></div>
+            <div class="feat__txt"><b>登録・ログイン不要</b><span>個人情報の入力なしで確認できます。</span></div>
+          </div>
+          <div class="feat">
+            <div class="ic-chip ic-chip--accent"><i class="ico ico-chart"></i></div>
+            <div class="feat__txt"><b>見直したい補償のポイントをご案内</b><span>暮らしの変化に合わせて、確認しておきたい点をお示しします。</span></div>
+          </div>
+        </div>
+        <p class="caption mt-4">※ 診断結果は一般的な傾向をお示しするものであり、個別の補償内容をお約束するものではありません。</p>
       </div>
-
-      <div class="section-label mt-6">関連コンテンツ</div>
-      <div class="list">
-        <a class="row" href="https://daiichi-line-miniapp.vercel.app/wave1_lifeevent.html#">
-          <span class="ic-chip ic-chip--accent"><i class="ico ico-shield"></i></span>
-          <span class="row__main">
-            <b>住宅購入のときに見直したい補償</b>
-            <span>地震・水災の特約、つい見落としがちなポイントを解説</span>
-          </span>
-          <i class="ico ico-chevron row__chev"></i>
-        </a>
-        <a class="row" href="https://daiichi-line-miniapp.vercel.app/wave1_lifeevent.html#">
-          <span class="ic-chip ic-chip--accent"><i class="ico ico-chart"></i></span>
-          <span class="row__main">
-            <b>ライフイベントと補償の見直しタイミング</b>
-            <span>暮らしの変化に合わせて確認したいこと</span>
-          </span>
-          <i class="ico ico-chevron row__chev"></i>
-        </a>
-      </div>
-
     </div>
+
+    <div id="qView" style="display:none">
+      <div class="pad">
+        <div class="progress"><div class="progress__seg"></div><div class="progress__seg"></div><div class="progress__seg"></div><div class="progress__seg"></div></div>
+        <div class="caption mt-2" id="qCaption">あと4問で結果がわかります</div>
+        <div class="q-num" id="qNum">QUESTION 1</div>
+        <div class="q-title" id="qTitle"></div>
+        <div id="optWrap"></div>
+      </div>
     </div>
-    <div id="leResult" style="display:none">
+
+    <div id="resultView" style="display:none">
       <div class="result-top">
-        <div class="eyebrow"><i class="ico ico--sm ico-sparkle"></i> 選択いただいた内容から</div>
-        <h1>見直したい補償のポイント</h1>
+        <div class="eyebrow"><i class="ico ico--sm ico-sparkle"></i> あなたの診断結果</div>
+        <h1>ライフイベントに合わせた<br>見直しのポイント</h1>
       </div>
-      <div class="pad" id="leResultAreas" style="padding-top:var(--space-2);"></div>
-      <p class="caption" style="padding:0 var(--space-5) var(--space-3);">※一般的な傾向を示す参考情報です。実際の補償内容・保険料は個人の状況により異なります。</p>
+      <div class="pad" id="resultAreas" style="padding-top:var(--space-2);"></div>
+      <p class="caption" style="padding:0 var(--space-5) var(--space-3);">※本チェックは一般的な傾向を示す参考情報です。実際の補償内容・保険料は個人の状況により異なります。</p>
     </div>
   <footer class="legal-footer"><div class="legal-footer__brand">東京海上日動火災保険株式会社</div><p>登録番号：関東財務局長（損保）第○○号（※モック・要差し替え）<br>保険のお申し込みに際しては「契約概要」「注意喚起情報」を必ずお読みください。<br>本アプリ内の試算・情報は一般的な参考値であり、個別の保障内容・保険料をお約束するものではありません。</p><div class="legal-footer__links"><a href="https://daiichi-line-miniapp.vercel.app/wave1_consent.html">プライバシー・データ設定</a><a href="https://daiichi-line-miniapp.vercel.app/wave1_lifeevent.html#">勧誘方針</a><a href="https://daiichi-line-miniapp.vercel.app/wave1_lifeevent.html#">苦情・相談窓口</a><a href="https://daiichi-line-miniapp.vercel.app/wave1_lifeevent.html#">契約概要／注意喚起情報</a></div><a class="legal-footer__home" href="https://daiichi-line-miniapp.vercel.app/index.html"><i class="ico ico-home ico--sm"></i> ホームに戻る</a></footer></div>
 
   <div class="cta" id="ctaArea">
-    <button type="button" class="btn btn--primary" id="leNextBtn" aria-disabled="true"><i class="ico ico-sliders"></i>見直しポイントを見る</button>
-    <div class="cta__note"><i class="ico ico--sm ico-info tint-mute"></i> 3分・登録不要で確認できます</div>
+    <button type="button" class="btn btn--primary" id="startBtn">診断をはじめる <i class="ico ico-arrow-right"></i></button>
+    <div class="cta__note"><i class="ico ico--sm ico-lock tint-mute"></i> 回答内容はいつでも消去できます</div>
   </div>
 </div>
 <script>
 (function(){
-  var CONTENT = {
-    housing: { label:'住宅購入', icon:'ico-home', text:'持ち家の補償だけでなく、地震・水災など特約の付帯状況もあわせて確認しておくと安心です。' },
-    marriage: { label:'結婚', icon:'ico-heart', text:'パートナーの方の自動車運転者範囲や、家財の補償額が今の世帯構成に合っているかご確認ください。' },
-    birth: { label:'出産', icon:'ico-gift', text:'お子様の傷害・入院保障や、自転車事故などの個人賠償責任の補償額をご確認ください。' },
-    study: { label:'進学', icon:'ico-star', text:'通学時の自転車利用や留守番の時間が増えるタイミングです。個人賠償責任・傷害保障をご確認ください。' },
-    job: { label:'転職', icon:'ico-user', text:'通勤方法の変化（車通勤など）に合わせて、自動車保険の使用目的区分をご確認ください。' },
-    retire: { label:'退職', icon:'ico-clock', text:'生活スタイルの変化に合わせて、契約全体の補償額・特約を一度まとめて見直すタイミングです。' }
+  var Q = [
+    { title: 'いま、最も気になる<br>ライフイベントは？',
+      options: [
+        {label:'結婚・パートナーとの生活', icon:'ico-heart'},
+        {label:'出産・子育て', icon:'ico-gift'},
+        {label:'住宅の購入', icon:'ico-home'},
+        {label:'進学・転職・退職などの節目', icon:'ico-star'}
+      ]},
+    { title: 'いまのお住まいは<br>持ち家ですか？賃貸ですか？',
+      options: [
+        {label:'持ち家', icon:'ico-home'},
+        {label:'賃貸', icon:'ico-doc'},
+        {label:'その他（社宅・実家など）', icon:'ico-star'}
+      ]},
+    { title: 'お車を<br>所有・運転されますか？',
+      options: [
+        {label:'所有していて、よく運転する', icon:'ico-check-c'},
+        {label:'所有しているが、あまり運転しない', icon:'ico-clock'},
+        {label:'所有していない', icon:'ico-x'}
+      ]},
+    { title: 'ご家族に自転車をよく<br>利用する方はいますか？',
+      options: [
+        {label:'よく利用する人がいる（お子様含む）', icon:'ico-heart'},
+        {label:'たまに利用する程度', icon:'ico-clock'},
+        {label:'ほとんど利用しない', icon:'ico-x'}
+      ]}
+  ];
+  var cur = 0;
+  var answers = [null,null,null,null];
+  var started = false;
+
+  var introView = document.getElementById('introView');
+  var qView = document.getElementById('qView');
+  var resultView = document.getElementById('resultView');
+  var backBtn = document.getElementById('backBtn');
+
+  document.getElementById('startBtn').onclick = function(){
+    started = true; cur = 0;
+    introView.style.display='none';
+    resultView.style.display='none';
+    qView.style.display='';
+    renderQ();
   };
-  function selectedKeys(){
-    var out=[];
-    document.querySelectorAll('#eventChips .chip').forEach(function(c){ if(c.classList.contains('chip--on')) out.push(c.getAttribute('data-key')); });
-    return out;
-  }
-  window.toggleChip=function(el){
-    el.classList.toggle('chip--on');
-    var btn=document.getElementById('leNextBtn');
-    if(selectedKeys().length>0){ btn.removeAttribute('aria-disabled'); } else { btn.setAttribute('aria-disabled','true'); }
-  };
-  document.getElementById('leNextBtn').onclick=function(){
-    var keys=selectedKeys();
-    if(keys.length===0) return;
-    document.getElementById('leView').style.display='none';
-    document.getElementById('pageTitle').textContent='見直しポイント';
-    var wrap=document.getElementById('leResultAreas');
+
+  function renderQ(){
+    resultView.style.display='none';
+    qView.style.display='';
+    document.getElementById('pageTitle').textContent='ライフイベントから見直す';
+    var segs = document.querySelectorAll('.progress__seg');
+    segs.forEach(function(s,i){ if(i<=cur){ s.classList.add('progress__seg--on'); } else { s.classList.remove('progress__seg--on'); } });
+    document.getElementById('qCaption').textContent = cur<3 ? ('あと'+(3-cur)+'問で結果がわかります') : 'これで最後の質問です';
+    document.getElementById('qNum').textContent = 'QUESTION '+(cur+1);
+    document.getElementById('qTitle').innerHTML = Q[cur].title;
+    var wrap = document.getElementById('optWrap');
     wrap.innerHTML='';
-    keys.forEach(function(k, idx){
-      var a=CONTENT[k]; if(!a) return;
+    Q[cur].options.forEach(function(o,i){
+      var b=document.createElement('button');
+      b.type='button';
+      b.className='opt'+(answers[cur]===i?' on':'');
+      b.innerHTML='<span class="ic-chip ic-chip--brand"><i class="ico '+o.icon+'"></i></span><span class="opt__txt">'+o.label+'</span><span class="rd"></span>';
+      b.onclick=function(){ answers[cur]=i; renderQ(); };
+      wrap.appendChild(b);
+    });
+    if(cur===0){
+      backBtn.setAttribute('href','#');
+      backBtn.onclick=function(e){ e.preventDefault(); introView.style.display=''; qView.style.display='none'; document.getElementById('pageTitle').textContent='ライフイベントから見直す'; setStartCta(); backBtn.setAttribute('href','https://daiichi-line-miniapp.vercel.app/index.html'); backBtn.onclick=null; };
+    } else {
+      backBtn.setAttribute('href','#');
+      backBtn.onclick=function(e){ e.preventDefault(); cur--; renderQ(); };
+    }
+    var cta = document.getElementById('ctaArea');
+    cta.innerHTML = '<button type="button" class="btn btn--primary" id="nextBtn">'+(cur<3?'次へ':'結果を見る')+' <i class="ico ico-arrow-right"></i></button>';
+    var next = document.getElementById('nextBtn');
+    if(answers[cur]==null){ next.setAttribute('aria-disabled','true'); } else { next.removeAttribute('aria-disabled'); }
+    next.onclick=function(){ if(answers[cur]==null) return; if(cur<3){ cur++; renderQ(); } else { showResult(); } };
+  }
+
+  function setStartCta(){
+    var cta = document.getElementById('ctaArea');
+    cta.innerHTML = '<button type="button" class="btn btn--primary" id="startBtn">診断をはじめる <i class="ico ico-arrow-right"></i></button><div class="cta__note"><i class="ico ico--sm ico-lock tint-mute"></i> 回答内容はいつでも消去できます</div>';
+    document.getElementById('startBtn').onclick = function(){ started=true; cur=0; introView.style.display='none'; resultView.style.display='none'; qView.style.display=''; renderQ(); };
+  }
+
+  function showResult(){
+    qView.style.display='none';
+    document.getElementById('pageTitle').textContent='見直しポイント';
+    var event = answers[0];
+    var eventContent = [
+      { label:'結婚・パートナーとの生活', icon:'ico-heart', text:'パートナーの方の自動車運転者範囲や、家財の補償額が今の世帯構成に合っているかご確認ください。' },
+      { label:'出産・子育て', icon:'ico-gift', text:'お子様の傷害・入院保障や、自転車事故などの個人賠償責任の補償額をご確認ください。' },
+      { label:'住宅の購入', icon:'ico-home', text:'火災保険の建物・家財の補償に加え、地震・水災など特約の付帯状況もあわせてご確認ください。' },
+      { label:'節目の見直し', icon:'ico-star', text:'生活スタイルの変化に合わせて、契約全体の補償額・特約を一度まとめて見直すタイミングです。' }
+    ][event];
+
+    var areas = [
+      { label:'選んだライフイベント：'+eventContent.label, icon:eventContent.icon, check:true, textCheck:eventContent.text, textOk:eventContent.text },
+      { label:'火災', icon:'ico-home', check: answers[1]===0,
+        textCheck:'持ち家の場合、建物・家財の両方が補償対象になっているか確認しておくと安心です。',
+        textOk:'お住まいの状況に合わせて、水濡れ・盗難などの補償範囲も確認しておくとより安心です。' },
+      { label:'自動車', icon:'ico-sliders', check: answers[2]!==2,
+        textCheck:'よく運転される場合は、対人・対物賠償や車両保険の範囲が今の状況に合っているか確認しておくと安心です。',
+        textOk:'現在お車をお持ちでないとのことです。ご家族の運転状況が変わった際はあらためてご確認ください。' },
+      { label:'個人賠償責任', icon:'ico-heart', check: (answers[3]===0 || answers[3]===1),
+        textCheck:'自転車事故の高額賠償化が進んでいます。個人賠償責任の補償額を確認しておくと安心です。',
+        textOk:'日常生活の賠償リスクも幅広くカバーされているか、念のため確認しておくと安心です。' }
+    ];
+    var wrap = document.getElementById('resultAreas');
+    wrap.innerHTML='';
+    areas.forEach(function(a, idx){
       var div=document.createElement('div');
       div.className='card result-area fade fade-'+((idx%4)+1);
-      div.innerHTML='<div class="ra-head"><span class="ic-chip ic-chip--brand"><i class="ico '+a.icon+'"></i></span><span class="ra-head__main"><b>'+a.label+'</b></span></div><p class="ra-txt">'+a.text+'</p>';
+      div.innerHTML =
+        '<div class="ra-head"><span class="ic-chip ic-chip--brand"><i class="ico '+a.icon+'"></i></span>'+
+        '<span class="ra-head__main"><b>'+a.label+'</b></span>'+
+        (idx===0?'':'<span class="badge '+(a.check?'badge--red':'badge--ok')+'">'+(a.check?'ご確認を':'備えは十分そう')+'</span>')+'</div>'+
+        '<p class="ra-txt">'+(a.check?a.textCheck:a.textOk)+'</p>';
       wrap.appendChild(div);
     });
-    var back=document.getElementById('backBtn');
-    back.setAttribute('href','#');
-    back.onclick=function(e){
-      e.preventDefault();
-      document.getElementById('leResult').style.display='none';
-      document.getElementById('leView').style.display='';
-      document.getElementById('pageTitle').textContent='ライフイベント';
-      back.setAttribute('href','https://daiichi-line-miniapp.vercel.app/index.html');
-      back.onclick=null;
-    };
-    var cta=document.getElementById('ctaArea');
-    cta.innerHTML='<a class="btn btn--primary" href="#" id="leQaBtn"><i class="ico ico-chat"></i>Q&amp;Aで相談する</a><div class="cta__note">より詳しい内容は、担当の代理店にもご相談いただけます</div>';
-    document.getElementById('leQaBtn').onclick=function(e){
+    backBtn.setAttribute('href','https://daiichi-line-miniapp.vercel.app/index.html');
+    backBtn.onclick=null;
+    var cta = document.getElementById('ctaArea');
+    cta.innerHTML =
+      '<a class="btn btn--primary" href="#" id="qaBtn"><i class="ico ico-chat"></i>Q&amp;Aで相談する</a>'+
+      '<div class="cta__note">より詳しい内容は、担当の代理店にもご相談いただけます</div>';
+    document.getElementById('qaBtn').onclick=function(e){
       e.preventDefault();
       try{ window.parent.postMessage({__shindanExit:'qa'},'*'); }catch(_){}
     };
-    document.getElementById('leResult').style.display='';
-  };
+    resultView.style.display='';
+  }
 })();
 %%ENDSCRIPT%%
 <script>
