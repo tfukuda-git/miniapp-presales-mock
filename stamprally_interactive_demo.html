@@ -202,7 +202,7 @@
       <!-- プレゼント -->
       <section class="view" id="v-reward">
         <h1>プレゼント</h1>
-        <p class="lead">景品はエリアごとの獲得数に応じて解放されます。受け取りは各会場のスタッフに<b>この画面を提示</b>してください（アプリ内での交換はありません）。</p>
+        <p class="lead">景品はエリアごとの獲得数に応じて交換できます。<b>スタンプ獲得と別日でもOK</b>。受け取りは各会場のスタッフに提示してください。</p>
         <div class="sec"><h2><span class="bar"></span>エリアを選択</h2><select id="rw-sel" class="area-sel"></select></div>
         <div id="rw-body" style="margin-top:12px"></div>
       </section>
@@ -290,12 +290,12 @@ const TIERS=[
   {n:4,name:"QUOカード2,000円"},{n:5,name:"コンプリート賞"}
 ];
 const GOAL=5;
-const KEY="misawa_stamp_proto_v10";
+const KEY="misawa_stamp_proto_v11";
 
 /* ---- state ---- */
 let S=load();
 function blank(){return {area:null,viewArea:null,rwSel:null,zip:"",member:{name:"",phone:"",email:""},registered:false,
-  stamps:[],shownTier:{},last_at:""};}
+  stamps:[],redeem:{},shownTier:{},last_at:""};}
 function load(){try{const r=localStorage.getItem(KEY);return r?Object.assign(blank(),JSON.parse(r)):blank();}catch(e){return blank();}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 const $=id=>document.getElementById(id);
@@ -384,7 +384,7 @@ function commit(key,label,area){
   const ac=areaCount(a);
   renderStamp();renderTop();renderME("エリア");show("v-stamp"); // 読み取ったらスタンプ確認へ
   const tier=TIERS.find(t=>t.n===ac),tk=a+":"+ac;
-  if(tier&&!S.shownTier[tk]){S.shownTier[tk]=true;save();toast("🎉",a+"で"+ac+"個達成！景品GET",tier.name+" を獲得しました。プレゼントで確認できます（受け取りは現地スタッフ）。");}
+  if(tier&&!S.shownTier[tk]){S.shownTier[tk]=true;save();toast("🎉",a+"で"+ac+"個達成！景品GET",tier.name+" を獲得しました。プレゼントタブで交換できます（別日でもOK・受け取りは現地）。");}
   else toast("🎫","スタンプGET！",label+"（"+a+"）／"+a+"エリア "+ac+" / "+GOAL+" 個");
 }
 
@@ -419,16 +419,20 @@ $("member-save").addEventListener("click",()=>{if(!validate())return;
   show("v-top");
   toast("✅","会員登録が完了しました","郵便番号から「"+S.area+"エリア」をデフォルト拠点に設定しました。TOPからスタンプ集めを始めましょう。");});
 
-/* ---- reward (現地スタッフ交換のみ：獲得段階の表示) ---- */
+/* ---- reward（交換する＋交換済み記録／受け取りは現地・別日OK） ---- */
 function renderReward(){
   if(!S.rwSel)S.rwSel=S.viewArea||S.area||AREAS[0];
   $("rw-sel").innerHTML=AREAS.map(a=>`<option value="${a}" ${S.rwSel===a?'selected':''}>${a}（${areaCount(a)}個）</option>`).join("");
-  const area=S.rwSel, ac=areaCount(area);
+  const area=S.rwSel, ac=areaCount(area); S.redeem=S.redeem||{}; const rd=S.redeem[area]||{};
   if(ac===0){$("rw-body").innerHTML=`<div class="progwrap" style="text-align:center;padding:24px"><div style="font-size:34px">🎁</div><p style="font-size:13px;margin:8px 0 12px"><b>${area}</b>エリアはまだスタンプがありません。<br>TOPの「ためる」からこのエリアのQRを読み取りましょう。</p><button class="btn" onclick="document.querySelector('#nav a[data-tab=v-top]').click()">TOPへ</button></div>`;return;}
-  const rows=TIERS.map(t=>{const got=ac>=t.n;return `<div class="cat"><div class="ci">🎁</div><div class="cx"><b>${t.n}個：${t.name}</b><span>${got?'獲得済み（現地スタッフに提示して受け取り）':'スタンプ'+t.n+'個で解放'}</span></div><span class="vbtn ${got?'done':''}" style="pointer-events:none">${got?'獲得':'未解放'}</span></div>`;}).join("");
-  $("rw-body").innerHTML=`<div class="note"><b>${area}</b>エリア：スタンプ ${ac} / ${GOAL} 個。景品は各会場のスタッフに<b>この画面を提示</b>して受け取ってください（アプリ内での交換はありません）。</div>`+rows;
+  const open=TIERS.filter(t=>t.n<=ac).map(t=>{const done=!!rd[t.n];return `<div class="cat"><div class="ci">🎁</div><div class="cx"><b>${t.n}個：${t.name}</b><span>${done?'交換済み':'交換できます（別日でもOK）'}</span></div><button class="vbtn ${done?'done':''}" data-r="${t.n}" ${done?'disabled':''}>${done?'交換済':'交換する'}</button></div>`;}).join("");
+  const locked=TIERS.filter(t=>t.n>ac).map(t=>`<div class="cat" style="opacity:.55"><div class="ci">🎁</div><div class="cx"><b>${t.n}個：${t.name}</b><span>スタンプ${t.n}個で解放</span></div><span class="vbtn" style="pointer-events:none;background:#c8ced7">未解放</span></div>`).join("");
+  $("rw-body").innerHTML=`<div class="note"><b>${area}</b>エリア：スタンプ ${ac} / ${GOAL} 個。景品は各会場のスタッフに提示して受け取り（<b>スタンプ獲得と別日でもOK</b>）。</div>`+open+locked;
 }
 document.getElementById("rw-sel").addEventListener("change",e=>{S.rwSel=e.target.value;save();renderReward();});
+$("rw-body").addEventListener("click",e=>{const b=e.target.closest("button[data-r]");if(!b||b.disabled)return;const n=+b.dataset.r,t=TIERS.find(x=>x.n===n);const area=S.rwSel;
+  S.redeem=S.redeem||{};S.redeem[area]=S.redeem[area]||{};S.redeem[area][n]=nowStr();S.last_at=nowStr();save();renderReward();renderME();
+  toast("🎁","景品を交換しました",`${area}／${t.name}／引換コード RD-2026-${1000+n}。会場スタッフにこの画面をご提示ください（受け取りは現地・別日でもOK）。`);});
 
 /* ---- overlay ---- */
 function toast(e,h,p){$("ov-e").textContent=e;$("ov-h").textContent=h;$("ov-p").textContent=p;$("ov").classList.add("show");}
