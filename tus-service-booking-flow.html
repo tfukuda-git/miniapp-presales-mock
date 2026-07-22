@@ -22,6 +22,10 @@
   .pill.user{background:var(--line);} .pill.admin{background:var(--accent);} .pill.sys{background:var(--navy);}
   .imp{display:inline-block;background:var(--accent);color:#fff;font-size:10px;font-weight:700;border-radius:999px;padding:1px 8px;margin-right:4px;}
   .src{display:inline-block;background:var(--accent-light);color:var(--deep);font-size:10px;font-weight:700;border-radius:999px;padding:1px 8px;margin-right:4px;}
+  .nb{display:inline-block;background:#D1232A;color:#fff;font-size:10px;font-weight:700;border-radius:999px;padding:1px 8px;margin-right:4px;letter-spacing:.03em;}
+  .phase-title .nb{font-size:11px;vertical-align:middle;margin-left:6px;}
+  .jp.newp{border-color:#D1232A;background:#FFF5F5;}
+  .jp.newp .ph{color:#D1232A;}
   .phase-title{font-size:18px;font-weight:700;color:var(--navy);border-left:6px solid var(--accent);padding-left:12px;margin:40px 0 6px;}
   .phase-note{font-size:12px;color:var(--fg2);margin:0 0 18px;padding-left:18px;}
   /* journey strip */
@@ -45,6 +49,17 @@
   .screen-wrap{display:flex;flex-direction:column;align-items:center;}
   .screen-label{font-size:12.5px;font-weight:700;color:var(--accent);margin-bottom:8px;text-align:center;}
   .screen-desc{font-size:11px;color:var(--fg2);text-align:center;max-width:290px;margin-top:8px;line-height:1.55;}
+  .screen-wrap .note.out{width:290px;max-width:290px;text-align:left;margin-top:10px;}
+  .msglegend{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin:2px 0 18px;display:flex;gap:20px;flex-wrap:wrap;}
+  .msglegend .col{flex:1;min-width:250px;}
+  .msglegend .cap{font-size:11.5px;color:var(--fg2);line-height:1.65;margin-top:8px;}
+  .msglegend .cap b{color:var(--navy);}
+  .msglegend .mini-dm{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px 10px;box-shadow:0 1px 3px rgba(27,29,59,.07);}
+  .msglegend .mini-dm .tg{font-size:9.5px;font-weight:700;color:var(--accent);}
+  .msglegend .mini-dm .tt{font-size:11.5px;font-weight:700;color:var(--navy);margin-top:1px;}
+  .msglegend .bubwrap{background:#8aa6c2;border-radius:8px;padding:9px;}
+  .msglegend .mini-bub{background:#fff;border-radius:12px;border-top-left-radius:2px;padding:7px 10px;font-size:11px;color:var(--fg1);display:inline-block;max-width:92%;}
+  .msglegend .mini-bub .nm{font-size:8.5px;color:var(--fg2);margin-bottom:2px;}
   .phone{width:290px;height:600px;border:9px solid var(--navy);border-radius:32px;background:#fff;overflow:hidden;position:relative;box-shadow:0 8px 24px rgba(27,29,59,.10);}
   .phone-notch{height:18px;background:var(--navy);border-radius:0 0 12px 12px;width:100px;margin:0 auto;}
   .line-header{background:var(--line);color:#fff;padding:9px 12px;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
@@ -166,14 +181,15 @@
 <div class="wrap">
   <p class="eyebrow">MICO × TOPPAN ｜ BizClo ミニアプリ</p>
   <h1>トヨタユナイテッド静岡 様｜マイカー登録・入庫予約 ミニアプリ モック（マージ版）</h1>
-  <p class="subtitle">v0.3 ｜ 通しシナリオ（全体ジャーニー）＋ ご要望7項目 反映版 ｜ 作成：株式会社Mico ／ TOPPAN株式会社 ｜ 2026年6月29日</p>
+  <p class="subtitle">v0.4 ｜ 通しシナリオ＋ご要望7項目（6/26）＋<strong style="color:#D1232A;">完了通知・お引き取り調整 3項目（7/18ご要望）</strong> 反映版 ｜ 作成：株式会社Mico ／ TOPPAN株式会社 ｜ 2026年7月21日</p>
 
   <div class="legend">
     <span class="pill user">ユーザー</span> LINEミニアプリ（LIFF）画面
     <span class="pill admin">店舗スタッフ</span> 管理画面
     <span class="pill sys">ME/BizClo</span> 配信・自動処理<br>
     <span class="src">ベースシナリオ</span> 通しシナリオ（友だち獲得→案内→予約→確定→完了後）の画面
-    <span class="imp">①〜⑦</span> 6/26 MTGでのご要望（As-Is→To-Be）反映箇所<br>
+    <span class="imp">①〜⑦</span> 6/26 MTGでのご要望（As-Is→To-Be）反映箇所
+    <span class="nb">NEW ⑧〜⑩</span> 7/18ご要望「完了通知・お引き取り調整」反映箇所<br>
     実画面は貴社ブランド・i-CROP-J仕様に合わせ調整します。
   </div>
 
@@ -186,6 +202,7 @@
     <div class="jp"><div class="ph">PHASE 2</div><div class="t">予約（4ステップ）</div><div class="d">店舗→サービス→予約情報→日時→確認→受付（受付中）</div></div>
     <div class="jp"><div class="ph">PHASE 3</div><div class="t">店舗確定</div><div class="d">店舗スタッフが候補から確定。アラート＋ステータスで対応漏れ防止</div></div>
     <div class="jp"><div class="ph">PHASE 4</div><div class="t">通知・予約後</div><div class="d">確定/リマインド通知＋予約後チャット・デジタルDM</div></div>
+    <div class="jp newp"><div class="ph">PHASE 4.5 🆕</div><div class="t">完了通知・お引き取り調整</div><div class="d">作業完了を自動/手動で通知→お客様が引き取り日時を指定→来店平準化</div></div>
     <div class="jp"><div class="ph">PHASE 5</div><div class="t">完了後フォロー</div><div class="d">お礼＋次回案内。次回満了でPhase1へ循環</div></div>
   </div>
   <p class="jloop">↻ 完了後フォロー → 次回満了で PHASE 1 へ循環（LTVループ）</p>
@@ -203,6 +220,16 @@
     <tr><td class="no">⑦</td><td class="cat">受付</td><td>予約受理後にLINEで追加連絡ができない</td><td>チャットでやり取り（デジタルDMも）</td><td class="app"><strong>予約後チャット＆デジタルDM</strong>（P4-2）</td></tr>
   </table>
 
+  <!-- ===== 7/18 追加ご要望 対応表 ===== -->
+  <p class="phase-title"><span class="nb">NEW</span>7/18 追加ご要望への対応マップ（完了通知・お引き取り調整）</p>
+  <p class="phase-note">前回までの「予約」に続き、今回は「通知（＝作業完了後のお引き取り調整）」のご要望。要旨は<strong>「店舗とお客様、双方の都合を合わせたい」</strong>。作業完了のご案内から、お客様ご自身が受け取れる日時のご指定までをLINE内で完結させます。</p>
+  <table class="imp-table">
+    <tr><th>#</th><th>区分</th><th>As-Is（現状の課題）</th><th>To-Be（ご要望）</th><th>本モックでの実現（該当画面）</th></tr>
+    <tr><td class="no">⑧</td><td class="cat">通知</td><td>洗車のような軽作業も、修理のように納車に時間のかかる作業も、完了案内が一律で手間・タイミングがばらつく</td><td>作業区分で<strong>自動・手動を柔軟に使い分け</strong>、完了案内を効率化</td><td class="app"><strong>完了通知の自動/手動 出し分け</strong>（N-1・A-2）</td></tr>
+    <tr><td class="no">⑨</td><td class="cat">引取</td><td>点検等が完了した車をなかなか取りに来ず、駐車場スペース圧迫・管理リスク・追いかけ工数が増大</td><td>引き取りを促し、放置を解消したい</td><td class="app"><strong>引き取り日時の指定＋未指定への自動追いかけ＋在庫日数の可視化</strong>（N-2・N-3・A-2）</td></tr>
+    <tr><td class="no">⑩</td><td class="cat">引取</td><td>「土日の朝」などお引き取り来店が集中し、店頭で長時間待たせてしまう</td><td>双方の都合を合わせ、来店を平準化したい</td><td class="app"><strong>お客様がご都合のよい日時を指定＋混雑状況の見える化で分散</strong>（N-2）</td></tr>
+  </table>
+
   <!-- ===== PHASE 0 ===== -->
   <p class="phase-title">PHASE 0 ｜ 友だち獲得・登録</p>
   <div class="grid">
@@ -217,8 +244,8 @@
           <div class="vcard"><div class="vt">プリウス</div><div class="vn">静岡 300 あ 12-34 ／ 使用者：ご本人 ／ 車検満了 2026/04</div><div class="toggle-row"><span>入庫案内・リマインド</span><span class="toggle on"></span></div></div>
           <div class="vcard"><div class="vt">ヤリス</div><div class="vn">静岡 500 か 88-12 ／ 使用者：奥様</div><div class="toggle-row"><span>入庫案内・リマインド</span><span class="toggle off"></span></div></div>
           <button class="btn ghost">＋ お車を追加</button>
-          <div class="note"><span class="imp">①②</span><span class="src">店舗連携</span>車両単位で紐付け、使用者別に通知ON/OFF。併有車・法人の複数台に対応。</div>
         </div></div>
+      <div class="note out"><span class="imp">①②</span><span class="src">店舗連携</span>車両単位で紐付け、使用者別に通知ON/OFF。併有車・法人の複数台に対応。</div>
       <div class="screen-desc">登録画面に、車両ごとの紐付け・通知制御（ご要望①②）を統合。</div>
     </div>
     <!-- P0-2 -->
@@ -231,8 +258,8 @@
           <div class="scan"><div class="ico">📷</div><div class="t">車検証を撮影してアップロード</div><div class="d">枠内に合わせて撮影してください</div></div>
           <div class="autofill"><strong>読み取り結果（自動入力）</strong><br>車名：プリウス／型式：6AA-MXWH60<br>登録番号：静岡 300 あ 12-34<br>初度登録：2022/04／車検満了：2026/04</div>
           <button class="btn">この内容で登録する</button>
-          <div class="note"><span class="imp">③</span>車検証情報を事前取得し店舗の事前準備が可能。聞き取り電話による離脱を低減。</div>
         </div></div>
+      <div class="note out"><span class="imp">③</span>車検証情報を事前取得し店舗の事前準備が可能。聞き取り電話による離脱を低減。</div>
       <div class="screen-desc">ご要望③の新機能。新規客（顧客情報なし）でも撮影だけで登録完了。</div>
     </div>
     <!-- P0-3 -->
@@ -245,8 +272,8 @@
           <p class="lead" style="text-align:center;">プリウスの車検満了が近づいています（2026/04）。</p>
           <button class="btn">続けて入庫予約に進む</button>
           <button class="btn outline">あとで予約する</button>
-          <div class="note"><span class="src">登録完了画面</span>満了が近ければそのまま予約へ誘導。</div>
         </div></div>
+      <div class="note out"><span class="src">登録完了画面</span>満了が近ければそのまま予約へ誘導。</div>
       <div class="screen-desc">旧フローで抜けていた登録完了画面。満了が近い場合は予約導線へ。</div>
     </div>
     <!-- P0-4 -->
@@ -261,8 +288,8 @@
               <div class="rm"><span class="i">🎫</span>クーポン</div><div class="rm"><span class="i">📍</span>店舗情報</div><div class="rm"><span class="i">❓</span>よくある質問</div>
             </div>
           </div>
-          <div class="note" style="background:#fff;"><span class="src">自発予約の入口</span>案内を待たずに自発予約できるリッチメニュー。</div>
         </div></div>
+      <div class="note out"><span class="src">自発予約の入口</span>案内を待たずに自発予約できるリッチメニュー。</div>
       <div class="screen-desc">登録受付メッセージ＋リッチメニューで、案内配信を待たない自発予約の入口を用意。</div>
     </div>
   </div>
@@ -280,8 +307,8 @@
             <div style="font-size:10.5px;color:var(--fg2);margin:3px 0 8px;">ボタンから予約画面が開きます（店舗・お車は入力済み）</div>
             <div class="btn" style="margin:0;">予約する</div>
           </div>
-          <div class="note" style="background:#fff;"><span class="pill sys" style="margin:0 4px 0 0;">ME</span>満了30日前に自動配信。『予約する』でLIFF起動（service/carプリセット）。未反応は再配信。</div>
         </div></div>
+      <div class="note out"><span class="pill sys" style="margin:0 4px 0 0;">ME</span>満了30日前に自動配信。『予約する』でLIFF起動（service/carプリセット）。未反応は再配信。</div>
       <div class="screen-desc">Phase1。満了30日前トリガーで自動配信し、ワンタップで予約へ。</div>
     </div>
   </div>
@@ -302,8 +329,8 @@
             <div class="st"><span>清水店</span><span>8.0km</span></div>
           </div>
           <button class="btn">次へ（サービス選択）</button>
-          <div class="note"><span class="src">複数店舗販社対応</span>一覧・地図・絞り込みに対応。複数店舗の販社でも選択可。</div>
         </div></div>
+      <div class="note out"><span class="src">複数店舗販社対応</span>一覧・地図・絞り込みに対応。複数店舗の販社でも選択可。</div>
       <div class="screen-desc">4ステップ予約の起点。よく利用する店舗＋他店舗・地図・絞り込み。</div>
     </div>
     <!-- P2-2 service -->
@@ -319,8 +346,8 @@
           <div class="svc"><span>6ヶ月無料点検</span><span class="badge">所要30分</span></div>
           <div class="svc"><span>オイル交換</span><span class="badge">所要20分</span></div>
           <button class="btn">次へ（予約情報）</button>
-          <div class="note"><span class="src">可変スロット連動</span>所要時間バッジが日時の可変スロットに連動。</div>
         </div></div>
+      <div class="note out"><span class="src">可変スロット連動</span>所要時間バッジが日時の可変スロットに連動。</div>
       <div class="screen-desc">サービスごとの所要時間が、後段の空き枠（可変スロット）に反映。</div>
     </div>
     <!-- P2-3 info + 2 candidates -->
@@ -336,8 +363,8 @@
           <div class="cand"><div class="r">第2希望</div><div class="v">タップして日時を選択 ›</div></div>
           <div class="cand" style="opacity:.6;"><div class="r">第3希望（任意）</div><div class="v">＋ 追加する</div></div>
           <button class="btn">次へ（確認）</button>
-          <div class="note"><span class="imp">④</span>タイムリー対応を前提に第1・第2の2枠でOK（第3は任意）。連絡先＋マイカー情報を引用。</div>
         </div></div>
+      <div class="note out"><span class="imp">④</span>タイムリー対応を前提に第1・第2の2枠でOK（第3は任意）。連絡先＋マイカー情報を引用。</div>
       <div class="screen-desc">「第1〜3候補・マイカー引用」を、ご要望④の2枠運用に簡素化。</div>
     </div>
     <!-- P2-4 datetime modal -->
@@ -357,8 +384,8 @@
           <div class="slotline few"><span>10:30〜12:00</span><span>△ 残1</span></div>
           <div class="slotline full"><span>13:00〜14:30</span><span>× 満枠</span></div>
           <button class="btn">この日時で決定</button>
-          <div class="note"><span class="imp">⑤</span>1日ずつ確認する手間を解消。◎△×でまとめ表示し、サービス所要に応じた可変スロット＋残台数を選択（条件は店舗Admin設定）。</div>
         </div></div>
+      <div class="note out"><span class="imp">⑤</span>1日ずつ確認する手間を解消。◎△×でまとめ表示し、サービス所要に応じた可変スロット＋残台数を選択（条件は店舗Admin設定）。</div>
       <div class="screen-desc">日時モーダル（◎△×・火曜定休・残台数）。ご要望⑤の「まとめ表示」を満たす。</div>
     </div>
     <!-- P2-5 confirm -->
@@ -386,8 +413,8 @@
           <h2 style="text-align:center;">お申し込みを受け付けました</h2>
           <div class="ticket"><div class="st">受付番号</div><div class="no">#1042</div><div class="st" style="margin-top:6px;"><span class="status-pill pend">受付中</span></div></div>
           <p class="lead" style="margin-top:10px;">店舗が空き状況を確認し、確定日時をLINEでお知らせします。</p>
-          <div class="note"><span class="src">受付と確定は別段階</span>受付番号を発行し status:pending。受付中通知をBizClo送信。</div>
         </div></div>
+      <div class="note out"><span class="src">受付と確定は別段階</span>受付番号を発行し status:pending。受付中通知をBizClo送信。</div>
       <div class="screen-desc">「受付中」と「確定」を分ける2段階設計。受付中通知を自動送信。</div>
     </div>
   </div>
@@ -421,13 +448,24 @@
         <div class="copt"><span>第2希望 7/9(火) PM</span><span>△ 残1</span></div>
         <button class="btn">この日程で確定して通知</button>
         <button class="btn outline">チャットで相談（BizClo）</button>
-        <div class="note"><span class="src">二重確定0%</span><span class="imp">⑥</span>原子的枠デクリメントで二重確定を防止。状態はSF確認〜SMB計画の現行運用と連携。</div>
       </div>
     </div>
   </div>
+  <div class="note out" style="max-width:1180px;width:auto;margin:10px auto 0;"><span class="src">二重確定0%</span><span class="imp">⑥</span>原子的枠デクリメントで二重確定を防止。状態はSF確認〜SMB計画の現行運用と連携。</div>
 
   <!-- ===== PHASE 4 ===== -->
   <p class="phase-title">PHASE 4 ｜ 通知・予約後コミュニケーション</p>
+  <p class="phase-note">これ以降の「通知」画面は、メッセージの<strong>見せ方を2種類</strong>で意図的に描き分けています。</p>
+  <div class="msglegend">
+    <div class="col">
+      <div class="mini-dm"><div class="tg">ご予約確定 / リマインド など</div><div class="tt">予約・整備に紐づく定型通知</div></div>
+      <div class="cap"><b>青ヘッダーのカード</b>＝サービスメッセージ／DM。予約・整備に紐づき、システムが定型で<strong>自動配信</strong>する通知（確定・当日/前日リマインド・予約日経過・作業完了・次回案内・デジタルDM）。</div>
+    </div>
+    <div class="col">
+      <div class="bubwrap"><div class="mini-bub"><div class="nm">公式アカウント</div>ご都合のよい日時をお知らせください。</div></div>
+      <div class="cap"><b>吹き出し</b>＝公式アカウント／店舗との1:1トーク。まだ予約に紐づかない<strong>声かけ</strong>や、往復の会話（車検案内・登録お礼・予約後チャット・引き取り日時 未指定への追いかけ）。</div>
+    </div>
+  </div>
   <div class="grid">
     <!-- P4-1 confirm notice -->
     <div class="screen-wrap">
@@ -435,10 +473,9 @@
       <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>トヨタユナイテッド静岡</span><span>≡</span></div>
         <div class="msgbg">
           <div class="dm"><div class="tag">ご予約確定</div><div class="t">7/2(水) 9:00 で確定しました</div><div class="d">車検・長沼店。車検証と印鑑をお持ちください。</div></div>
-          <div class="bubble shop"><div class="nm">公式アカウント</div>※第2希望での確定／全枠NG時は文面が自動で分岐します。</div>
           <div class="dm"><div class="tag">前日リマインド</div><div class="t">明日 9:00 ご来店です</div><div class="d">変更・キャンセルはこちらから。</div></div>
-          <div class="note" style="background:#fff;"><span class="src">文面分岐</span>確定即時通知＋前日リマインド。第2/3希望確定・全NGで文面分岐。</div>
         </div></div>
+      <div class="note out"><span class="src">文面分岐</span>確定即時通知＋前日リマインド。第1/第2希望での確定、全枠NGなど<strong>結果に応じて文面を自動で出し分け</strong>ます。</div>
       <div class="screen-desc">確定・前日リマインドを自動配信。希望順や全NGに応じて文面を出し分け。</div>
     </div>
     <!-- P4-2 chat after booking -->
@@ -450,10 +487,96 @@
           <div class="bubble user">お願いします！代車も希望です</div>
           <div class="bubble shop"><div class="nm">長沼店</div>承知しました。代車をご用意しておきます。当日は車検証をお持ちください。</div>
           <div class="dm"><div class="tag">デジタルDM</div><div class="t">夏のエアコン点検キャンペーン</div><div class="d">ご来店時にクーポンをご提示ください。</div></div>
-          <div class="note" style="background:#fff;"><span class="imp">⑦</span><span class="src">差別化核</span>予約後の1:1チャット＝競合に無い予約後導線。追加整備案内・持ち物・デジタルDMをLINEで完結。</div>
         </div></div>
+      <div class="note out"><span class="imp">⑦</span><span class="src">差別化核</span>予約後の1:1チャット＝競合に無い予約後導線。追加整備案内・持ち物・デジタルDMをLINEで完結。</div>
       <div class="screen-desc">ご要望⑦＋「予約後導線（差別化核）」を統合。サンキューコール重複工数を削減。</div>
     </div>
+  </div>
+
+  <!-- ===== PHASE 4.5 (NEW / 7-18) ===== -->
+  <p class="phase-title">PHASE 4.5 ｜ 完了通知・お引き取り調整<span class="nb">NEW ⑧⑨⑩</span></p>
+  <p class="phase-note">作業完了を <strong>自動 or 手動</strong> で通知（⑧）→ お客様が <strong>ご都合のよい日時</strong>で引き取りを指定（⑩）→ 未指定・予約日経過は自動で追いかけ、在庫日数を可視化（⑨）。「双方の都合を合わせる」動線をLINE内で完結させます。</p>
+  <div class="grid">
+
+    <!-- N-1 completion notice (auto/manual) -->
+    <div class="screen-wrap">
+      <div class="screen-label">N-1 ｜ 作業完了のお知らせ</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>トヨタユナイテッド静岡</span><span>≡</span></div>
+        <div class="msgbg">
+          <div class="dm"><div class="tag">作業完了のお知らせ</div><div class="t">プリウスの車検が完了しました</div><div class="d">お引き取りが可能です。ご都合のよい日時をご指定ください。</div></div>
+          <button class="btn" style="margin-top:4px;">🚗 引き取り日時を指定する</button>
+        </div></div>
+      <div class="note out"><span class="nb">⑧</span><span class="src">自動/手動の出し分け</span>お客様に届く通知は同じ（完了のお知らせ＋日時指定ボタン）。違いは<strong>送信タイミングと、誰が送るか</strong>だけで、これは店舗側の設定です。洗車・オイル交換など軽作業は「作業完了で自動送信」、車検・点検は「作業確定で自動送信」、修理・板金など仕上がりに時間を要する作業は「スタッフが仕上がりを確認して手動送信」。作業区分ごとに自動／手動をあらかじめ設定します（→ A-2）。</div>
+      <div class="screen-desc">お客様側の体験は一律「完了通知→日時指定」。自動/手動は店舗設定で、お客様には見えません（ご要望⑧）。</div>
+    </div>
+
+    <!-- N-2 pickup datetime picker -->
+    <div class="screen-wrap">
+      <div class="screen-label">N-2 ｜ お引き取り日時のご指定</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>お引き取りのご予約</span><span>≡</span></div>
+        <div class="liff">
+          <h2>お引き取り日時を選ぶ</h2>
+          <p class="lead">ご都合のよい日時をお選びください。<br>混み合う時間帯は店頭でお待たせすることがあります。空いている時間帯だと、お待たせせずご案内できます。</p>
+          <div class="field"><label>お引き取り日</label>
+            <span class="chip">7/4(金)</span><span class="chip sel">7/5(土)</span><span class="chip">7/6(日)</span><span class="chip">7/7(月)</span>
+          </div>
+          <div class="field"><label>時間帯（7/5 土）</label>
+            <div class="slotline full"><span>9:00〜11:00</span><span>混雑・お待たせします</span></div>
+            <div class="slotline few"><span>11:00〜13:00</span><span>やや混雑</span></div>
+            <div class="slotline sel"><span>14:00〜15:00</span><span>お待たせしません ✓</span></div>
+            <div class="slotline"><span>17:00〜18:00</span><span>お待たせしません</span></div>
+          </div>
+          <button class="btn">この日時でお引き取り予約</button>
+        </div></div>
+      <div class="note out"><span class="nb">⑩</span><span class="src">来店の平準化</span>時間帯ごとの混雑を「お待たせします／お待たせしません」とお客様目線で提示。空いている枠を<strong>お客様自身が選びたくなる</strong>設計で、土日朝の集中を自然に分散し、店頭の待ち時間を短縮します。</div>
+      <div class="screen-desc">お客様がご自身の都合で引き取り日時を指定（ご要望⑩）。混雑＝待たせるリスクを明示し、空き枠へ自然に誘導。</div>
+    </div>
+
+    <!-- N-3 pickup confirmed + reminders + chase -->
+    <div class="screen-wrap">
+      <div class="screen-label">N-3 ｜ 引き取り確定・各種リマインド</div>
+      <div class="phone"><div class="phone-notch"></div><div class="line-header"><span>トヨタユナイテッド静岡</span><span>≡</span></div>
+        <div class="msgbg">
+          <div class="dm"><div class="tag">お引き取り予約 確定</div><div class="t">7/5(土) 14:00〜15:00 で承りました</div><div class="d">長沼店｜お預かり中のプリウス。到着時にこの画面をご提示ください。</div></div>
+          <div class="dm"><div class="tag">当日リマインド</div><div class="t">本日14:00にお引き取り予定です</div><div class="d">ご都合が変わった場合は日時の変更ができます。</div></div>
+          <div class="dm"><div class="tag">予約日 経過のお知らせ</div><div class="t">お引き取り予定日を過ぎています</div><div class="d">7/5のご予約が未完了です。あらためてご都合のよい日時をお知らせください。</div></div>
+          <div class="bubble shop"><div class="nm">公式アカウント</div>お引き取り日時がまだご指定いただけていないお車があります。ご都合のよい日時をお知らせください。</div>
+        </div></div>
+      <div class="note out"><span class="nb">⑨</span><span class="src">放置抑制</span>通知は4種を自動で出し分け：<strong>①引き取り予約 確定 ②当日リマインド ③予約日 経過リマインド</strong>は予約に紐づく通知カード、<strong>④日時 未指定への追いかけ</strong>は予約前の声かけとして吹き出しで表現（上部の凡例を参照）。駐車場圧迫・管理リスク・追いかけ電話の工数を低減します。</div>
+      <div class="screen-desc">確定・当日・予約日経過・未指定追いかけの4通知を自動化（ご要望⑨）。取りに来ない放置を仕組みで解消。</div>
+    </div>
+  </div>
+
+  <!-- A-2 admin board for completion / pickup -->
+  <div class="pc" style="margin-top:8px;">
+    <div class="pc-bar"><span class="pc-dot r"></span><span class="pc-dot y"></span><span class="pc-dot g"></span><span class="pc-url">https://icrop-j.tus.example.jp/pickup</span></div>
+    <div class="pc-body">
+      <div>
+        <h2>完了・お引き取り管理ボード（長沼店）</h2>
+        <p class="sub">作業完了→通知→お引き取りまでを一覧管理。長期在庫はアラートで可視化。</p>
+        <div class="alert"><span class="dot"></span>お引き取り予定 超過（在庫3日以上）が <strong>2件</strong> — 駐車場圧迫・追いかけ対象</div>
+        <table class="adm">
+          <tr><th>車両 / 顧客</th><th>作業</th><th>完了通知</th><th>お引き取り</th><th>在庫</th><th>操作</th></tr>
+          <tr><td>プリウス／田中</td><td>車検</td><td><span class="tag done">自動送信済</span></td><td>7/5(土) 14:00</td><td>1日</td><td><button class="action-btn">詳細</button></td></tr>
+          <tr><td>アクア／渡辺</td><td>洗車</td><td><span class="tag done">自動送信済</span></td><td>本日 AM</td><td>0日</td><td><button class="action-btn">詳細</button></td></tr>
+          <tr><td>ハリアー／中村</td><td>修理（板金）</td><td><span class="tag wait">未送信</span></td><td>—</td><td><strong style="color:#c0392b;">3日</strong></td><td><button class="action-btn fill">完了通知を送る</button></td></tr>
+          <tr><td>ヴォクシー／佐藤</td><td>点検</td><td><span class="tag prog">送信済</span></td><td><span style="color:#c0392b;">未指定</span></td><td><strong style="color:#c0392b;">5日</strong></td><td><button class="action-btn fill">追いかけ通知</button></td></tr>
+        </table>
+      </div>
+      <div class="cpanel">
+        <div class="cn">完了通知の送信設定</div>
+        <div class="cm">作業区分ごとに自動／手動を設定（⑧）</div>
+        <div class="copt sel"><span>洗車・オイル交換（軽作業）</span><span>自動</span></div>
+        <div class="copt sel"><span>車検・点検</span><span>自動</span></div>
+        <div class="copt"><span>修理・板金（要時間）</span><span>手動</span></div>
+        <div class="row" style="margin-top:10px;"><span>平均在庫日数</span><span>1.8日</span></div>
+        <div class="row"><span>超過（3日以上）</span><span style="color:#c0392b;font-weight:700;">2件</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="note out" style="max-width:1180px;width:auto;margin:10px auto 0;"><span class="nb">⑧⑨</span>自動/手動の出し分け＋在庫日数の可視化・追いかけで、放置と店舗工数を同時に解消。</div>
+  <div class="flow-note">
+    <strong>💡 このフェーズの狙い：</strong>「予約」で入口を整えた次は、<strong>出口（お引き取り）</strong>の体験を設計します。<span class="nb">⑧</span>作業の重い/軽いで完了通知を自動・手動に出し分け、<span class="nb">⑩</span><strong>お客様自身が受け取れる日時を指定</strong>（混雑＝お待たせするリスクを見せ、空き枠へ自然に誘導）、<span class="nb">⑨</span>当日・予約日経過・未指定を自動でリマインド＋長期在庫を可視化。結果として、駐車場圧迫・管理リスク・追いかけ工数と、土日朝の来店集中による店頭待ちを同時に抑えます。
   </div>
 
   <!-- ===== PHASE 5 ===== -->
@@ -466,14 +589,14 @@
           <div class="bubble shop"><div class="nm">長沼店</div>本日はご入庫ありがとうございました。点検結果はマイページからご確認いただけます。</div>
           <div class="dm"><div class="tag">次回のご案内</div><div class="t">次回点検：2026/10 / 次回車検：2028/04</div><div class="d">時期が近づいたらLINEでお知らせします。</div></div>
           <div class="bubble shop"><div class="nm">長沼店</div>オイル交換のおすすめ時期もLINEでご案内します。</div>
-          <div class="note" style="background:#fff;"><span class="src">LTVループ</span>入庫完了→お礼＋次回案内。次回満了でPHASE 1へ循環。</div>
         </div></div>
+      <div class="note out"><span class="src">LTVループ</span>入庫完了→お礼＋次回案内。次回満了でPHASE 1へ循環。</div>
       <div class="screen-desc">完了後フォローで次回入庫へつなぐLTVループ。Phase1の案内配信へ戻る。</div>
     </div>
   </div>
 
   <div class="flow-note">
-    <strong>📌 注記：</strong>本モックは v0.3 マージ版（2026-06-29）。<span class="src">ベースシナリオ</span>＝通しシナリオ（友だち獲得→案内→予約4ステップ→受付中→店舗確定→通知→完了後フォローのLTVループ）、<span class="imp">①〜⑦</span>＝6/26 MTGでのご要望反映。車検証OCR・空き枠のリアルタイム反映・チャット/デジタルDM・原子的枠デクリメントは、実装範囲・連携方式を要件定義で確定します。SF確認〜SMB計画作成は現行運用を維持。費用・スケジュールは別紙「PRD」「概算見積もり」を参照ください。
+    <strong>📌 注記：</strong>本モックは v0.4（2026-07-21）。<span class="src">ベースシナリオ</span>＝通しシナリオ（友だち獲得→案内→予約4ステップ→受付中→店舗確定→通知→<strong>完了通知・お引き取り調整</strong>→完了後フォローのLTVループ）、<span class="imp">①〜⑦</span>＝6/26ご要望、<span class="nb">⑧〜⑩</span>＝7/18ご要望（完了通知・お引き取り調整）反映。完了通知の自動/手動トリガー・引き取り枠のリアルタイム空き反映・在庫日数の可視化・追いかけ自動化は、実装範囲・連携方式（i-CROP-J / BizClo / ME）を要件定義で確定します。SF確認〜SMB計画作成は現行運用を維持。費用・スケジュールは別紙「PRD」「概算見積もり」を参照ください。
   </div>
   <p class="disc">アイコン・地図は仮表示。実装時はLucide／実地図に差し替え。単一HTML・アカウント不要（GitHub Pages配布可）。© Mico Inc. / TOPPAN Inc. — CONFIDENTIAL</p>
 </div>
