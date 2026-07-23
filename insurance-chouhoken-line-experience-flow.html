@@ -97,6 +97,58 @@
   .qchip:active{background:#eafaf0;}
   .qchip.alt{border-color:var(--navy);color:var(--navy);}
 
+  /* Q&A: typing indicator */
+  .typing{display:inline-flex;gap:4px;padding:3px 2px;}
+  .typing span{width:7px;height:7px;border-radius:50%;background:#c2ccd6;animation:qabounce 1.2s infinite;}
+  .typing span:nth-child(2){animation-delay:.15s;}
+  .typing span:nth-child(3){animation-delay:.3s;}
+  @keyframes qabounce{0%,60%,100%{transform:translateY(0);opacity:.5;}30%{transform:translateY(-4px);opacity:1;}}
+  /* Q&A: answer carousel */
+  .qacar{display:flex;gap:9px;overflow-x:auto;padding:2px 12px 10px 52px;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;}
+  .qacar::-webkit-scrollbar{height:4px;}
+  .qacar::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px;}
+  .qacard{scroll-snap-align:start;flex:none;width:212px;background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(15,23,42,.13);overflow:hidden;display:flex;flex-direction:column;border:1px solid #eef0f3;}
+  .qacard .top{background:linear-gradient(120deg,var(--navy),#0d2c53);color:#fff;padding:8px 11px;font-size:10.5px;font-weight:700;letter-spacing:.03em;}
+  .qacard .bd{padding:10px 11px 11px;display:flex;flex-direction:column;gap:6px;flex:1;}
+  .qacard .q{font-size:12px;font-weight:700;color:#1b232d;line-height:1.45;}
+  .qacard .a{font-size:11px;color:#495562;line-height:1.6;}
+  .qacard .cbtn2{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:5px;background:#e8edf5;color:var(--navy);font-size:11px;font-weight:700;padding:8px 10px;border-radius:9px;cursor:pointer;border:none;width:100%;}
+  .qacard .cbtn2.solid{background:var(--navy);color:#fff;}
+  .swipehint{font-size:10px;color:#9aa3b0;margin:1px 0 0 52px;}
+  /* Q&A: selectable options */
+  .qaopt{margin:2px 12px 10px 52px;display:flex;flex-direction:column;gap:6px;}
+  .qaopt .o{background:#fff;border:1.5px solid #e8edf5;color:var(--navy);font-size:12.5px;font-weight:700;padding:9px 13px;border-radius:12px;text-align:left;cursor:pointer;transition:.2s;}
+  .qaopt .o.sel{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .qaopt .o.dim{opacity:.4;}
+  /* Q&A: demo scenario panel (端末の外・スマホ下に配置) */
+  .qa-demo-ext{margin:14px auto 0;max-width:378px;background:#fff;border:1px solid #e5e8ee;border-radius:14px;box-shadow:0 4px 18px rgba(15,23,42,.08);padding:13px 15px;}
+  .qa-demo-ext[hidden]{display:none;}
+  .qa-demo-ext .dh{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+  .qa-demo-ext .dh .tag{font-size:9.5px;font-weight:800;color:#fff;background:var(--navy);border-radius:5px;padding:2px 7px;letter-spacing:.04em;flex:none;}
+  .qa-demo-ext .dh .cnt{font-size:11px;font-weight:700;color:#9aa3b0;flex:none;}
+  .qa-demo-ext .dh .ttl{font-size:12.5px;font-weight:800;color:#1b232d;flex:1;line-height:1.35;}
+  .qa-demo-ext .dh .qaback{flex:none;background:none;border:1px solid #d1d5db;color:#4b5563;font-family:inherit;font-size:10.5px;font-weight:700;padding:5px 10px;border-radius:999px;cursor:pointer;transition:.15s;}
+  .qa-demo-ext .dh .qaback:hover:not(:disabled){border-color:var(--navy);color:var(--navy);}
+  .qa-demo-ext .dh .qaback:disabled{opacity:.4;cursor:default;}
+  .qa-demo-ext .desc{font-size:11px;color:#6b7280;line-height:1.6;margin-top:11px;}
+  .qa-demo-ext .scgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .qa-demo-ext .scbtn{display:flex;align-items:center;gap:8px;text-align:left;background:#fff;border:1.5px solid #e5e8ee;border-radius:10px;padding:9px 11px;font-family:inherit;cursor:pointer;transition:.15s;}
+  .qa-demo-ext .scbtn:hover:not(:disabled){border-color:var(--navy);}
+  .qa-demo-ext .scbtn.active{border-color:var(--navy);background:#eef2f8;}
+  .qa-demo-ext .scbtn:disabled{opacity:.5;cursor:default;}
+  .qa-demo-ext .scbtn .scn{width:20px;height:20px;border-radius:6px;background:var(--navy);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;}
+  .qa-demo-ext .scbtn .sct{font-size:11.5px;font-weight:700;color:#1b232d;line-height:1.3;}
+  /* Q&A: LINE風入力バー（Q&Aモード時のみ表示） */
+  .qa-inputbar{position:absolute;left:0;right:0;bottom:0;z-index:108;background:#fff;border-top:1px solid #edeff2;padding:8px 10px;display:none;align-items:center;gap:9px;}
+  .qa-inputbar.show{display:flex;}
+  .qa-inputbar .ib-plus{color:#8b96a1;font-size:22px;line-height:1;flex:none;}
+  .qa-inputbar .ib-field{flex:1;background:#f1f3f5;border-radius:20px;padding:8px 14px;display:flex;align-items:center;min-width:0;}
+  .qa-inputbar .ib-field input{border:none;background:transparent;outline:none;width:100%;font-size:13px;color:#1c2530;font-family:inherit;}
+  .qa-inputbar .ib-send{width:33px;height:33px;border-radius:50%;background:var(--line);color:#fff;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;flex:none;transition:.15s;}
+  .qa-inputbar .ib-send:disabled{background:#cfd6dd;cursor:default;}
+  .qa-inputbar .ib-caret{display:inline-block;width:1px;height:15px;background:var(--line);margin-left:1px;animation:qacaret 1s steps(1) infinite;vertical-align:-2px;}
+  @keyframes qacaret{0%,50%{opacity:1;}50.01%,100%{opacity:0;}}
+
   /* rich menu */
   .rm-tab{position:absolute;left:0;right:0;z-index:110;background:#fff;border-top:1px solid var(--hair);height:38px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;font-weight:700;color:#555;cursor:pointer;}
   .rm-tab .ic{font-size:11px;transition:transform .25s;}
@@ -196,6 +248,11 @@
               </div>
             </div>
             <div class="chatarea" id="chat"></div>
+            <div class="qa-inputbar" id="qaInputBar">
+              <span class="ib-plus">＋</span>
+              <div class="ib-field"><input id="qaInput" type="text" placeholder="メッセージを入力" autocomplete="off" readonly/></div>
+              <button class="ib-send" id="qaSend" title="送信" disabled>➤</button>
+            </div>
             <div class="rm-tab" id="rmTab" onclick="toggleRM()"><span class="ic" id="rmIc">▼</span><span>メニュー</span></div>
             <div class="richmenu" id="richmenu">
               <div class="rm-grid">
@@ -217,6 +274,7 @@
       </div>
     </div>
     <div class="caption">超保険 LINE体験全体モック｜LINEトーク→リッチメニュー／Q&Aエージェント</div>
+    <div class="qa-demo-ext" id="qaDemoExt" hidden></div>
   </div>
 
   <div class="sidebox">
@@ -7142,70 +7200,217 @@ function buildGreeting(){
   },500);
 }
 
-/* ===== Q&A AGENT (明治安田方式) ===== */
+/* ===== Q&A AGENT (自然文入力 → 理解 → 回答カード提示) ===== */
 const KB=[
-  {q:"契約内容はどこで確認できますか？",
-   a:"ご契約内容は、マイページからいつでもご確認いただけます。証券番号・補償内容・満期日などをご覧いただけます。",
-   url:"マイページで契約を確認する",dest:"mypage",ref:"契約確認FAQ"},
-  {q:"契約更新の手続きと時期を教えて",
-   a:"更新のご案内は、満期の約2〜3ヶ月前にお送りしています。お手続きはマイページ、または担当代理店にて承ります。",
-   url:"更新手続きの流れ（案内ページ）",dest:null,ref:"更新手続きFAQ"},
-  {q:"補償を見直したい・追加したい",
-   a:"ライフイベント（結婚・出産・住宅購入など）に合わせた補償の見直しは、担当代理店がご相談を承ります。まずは「かんたん診断」で現状を把握いただくのもおすすめです。",
-   url:null,dest:"shindan",ref:"補償見直しFAQ",agent:true},
-  {q:"保険料控除証明書を再発行したい",
-   a:"控除証明書の再発行は、マイページからお申し込みいただけます。お手元に届くまで通常1週間程度です。",
-   url:"控除証明書の再発行手続き",dest:null,ref:"控除証明書FAQ"},
-  {q:"事故にあったときの連絡先は？",
-   a:"事故のご連絡は、24時間365日受付の事故受付センターへお願いします。マイページからも受付状況をご確認いただけます。",
-   url:"事故のご連絡・受付状況",dest:null,ref:"事故対応FAQ"},
-  {q:"おすすめの投資信託を教えて",
-   oos:true},
+  {id:'kakunin',cat:'契約内容',q:'契約内容・補償内容を確認したい',
+   kw:['契約内容','補償内容','補償','契約','内容','確認','証券','保障','いくら','加入している','入ってる','現在'],
+   a:'ご契約中の超保険の補償内容・保険金額は、マイページからいつでもご確認いただけます。',
+   btn:'マイページで確認する',dest:'mypage'},
+  {id:'towa',cat:'超保険とは',q:'超保険とはどんな保険ですか',
+   kw:['超保険とは','どんな保険','特徴','一体','セット','まとめ','何ができ','どういう保険'],
+   a:'「超保険」は自動車・住まい・からだ・賠償責任などの補償を1つの証券にまとめられる総合保険です。',
+   btn:'超保険の概要を見る'},
+  {id:'koushin',cat:'契約更新',q:'契約更新の手続き・時期について',
+   kw:['更新','満期','継続','いつ','時期','自動'],
+   a:'超保険は原則1年ごとの自動更新です。満期の約2か月前に更新のご案内をお送りします。',
+   btn:'更新の流れを見る'},
+  {id:'minaoshi',cat:'補償見直し',q:'補償を見直したい・追加したい',
+   kw:['見直し','見直す','見直したい','追加','変更','増やす','結婚','出産','生まれ','子供','こども','子ども','住宅','家を','引っ越し','引越','ライフイベント','家族'],
+   a:'ライフイベントに合わせた補償の見直し・追加をご検討いただけます。まずはかんたん診断で現状を把握いただけます。',
+   btn:'かんたん診断をひらく',dest:'shindan',agent:true},
+  {id:'koujo',cat:'控除証明書',q:'保険料控除証明書を再発行したい',
+   kw:['控除','証明書','再発行','年末調整','確定申告','なくし','無くし','紛失','届かない'],
+   a:'保険料控除証明書は毎年10月頃に発送しています。再発行はマイページからお申し込みいただけます。',
+   btn:'控除証明書を再発行'},
+  {id:'jiko',cat:'事故のとき',q:'事故にあった・連絡先を知りたい',
+   kw:['事故','ぶつけ','ぶつかっ','こすっ','こすって','壊れ','けが','怪我','連絡先','緊急','火災','水漏れ','盗難','当て'],
+   a:'事故や災害にあわれた場合は、24時間365日受付の事故受付センターへご連絡ください。',
+   btn:'事故受付の連絡先'},
+  {id:'jusho',cat:'登録情報変更',q:'住所・電話番号などを変更したい',
+   kw:['住所','引っ越し','引越','転居','電話番号','連絡先','登録情報','メールアドレス','変更したい'],
+   a:'登録情報の変更はマイページから可能です。補償に関わる変更はあわせて担当代理店へご連絡ください。',
+   btn:'登録情報を変更する',dest:'mypage'},
 ];
+let qaBusy=false;
+/* --- チャット描画補助（Q&A用） --- */
+function qaTyping(){
+  const m=document.createElement('div'); m.className='msg';
+  m.innerHTML=`<div class="av"><div class="m">超保険</div></div>
+    <div class="stack"><div class="name">超保険（東京海上日動）</div>
+    <div class="bubble"><span class="typing"><span></span><span></span><span></span></span></div></div>`;
+  chat().appendChild(m); scrollBottom(); return m;
+}
+const qaSleep=ms=>new Promise(r=>setTimeout(r,ms));
+function qaSearch(text){
+  const q=(text||'').toLowerCase().replace(/\s/g,'');
+  return KB.map(e=>{ let h=0; e.kw.forEach(k=>{ if(q.includes(k.toLowerCase())) h++; });
+    if(q.length>=3 && e.q.toLowerCase().includes(q)) h+=2; return {e,h}; })
+    .filter(x=>x.h>0).sort((a,b)=>b.h-a.h).map(x=>x.e);
+}
+function qaCarousel(items,autoPickId){
+  return new Promise(resolve=>{
+    const wrap=document.createElement('div'); wrap.className='qacar';
+    let picked=false;
+    const pick=e=>{ if(picked) return; picked=true; resolve(e); };
+    items.forEach(e=>{
+      const c=document.createElement('div'); c.className='qacard';
+      c.innerHTML=`<div class="top">${e.cat}</div><div class="bd"><div class="q">Q. ${e.q}</div><div class="a">${e.a}</div>
+        <button class="cbtn2${e.agent?' solid':''}">${e.btn} ›</button></div>`;
+      c.querySelector('button').addEventListener('click',()=>pick(e));
+      wrap.appendChild(c);
+    });
+    chat().appendChild(wrap);
+    if(items.length>1){ const h=document.createElement('div'); h.className='swipehint'; h.textContent='← スワイプして他の候補も見る →'; chat().appendChild(h); }
+    scrollBottom();
+    if(autoPickId){ const a=items.find(x=>x.id===autoPickId)||items[0]; setTimeout(()=>pick(a),1500); }
+  });
+}
+function qaOptions(options,selected){
+  return new Promise(resolve=>{
+    const wrap=document.createElement('div'); wrap.className='qaopt';
+    const btns=options.map(o=>{ const b=document.createElement('button'); b.className='o'; b.textContent=o; wrap.appendChild(b); return b; });
+    chat().appendChild(wrap); scrollBottom();
+    setTimeout(()=>{ btns.forEach(b=>{ b.classList.add(b.textContent===selected?'sel':'dim'); }); scrollBottom();
+      setTimeout(()=>resolve(selected),700); },1000);
+  });
+}
+/* --- 個別回答（カルーセル） --- */
+async function qaAnswer(text,forcedIds,autoPickId){
+  const t=qaTyping(); await qaSleep(1500); t.remove();
+  const results=forcedIds?forcedIds.map(id=>KB.find(x=>x.id===id)).filter(Boolean):qaSearch(text);
+  if(!results.length){ qaMiss(); return null; }
+  botMsg(`ご質問ありがとうございます。近いご案内が ${Math.min(results.length,3)} 件見つかりました。該当するものをご確認ください 👇`);
+  const picked=await qaCarousel(results.slice(0,3),autoPickId);
+  meMsg(picked.q);
+  const t2=qaTyping(); await qaSleep(1200); t2.remove();
+  let html=picked.a;
+  const onclick=picked.dest?`onclick="closeAndGo('${picked.dest}')"`:`onclick="toast('（デモ）案内ページに遷移します')"`;
+  html+=`<a class="kburl" ${onclick}>🔗 ${picked.btn}</a>`;
+  html+=`<div class="guard">正式な補償内容は、パンフレット・約款、または担当代理店にてご確認ください。</div>`;
+  botMsg(html);
+  return picked;
+}
+function qaMiss(){
+  botMsg('大変申し訳ございません。お客様のお問い合わせに近しいQ&Aはございませんでした。<br>ご質問を変えていただくか、担当代理店へのご相談をご検討ください。');
+}
+function closeAndGo(dest){ closeOv&&closeOv(); openDest(dest); }
+
 function startQA(){
   hideRM();
   clearQR();
   meMsg('Q&Aで相談したい');
   setTimeout(()=>{
-    botMsg('ご質問をどうぞ。よくあるご質問からもお選びいただけます。<div class="kbref">AIが、用意されたナレッジから回答します。</div>');
-    qaChips();
+    botMsg('こんにちは、超保険サポートAIです 🤖<br>ご質問をご入力ください。サポートAIが最も近いFAQを探して回答します。');
+    startDemo();
   },300);
 }
-function qaChips(){
-  clearQR();
-  const chips=KB.map((k,i)=>({label:k.oos?'（例）投資の相談':k.q.length>12?k.q.slice(0,12)+'…':k.q,act:`askQA(${i})`}));
-  qrRow(chips);
+
+/* ===== 4シナリオ・デモ導線 ===== */
+const QA_SCENARIOS=[
+  {title:'Q&Aモードでの回答',
+   desc:'ナレッジベースから近い回答を提示。ハルシネーションを抑えて回答します。カードを選ぶと回答が表示されます。',
+   run:async()=>{ await qaTypeSend('いま加入している補償の内容を確認したいのですが');
+     await qaAnswer(null,['kakunin','towa']); }},
+  {title:'回答不可：ナレッジ合致なし',
+   desc:'近いQ&Aが見つからない場合は無理に回答しません。',
+   run:async()=>{ await qaTypeSend('ペット保険には加入できますか？');
+     const t=qaTyping(); await qaSleep(1500); t.remove(); qaMiss(); }},
+  {title:'回答不可：競合社・他サービス',
+   desc:'超保険以外の他社サービスに関する質問にはお答えしません。',
+   run:async()=>{ await qaTypeSend('他社の火災保険について教えてほしい');
+     const t=qaTyping(); await qaSleep(1500); t.remove();
+     botMsg('大変恐縮ですが、本サービスは東京海上日動火災保険・超保険サポート専用の窓口です。他社サービスの内容についてはご回答いたしかねます。'); }},
+  {title:'規定アクション実行',
+   desc:'あらかじめ指定したアクションを実行し、スムーズに手続きへつなぎます。',
+   run:async()=>{ await qaTypeSend('保険内容を変更したい');
+     const t=qaTyping(); await qaSleep(1500); t.remove();
+     botMsg('かしこまりました。ご希望に近いお手続きはこちらです 👇');
+     const pick=await qaCarousel([KB.find(x=>x.id==='minaoshi')],'minaoshi');
+     meMsg(pick.q);
+     const t2=qaTyping(); await qaSleep(1200); t2.remove();
+     botMsg('今回の見直しのきっかけを教えていただけますか？');
+     await qaTypeSend('子どもが生まれたため');
+     const t3=qaTyping(); await qaSleep(1200); t3.remove();
+     botMsg('ありがとうございます。備えたいリスクを教えてください（選択式） 👇');
+     const risk=await qaOptions(['病気・ケガ','万一のときの家族の生活費','事故・賠償','災害（火災・地震）'],'万一のときの家族の生活費');
+     meMsg(risk);
+     const t4=qaTyping(); await qaSleep(1200); t4.remove();
+     botMsg('いただいた内容を参考に、当社の担当代理店にご相談いただけます。');
+     agentHandoffPrompt(); }},
+];
+let qaScIdx=-1;
+function startDemo(){
+  qaScIdx=-1;
+  // demo中はリッチメニュー導線を隠し、LINE風入力バーを表示
+  const rmTab=el('rmTab'); if(rmTab) rmTab.style.display='none';
+  const rm=el('richmenu'); if(rm) rm.classList.add('hidden');
+  const ib=el('qaInputBar'); if(ib) ib.classList.add('show');
+  layoutQADemo();
+  renderDemoBar();
 }
-function askQA(i){
-  const k=KB[i];
+function layoutQADemo(){
+  const ib=el('qaInputBar'), chatEl=el('chat');
+  if(!ib||!chatEl) return;
+  requestAnimationFrame(()=>{
+    const ibH=ib.getBoundingClientRect().height;
+    chatEl.style.bottom=ibH+'px';
+  });
+}
+function renderDemoBar(){
+  const ext=el('qaDemoExt');
+  if(!ext) return;
+  ext.hidden=false;
+  const btns=QA_SCENARIOS.map((s,i)=>
+    `<button class="scbtn${i===qaScIdx?' active':''}" data-i="${i}"${qaBusy?' disabled':''}>
+      <span class="scn">${i+1}</span><span class="sct">${s.title}</span></button>`).join('');
+  const desc=qaScIdx>=0?`<div class="desc">${QA_SCENARIOS[qaScIdx].desc}</div>`:`<div class="desc">見たいシナリオを選んでください。ボタンを押すと、その挙動をLINEトーク上で再生します。</div>`;
+  ext.innerHTML=`<div class="dh"><span class="tag">DEMO</span><span class="ttl">Q&Aエージェント｜シナリオを選択</span><button class="qaback" id="qaBackRM"${qaBusy?' disabled':''}>‹ メニューに戻る</button></div>
+    <div class="scgrid">${btns}</div>
+    ${desc}`;
+  ext.querySelectorAll('.scbtn').forEach(b=>{
+    b.onclick=()=>{ if(qaBusy) return; const i=+b.getAttribute('data-i');
+      qaScIdx=i; renderDemoBar(); runQaScenario(i); };
+  });
+  const back=el('qaBackRM'); if(back) back.onclick=()=>{ if(qaBusy) return; exitQA(); };
+}
+function removeDemoBar(){
+  const ext=el('qaDemoExt'); if(ext){ ext.hidden=true; ext.innerHTML=''; }
+  const rmTab=el('rmTab'); if(rmTab) rmTab.style.display='';
+  const ib=el('qaInputBar'); if(ib) ib.classList.remove('show');
+  const chatEl=el('chat'); if(chatEl) chatEl.style.bottom='';
+  fixLayout();
+}
+function exitQA(){
+  qaScIdx=-1;
+  removeDemoBar();
+  showRM();   // リッチメニューを開いた状態で戻す
+}
+function clearQAChat(){
+  chat().innerHTML='';
+  const d=document.createElement('div'); d.className='daydiv'; d.innerHTML='<span>今日</span>'; chat().appendChild(d);
+  botMsg('こんにちは、超保険サポートAIです 🤖<br>ご質問をご入力ください。サポートAIが最も近いFAQを探して回答します。');
+}
+async function runQaScenario(i){
+  qaBusy=true; renderDemoBar();
   clearQR();
-  meMsg(k.oos?'おすすめの投資信託を教えて':k.q);
-  setTimeout(()=>{
-    if(k.oos){
-      botMsg(`申し訳ございません。そのご質問についての<b>知識がございません</b>。<br>超保険の契約・補償に関するご質問にお答えできます。<br>個別のご相談は、担当代理店におつなぎできます。
-        <div class="kbref">類似度スコアが基準を下回ったため、無理な回答は行いません。</div>`);
-      setTimeout(()=>{ agentHandoffPrompt(); },400);
-      return;
-    }
-    let html=k.a;
-    if(k.url){ const onclick=k.dest?`onclick="openDest('${k.dest}')"`:`onclick="toast('（デモ）案内ページに遷移します')"`;
-      html+=`<a class="kburl" ${onclick}>🔗 ${k.url}</a>`; }
-    else if(k.dest){ html+=`<a class="kburl" onclick="openDest('${k.dest}')">🔗 かんたん診断をひらく</a>`; }
-    html+=`<div class="guard">正式な補償内容は、パンフレット・約款、または担当代理店にてご確認ください。</div>`;
-    html+=`<div class="kbref">参照ナレッジ：${k.ref}</div>`;
-    botMsg(html);
-    setTimeout(()=>{
-      if(k.agent){ agentHandoffPrompt(); }
-      else { botMsg('ほかにご質問はありますか？'); qaChips(); }
-    },450);
-  },400);
+  await QA_SCENARIOS[i].run();
+  qaBusy=false; renderDemoBar();
+}
+async function qaTypeSend(text){
+  const field=el('qaInput'), send=el('qaSend');
+  if(field){
+    field.value=''; if(send) send.disabled=true;
+    await qaSleep(350);
+    for(let i=0;i<text.length;i++){ field.value=text.slice(0,i+1); if(send) send.disabled=false; await qaSleep(55); }
+    await qaSleep(420);            // 入力し終えて一拍
+    field.value=''; if(send) send.disabled=true;   // 送信でフィールドが空に
+  }
+  meMsg(text);
+  await qaSleep(250);
 }
 function agentHandoffPrompt(){
   clearQR();
-  botMsg('より詳しいご相談は、担当の代理店にて承ります。お近くの代理店・担当者よりご案内いたします。<div class="kbref">本アカウントでは1対1のチャット対応は行っておりません。</div>');
-  qrRow([
-    {label:'ほかの質問をする',act:'qaChips()',alt:true},
-  ]);
+  botMsg('より詳しいご相談は、担当の代理店にて承ります。お近くの代理店・担当者よりご案内いたします。');
 }
 
 /* ===== RICH MENU ===== */
