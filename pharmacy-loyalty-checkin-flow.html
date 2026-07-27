@@ -17,8 +17,8 @@
 <style>
   :root{--navy:#1F3864;}
   *{box-sizing:border-box;}
-  html,body{margin:0;height:100%;}
-  body{font-family:-apple-system,'Hiragino Sans','Noto Sans JP',system-ui,sans-serif;
+  html,body{margin:0;}
+  body.gate{font-family:-apple-system,'Hiragino Sans','Noto Sans JP',system-ui,sans-serif;
        background:linear-gradient(160deg,#eef2f8,#e3ebf5);min-height:100vh;display:flex;align-items:center;justify-content:center;}
   .box{background:#fff;padding:34px 30px;border-radius:16px;box-shadow:0 12px 40px rgba(31,56,100,.18);width:min(92vw,380px);text-align:center;}
   .lock{font-size:34px;}
@@ -29,9 +29,10 @@
   button:disabled{opacity:.6;cursor:default;}
   .err{color:#d33;font-size:12px;margin-top:10px;min-height:16px;}
   .foot{margin-top:18px;font-size:10.5px;color:#98a2b3;}
+  iframe#mock{display:block;width:100%;border:0;background:#fff;}
 </style>
 </head>
-<body>
+<body class="gate">
   <div class="box" id="gate">
     <div class="lock">🔒</div>
     <h1>薬局ロイヤリティ ミニアプリ モック</h1>
@@ -57,12 +58,18 @@ f.addEventListener('submit',async(ev)=>{
   ev.preventDefault();e.textContent='';b.disabled=true;b.textContent='復号中…';
   try{
     const html=await decrypt(document.getElementById('pw').value);
-    const fr=document.createElement('iframe');
-    fr.setAttribute('title','薬局ロイヤリティ ミニアプリ モック');
-    fr.style.cssText='position:fixed;inset:0;width:100vw;height:100vh;border:0;background:#fff;';
+    document.body.className='';
+    document.documentElement.style.background='#fff';
     document.body.style.cssText='margin:0;background:#fff;';
     document.body.innerHTML='';
+    const fr=document.createElement('iframe');
+    fr.id='mock';
+    fr.setAttribute('title','薬局ロイヤリティ ミニアプリ モック');
+    fr.setAttribute('scrolling','no');
     document.body.appendChild(fr);
+    function fit(){try{const dd=fr.contentDocument;if(dd&&dd.body){const h=Math.max(dd.body.scrollHeight,dd.documentElement.scrollHeight);if(h>0)fr.style.height=h+'px';}}catch(_){}}
+    fr.addEventListener('load',()=>{fit();let n=0;const t=setInterval(()=>{fit();if(++n>30)clearInterval(t);},300);});
+    window.addEventListener('resize',fit);
     fr.srcdoc=html;
   }catch(err){
     e.textContent='パスワードが正しくありません。';
