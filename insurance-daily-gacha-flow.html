@@ -225,6 +225,26 @@ body{font-family:var(--font);background:#EEF0F7;color:var(--fg1);letter-spacing:
 .memo ul{margin:10px 0 0;padding-left:16px}
 .memo li{font-size:12px;opacity:.85;line-height:1.7;margin-bottom:4px}
 .note-fine{margin-top:14px;font-size:11px;color:var(--gray);line-height:1.6}
+
+/* ===== mobile: fit device frame to viewport ===== */
+@media(max-width:480px){
+  body{padding:12px 8px 32px;overflow-x:hidden}
+  .stage{gap:18px}
+  .headline h1{font-size:21px}
+  .headline p{font-size:12px}
+  .phone-wrap{position:static;width:100%;max-width:420px;margin:0 auto}
+  .phone{width:100%;height:auto;border-radius:34px;padding:8px}
+  .screen{height:auto;border-radius:26px}
+  .body{overflow:visible;flex:none}
+  .notch{width:118px;height:24px}
+  .result{position:fixed}
+  .panel{width:100%}
+}
+@media(max-width:360px){
+  .roul{width:210px;height:210px}
+  .wheel{width:210px;height:210px}
+  .wheel .num{}
+}
 </style>
 </head>
 <body>
