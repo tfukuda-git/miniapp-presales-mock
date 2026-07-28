@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>生命保険 SAMPLE｜デイリーガチャ ミニアプリ モック</title>
+<title>生命保険 SAMPLE｜デイリールーレット ミニアプリ モック</title>
 <meta name="catalog:group" content="触れるデモ（最新・インタラクティブ）">
 <meta name="catalog:order" content="2">
-<meta name="catalog:icon" content="🎁">
+<meta name="catalog:icon" content="🎡">
 <meta name="catalog:iconColor" content="var(--brand)">
-<meta name="catalog:title" content="生保 デイリーガチャ｜毎日ひらく活性化ミニアプリ">
+<meta name="catalog:title" content="生保 デイリールーレット｜薄く長くつながるミニアプリ">
 <meta name="catalog:badge" content="生保">
 <meta name="catalog:badgeColor" content="var(--brand)">
-<meta name="catalog:desc" content="1日1回のデイリーガチャで毎日アプリをひらく習慣をつくる、生命保険向けミニアプリの触れるモック。連続ログイン・月次キャンペーン応募・ライフステージ取得→担当者連携までを通しで確認できます。iPhoneフレーム＋LINEミニアプリUI（社名/ブランドは架空）。">
+<meta name="catalog:desc" content="1日1回のルーレットで毎日ひらく理由をつくり、ブロックされずに薄く長くつながる生保向けミニアプリの触れるモック。1〜10ptを貯め、友だち数の節目（30/50/100万人）で全員抽選。相談予約＋ドタキャン防止リマインドまで。ポイントは属性更新＋一斉配信＋抽選で在庫レス運用（社名/ブランドは架空）。">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,7 +31,6 @@ body{font-family:var(--font);background:#EEF0F7;color:var(--fg1);letter-spacing:
   min-height:100vh;padding:32px 16px 64px;
   background:radial-gradient(1200px 600px at 50% -10%,#f4f5ff 0%,#EEF0F7 55%);}
 
-/* layout */
 .stage{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:390px 1fr;gap:40px;align-items:start}
 @media(max-width:900px){.stage{grid-template-columns:1fr;gap:28px;justify-items:center}}
 
@@ -48,7 +47,6 @@ body{font-family:var(--font);background:#EEF0F7;color:var(--fg1);letter-spacing:
 .screen{width:100%;height:100%;background:var(--bg);border-radius:42px;overflow:hidden;position:relative;display:flex;flex-direction:column}
 .notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:150px;height:30px;background:#000;border-radius:0 0 20px 20px;z-index:60}
 
-/* status + line header */
 .statusbar{height:44px;flex:0 0 44px;display:flex;align-items:flex-end;justify-content:space-between;
   padding:0 26px 6px;font-size:13px;font-weight:700;color:var(--fg1);background:var(--white)}
 .statusbar .r{display:flex;gap:6px;align-items:center}
@@ -61,155 +59,129 @@ body{font-family:var(--font);background:#EEF0F7;color:var(--fg1);letter-spacing:
 .linebar .ttl small{display:block;font-size:10px;color:var(--fg2);font-weight:500}
 .linebar .more{margin-left:auto;color:var(--fg2)}
 
-/* scroll body */
 .body{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .body::-webkit-scrollbar{display:none}
 .view{display:none;padding:16px 16px 24px;animation:fade .25s ease}
 .view.active{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* generic card */
 .card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px}
 .card+.card{margin-top:12px}
 .sec-ttl{font-size:12px;font-weight:700;color:var(--fg2);margin:18px 2px 8px;letter-spacing:.02em}
 
-/* home greeting */
+/* greeting */
 .greet{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .avatar{width:46px;height:46px;border-radius:50%;background:var(--accent-light);color:var(--accent);
   display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;flex-shrink:0}
 .greet h2{font-size:17px;font-weight:900;color:var(--navy)}
 .greet p{font-size:12px;color:var(--fg2);margin-top:1px}
 
-/* streak */
-.streak{background:linear-gradient(135deg,var(--navy),#2b2e63);color:#fff;border:none;position:relative;overflow:hidden}
-.streak .lbl{font-size:11px;opacity:.75;letter-spacing:.04em}
-.streak .big{font-size:34px;font-weight:900;line-height:1;margin-top:4px}
-.streak .big small{font-size:14px;font-weight:700;margin-left:2px}
-.streak .dots{display:flex;gap:6px;margin-top:14px}
-.streak .dot{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.18)}
-.streak .dot.on{background:var(--gold)}
-.streak .flame{position:absolute;right:-6px;top:-8px;font-size:78px;opacity:.14}
+/* streak / balance strip */
+.strip{display:flex;gap:10px}
+.strip .box{flex:1;background:linear-gradient(135deg,var(--navy),#2b2e63);color:#fff;border-radius:var(--r-lg);padding:14px;position:relative;overflow:hidden}
+.strip .box.pt{background:linear-gradient(135deg,var(--accent),var(--mid))}
+.strip .lbl{font-size:10px;opacity:.8;letter-spacing:.03em}
+.strip .big{font-size:26px;font-weight:900;line-height:1;margin-top:6px}
+.strip .big small{font-size:12px;font-weight:700;margin-left:2px}
+.strip .flame{position:absolute;right:-6px;top:-10px;font-size:60px;opacity:.14}
 
-/* daily gacha CTA */
-.cta-gacha{background:linear-gradient(135deg,var(--accent),var(--mid));color:#fff;border:none;
-  display:flex;align-items:center;gap:14px;cursor:pointer;transition:transform .12s;position:relative;overflow:hidden}
-.cta-gacha:active{transform:scale(.98)}
-.cta-gacha .cap{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.16);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.cta-gacha h3{font-size:16px;font-weight:900}
-.cta-gacha p{font-size:11px;opacity:.85;margin-top:2px}
-.cta-gacha .arrow{margin-left:auto}
-.badge-new{position:absolute;top:12px;right:14px;background:var(--gold);color:#3a2a00;
-  font-size:10px;font-weight:900;padding:2px 8px;border-radius:var(--r-pill)}
-.cta-done{background:#fff;border:1px solid var(--border);color:var(--fg2)}
-.cta-done .cap{background:var(--bg);color:var(--gray)}
-.cta-done h3{color:var(--fg1)}
-
-/* campaign banner */
-.camp{position:relative;overflow:hidden}
-.camp .kick{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.06em}
-.camp h3{font-size:15px;font-weight:900;margin-top:4px;color:var(--navy);line-height:1.35}
-.camp p{font-size:11px;color:var(--fg2);margin-top:6px;line-height:1.5}
-.camp .prog{margin-top:12px}
-.camp .prog .row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px}
-.camp .prog .row b{color:var(--accent);font-weight:900}
-.camp .bar{height:8px;background:var(--accent-light);border-radius:4px;overflow:hidden}
-.camp .bar span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--mid));border-radius:4px}
-.camp .cbtn{margin-top:12px;width:100%;border:none;background:var(--accent);color:#fff;font-family:inherit;
-  font-weight:700;font-size:13px;padding:11px;border-radius:var(--r-pill);cursor:pointer}
-.camp .cbtn:active{background:var(--deep)}
-.camp .cbtn.sub{background:var(--accent-light);color:var(--accent)}
-
-/* tip */
-.tip{display:flex;gap:12px;align-items:flex-start}
-.tip .ic{width:38px;height:38px;border-radius:var(--r-md);background:var(--accent-light);color:var(--accent);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.tip h4{font-size:13px;font-weight:700}
-.tip p{font-size:11px;color:var(--fg2);margin-top:2px;line-height:1.5}
-
-/* ===== gacha view ===== */
-#view-gacha{padding:0;height:100%;flex-direction:column;
-  background:radial-gradient(120% 70% at 50% 0%,#2b2e63 0%,var(--navy) 60%)}
-#view-gacha.active{display:flex}
-.g-head{padding:18px 16px 8px;color:#fff;text-align:center}
-.g-head h2{font-size:16px;font-weight:900}
-.g-head p{font-size:11px;opacity:.7;margin-top:3px}
-.g-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:10px 20px}
-.machine{width:170px;height:170px;position:relative}
-.machine .globe{width:170px;height:170px;border-radius:50%;
-  background:radial-gradient(circle at 34% 30%,rgba(255,255,255,.9),rgba(219,225,255,.35) 45%,rgba(110,130,255,.25) 70%);
-  border:3px solid rgba(255,255,255,.5);position:relative;overflow:hidden;
-  box-shadow:0 20px 50px rgba(0,0,0,.35),inset 0 0 40px rgba(255,255,255,.25)}
-.capsule{position:absolute;width:34px;height:34px;border-radius:50%;
-  top:50%;left:50%;transform:translate(-50%,-50%)}
-.capsule.c1{background:var(--gold);left:38%;top:58%}
-.capsule.c2{background:var(--mid);left:60%;top:52%}
-.capsule.c3{background:#fff;left:50%;top:38%}
-.capsule.c4{background:var(--accent-light);left:44%;top:44%}
-.machine.spin .globe{animation:shake .5s ease infinite}
-@keyframes shake{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
-.g-btn{width:200px;border:none;font-family:inherit;font-weight:900;font-size:16px;color:#3a2a00;
-  background:linear-gradient(135deg,#f5d97a,var(--gold));padding:15px;border-radius:var(--r-pill);
+/* roulette */
+.roul-card{margin-top:12px;text-align:center;background:radial-gradient(120% 100% at 50% 0%,#20224a,#141530);
+  border:none;color:#fff;padding:18px 16px 20px}
+.roul-card h3{font-size:16px;font-weight:900}
+.roul-card .sub{font-size:11px;opacity:.7;margin-top:2px}
+.roul{position:relative;width:240px;height:240px;margin:14px auto 6px}
+.pointer{position:absolute;top:-4px;left:50%;transform:translateX(-50%);z-index:5;
+  width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:20px solid var(--gold);
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+.wheel{width:240px;height:240px;border-radius:50%;position:relative;
+  border:6px solid #fff;box-shadow:0 12px 30px rgba(0,0,0,.45),inset 0 0 0 2px rgba(0,0,0,.1);
+  transition:transform 3.6s cubic-bezier(.12,.72,.14,1)}
+.wheel .cap{position:absolute;top:50%;left:50%;width:52px;height:52px;border-radius:50%;
+  transform:translate(-50%,-50%);background:#fff;z-index:4;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 6px rgba(0,0,0,.25);color:var(--accent);font-weight:900;font-size:11px}
+.wheel .num{position:absolute;top:50%;left:50%;font-size:15px;font-weight:900;color:#fff;
+  transform-origin:0 0}
+.spin-btn{margin-top:12px;width:200px;border:none;font-family:inherit;font-weight:900;font-size:16px;color:#3a2a00;
+  background:linear-gradient(135deg,#f5d97a,var(--gold));padding:14px;border-radius:var(--r-pill);
   cursor:pointer;box-shadow:0 10px 24px rgba(231,185,75,.4);transition:transform .12s}
-.g-btn:active{transform:scale(.96)}
-.g-btn:disabled{opacity:.5;background:var(--gray);color:#fff;box-shadow:none;cursor:default}
-.g-note{color:#fff;opacity:.6;font-size:11px;text-align:center}
+.spin-btn:active{transform:scale(.96)}
+.spin-btn:disabled{opacity:.5;background:var(--gray);color:#fff;box-shadow:none;cursor:default}
+.roul-note{font-size:11px;opacity:.7;margin-top:10px}
+.roul-bal{margin-top:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);
+  border-radius:var(--r-md);padding:10px 12px;font-size:12px;display:flex;justify-content:space-between;align-items:center}
+.roul-bal b{font-size:18px;font-weight:900;color:var(--gold)}
+
+/* next lottery hint */
+.hint-card{display:flex;gap:12px;align-items:flex-start}
+.hint-card .ic{width:38px;height:38px;border-radius:var(--r-md);background:var(--accent-light);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hint-card h4{font-size:13px;font-weight:700}
+.hint-card p{font-size:11px;color:var(--fg2);margin-top:2px;line-height:1.5}
 
 /* result overlay */
 .result{position:absolute;inset:0;background:rgba(15,16,40,.92);display:none;flex-direction:column;
-  align-items:center;justify-content:center;gap:12px;padding:30px;z-index:40;backdrop-filter:blur(3px)}
+  align-items:center;justify-content:center;gap:14px;padding:30px;z-index:40;backdrop-filter:blur(3px)}
 .result.show{display:flex;animation:fade .3s}
 .result .rare{font-size:12px;font-weight:900;letter-spacing:.14em;color:var(--gold)}
-.prize{width:210px;background:#fff;border-radius:var(--r-lg);padding:22px;text-align:center;
+.prize{width:220px;background:#fff;border-radius:var(--r-lg);padding:26px 22px;text-align:center;
   animation:pop .45s cubic-bezier(.2,1.4,.4,1);box-shadow:0 0 40px rgba(231,185,75,.35)}
 @keyframes pop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
-.prize .pic{width:80px;height:80px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;
-  background:var(--accent-light);color:var(--accent)}
-.prize h3{font-size:17px;font-weight:900;color:var(--navy)}
+.prize .pt{font-size:44px;font-weight:900;color:var(--accent);line-height:1}
+.prize .pt small{font-size:18px}
+.prize h3{font-size:15px;font-weight:900;color:var(--navy);margin-top:6px}
 .prize p{font-size:11px;color:var(--fg2);margin-top:6px;line-height:1.5}
-.result .rbtn{width:210px;border:none;font-family:inherit;font-weight:700;font-size:14px;color:#fff;
+.result .rbtn{width:220px;border:none;font-family:inherit;font-weight:700;font-size:14px;color:#fff;
   background:var(--accent);padding:13px;border-radius:var(--r-pill);cursor:pointer}
-.result .rlink{color:#fff;opacity:.7;font-size:12px;background:none;border:none;font-family:inherit;cursor:pointer;text-decoration:underline}
 .confetti{position:absolute;width:9px;height:14px;top:-20px;z-index:45;border-radius:2px;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(840px) rotate(540deg);opacity:.2}}
 
-/* ===== 特典 / mypage ===== */
-.stat-row{display:flex;gap:10px}
-.stat{flex:1;background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;text-align:center}
-.stat .n{font-size:24px;font-weight:900;color:var(--accent)}
-.stat .l{font-size:10px;color:var(--fg2);margin-top:2px}
-.coupon{display:flex;align-items:center;gap:12px}
-.coupon .ic{width:42px;height:42px;border-radius:var(--r-md);background:var(--accent-light);color:var(--accent);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.coupon h4{font-size:13px;font-weight:700}
-.coupon p{font-size:10px;color:var(--fg2);margin-top:1px}
-.coupon .use{margin-left:auto;font-size:11px;font-weight:700;color:var(--accent);border:1px solid var(--accent-light);
-  background:var(--white);padding:6px 12px;border-radius:var(--r-pill)}
+/* ===== マイポイント ===== */
+.bal-hero{text-align:center;background:linear-gradient(135deg,var(--accent),var(--mid));color:#fff;border:none}
+.bal-hero .lbl{font-size:11px;opacity:.85}
+.bal-hero .n{font-size:46px;font-weight:900;line-height:1;margin-top:4px}
+.bal-hero .n small{font-size:18px;margin-left:2px}
+.bal-hero .tk{margin-top:8px;font-size:11px;opacity:.9}
 
-/* life event */
-.life h3{font-size:14px;font-weight:900;color:var(--navy)}
-.life p{font-size:11px;color:var(--fg2);margin-top:4px;line-height:1.5}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.chip{border:1px solid var(--border);background:var(--white);border-radius:var(--r-pill);
-  padding:9px 14px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s}
-.chip:active{transform:scale(.95)}
+.mile .top{display:flex;justify-content:space-between;align-items:baseline}
+.mile h3{font-size:14px;font-weight:900;color:var(--navy)}
+.mile .cur{font-size:12px;color:var(--accent);font-weight:900}
+.mile .track{margin-top:12px;position:relative;height:8px;background:var(--accent-light);border-radius:4px}
+.mile .track span{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,var(--accent),var(--mid));border-radius:4px}
+.mile .ticks{display:flex;justify-content:space-between;margin-top:8px}
+.mile .tick{font-size:10px;color:var(--fg2);text-align:center;flex:1}
+.mile .tick b{display:block;color:var(--fg1);font-weight:900;font-size:11px}
+.mile .tick.on b{color:var(--accent)}
+.mile .expl{margin-top:12px;font-size:11px;color:var(--fg2);line-height:1.6;background:var(--bg);border-radius:var(--r-md);padding:10px 12px}
+
+.hist{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--border)}
+.hist:last-child{border-bottom:none}
+.hist .d{font-size:12px;color:var(--fg2);width:52px;flex-shrink:0}
+.hist .t{font-size:12px;font-weight:700;flex:1}
+.hist .v{font-size:13px;font-weight:900;color:var(--accent)}
+
+/* ===== そうだん ===== */
+.consult h3{font-size:15px;font-weight:900;color:var(--navy)}
+.consult p.d{font-size:11px;color:var(--fg2);margin-top:4px;line-height:1.5}
+.chips{display:flex;gap:8px;margin-top:12px}
+.chip{flex:1;border:1px solid var(--border);background:var(--white);border-radius:var(--r-md);
+  padding:12px 8px;font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s;
+  display:flex;flex-direction:column;align-items:center;gap:5px}
 .chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
-.life .hint{margin-top:12px;font-size:11px;color:var(--accent);background:var(--accent-light);
-  border-radius:var(--r-md);padding:10px 12px;display:none;line-height:1.5}
-.life .hint.show{display:block;animation:fade .3s}
-
-/* ===== つながる ===== */
-.agent{text-align:center}
-.agent .ph{width:76px;height:76px;border-radius:50%;margin:0 auto 10px;background:var(--accent-light);
-  color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;position:relative}
-.agent .on-dot{position:absolute;right:4px;bottom:4px;width:16px;height:16px;border-radius:50%;background:var(--line-green);border:3px solid #fff}
-.agent h3{font-size:16px;font-weight:900;color:var(--navy)}
-.agent .role{font-size:11px;color:var(--fg2);margin-top:2px}
-.agent .quote{font-size:12px;color:var(--fg1);background:var(--bg);border-radius:var(--r-md);padding:12px;margin-top:14px;line-height:1.6;text-align:left}
-.agent .btns{display:flex;gap:10px;margin-top:14px}
-.agent .btns button{flex:1;border:none;font-family:inherit;font-weight:700;font-size:13px;padding:12px;border-radius:var(--r-pill);cursor:pointer}
-.agent .btns .primary{background:var(--line-green);color:#fff}
-.agent .btns .ghost{background:var(--white);border:1px solid var(--border);color:var(--fg1)}
+.chip .ci{color:var(--accent)} .chip.on .ci{color:#fff}
+.cbtn{margin-top:12px;width:100%;border:none;background:var(--accent);color:#fff;font-family:inherit;
+  font-weight:700;font-size:13px;padding:12px;border-radius:var(--r-pill);cursor:pointer}
+.cbtn:active{background:var(--deep)}
+.cbtn.line{background:var(--line-green)}
+.remind{display:flex;gap:10px;align-items:flex-start;background:var(--accent-light);border-radius:var(--r-md);padding:11px 12px;margin-top:12px}
+.remind .ic{color:var(--accent);flex-shrink:0}
+.remind p{font-size:11px;color:var(--deep);line-height:1.5}
+.fp{display:flex;align-items:center;gap:12px}
+.fp .ph{width:52px;height:52px;border-radius:50%;background:var(--accent-light);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;flex-shrink:0;position:relative}
+.fp .on-dot{position:absolute;right:2px;bottom:2px;width:13px;height:13px;border-radius:50%;background:var(--line-green);border:2px solid #fff}
+.fp h4{font-size:14px;font-weight:900}
+.fp .role{font-size:11px;color:var(--fg2)}
 .reco{display:flex;gap:12px;align-items:flex-start}
 .reco .ic{width:38px;height:38px;border-radius:var(--r-md);background:#fff;border:1px solid var(--border);
   color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -221,16 +193,15 @@ body{font-family:var(--font);background:#EEF0F7;color:var(--fg1);letter-spacing:
 .tab{flex:1;background:none;border:none;font-family:inherit;color:var(--gray);cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;font-size:10px;font-weight:700;position:relative}
 .tab.active{color:var(--accent)}
-.tab .n-badge{position:absolute;top:2px;right:calc(50% - 20px);width:8px;height:8px;border-radius:50%;background:var(--gold);display:none}
+.tab .n-badge{position:absolute;top:2px;right:calc(50% - 22px);width:8px;height:8px;border-radius:50%;background:var(--gold);display:none}
 .tab.has-new .n-badge{display:block}
 
-/* toast */
 .toast{position:absolute;bottom:96px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;
   background:var(--navy);color:#fff;font-size:12px;font-weight:700;padding:10px 18px;border-radius:var(--r-pill);
   z-index:70;transition:all .3s;white-space:nowrap;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ===== right: story panel ===== */
+/* ===== story panel ===== */
 .panel{max-width:640px}
 .panel .p-eyebrow{font-size:11px;letter-spacing:.12em;color:var(--accent);font-weight:700}
 .panel h2{font-size:20px;font-weight:900;color:var(--navy);margin-top:6px}
@@ -242,27 +213,27 @@ body{font-family:var(--font);background:#EEF0F7;color:var(--fg1);letter-spacing:
   display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;z-index:1}
 .step .txt h4{font-size:14px;font-weight:900;color:var(--navy)}
 .step .txt p{font-size:12px;color:var(--fg2);margin-top:4px;line-height:1.6}
-.kpis{margin-top:8px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.kpi{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;text-align:center}
-.kpi .n{font-size:26px;font-weight:900;color:var(--accent);line-height:1}
-.kpi .n small{font-size:13px}
-.kpi .l{font-size:10px;color:var(--fg2);margin-top:6px;line-height:1.4}
-.model{margin-top:22px;background:var(--navy);color:#fff;border-radius:var(--r-lg);padding:20px}
-.model h4{font-size:13px;font-weight:900;letter-spacing:.02em}
-.model p{font-size:12px;opacity:.8;margin-top:8px;line-height:1.7}
-.model .row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
-.model .pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:var(--r-pill);
-  padding:7px 14px;font-size:12px;font-weight:700}
-.note{margin-top:18px;font-size:11px;color:var(--gray);line-height:1.6;border-top:1px dashed var(--border);padding-top:14px}
+.ops{margin-top:6px;background:var(--accent-light);border-radius:var(--r-lg);padding:18px 20px}
+.ops h4{font-size:13px;font-weight:900;color:var(--deep)}
+.ops p{font-size:12px;color:var(--deep);margin-top:8px;line-height:1.7}
+.ops .row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.ops .pill{background:#fff;border:1px solid var(--accent-light);color:var(--accent);border-radius:var(--r-pill);
+  padding:6px 12px;font-size:11px;font-weight:700}
+.memo{margin-top:18px;background:var(--navy);color:#fff;border-radius:var(--r-lg);padding:18px 20px}
+.memo .k{font-size:11px;font-weight:900;letter-spacing:.1em;color:var(--gold)}
+.memo h4{font-size:13px;font-weight:900;margin-top:4px}
+.memo ul{margin:10px 0 0;padding-left:16px}
+.memo li{font-size:12px;opacity:.85;line-height:1.7;margin-bottom:4px}
+.note-fine{margin-top:14px;font-size:11px;color:var(--gray);line-height:1.6}
 </style>
 </head>
 <body>
 <div class="stage">
   <div class="headline">
-    <div class="eyebrow">生命保険 ミニアプリ ｜ デイリーガチャ（提案モック）</div>
-    <h1>デイリーガチャで「毎日ひらく」習慣をつくる</h1>
-    <p>毎日のアクティベーション → ライフイベント把握 → 営業職員が最適タイミングでご案内</p>
-    <span class="tag">生命保険 SAMPLE（架空ブランド）｜ スマホで動くモックです。下のタブとガチャを触ってみてください</span>
+    <div class="eyebrow">生命保険 ミニアプリ ｜ デイリールーレット（提案モック）</div>
+    <h1>1日1回のルーレットで「薄く長く」つながる</h1>
+    <p>毎日ひらく理由をつくってブロックを防ぎ、友だち数の節目でみんなで抽選</p>
+    <span class="tag">生命保険 SAMPLE（架空ブランド）｜ スマホで動くモックです。ルーレットを回してみてください</span>
   </div>
 
   <!-- ===================== PHONE ===================== -->
@@ -289,190 +260,214 @@ body{font-family:var(--font);background:#EEF0F7;color:var(--fg1);letter-spacing:
               <div><h2>田中さん、こんにちは</h2><p>今日もありがとうございます</p></div>
             </div>
 
-            <div class="card streak">
-              <span class="flame">🔥</span>
-              <div class="lbl">連続ログイン</div>
-              <div class="big" id="streakN">7<small>日</small></div>
-              <div class="dots">
-                <span class="dot on"></span><span class="dot on"></span><span class="dot on"></span>
-                <span class="dot on"></span><span class="dot on"></span><span class="dot on"></span>
-                <span class="dot on"></span>
+            <div class="strip">
+              <div class="box"><span class="flame">🔥</span><div class="lbl">連続ログイン</div><div class="big" id="streakN">7<small>日</small></div></div>
+              <div class="box pt"><div class="lbl">マイポイント</div><div class="big"><span id="balHome">128</span><small>pt</small></div></div>
+            </div>
+
+            <div class="card roul-card">
+              <h3>デイリールーレット</h3>
+              <div class="sub">毎日 9:00〜 / 1日1回 / 1〜10pt が当たる</div>
+              <div class="roul">
+                <div class="pointer"></div>
+                <div class="wheel" id="wheel"><div class="cap">MY<br>POINT</div></div>
               </div>
+              <button class="spin-btn" id="spinBtn" onclick="spin()">まわす！</button>
+              <div class="roul-note" id="roulNote">今日のぶんはまだ回せます</div>
+              <div class="roul-bal"><span>いまのポイント</span><b><span id="balRoul">128</span> pt</b></div>
             </div>
 
-            <div class="card cta-gacha" id="homeGacha" onclick="go('gacha')">
-              <span class="badge-new" id="gachaBadge">未実施</span>
-              <div class="cap"><i data-lucide="gift" width="26"></i></div>
-              <div><h3 id="gachaCtaTtl">今日のガチャを回す</h3><p id="gachaCtaSub">1日1回・無料 / 特典やポイントが当たる</p></div>
-              <i data-lucide="chevron-right" class="arrow" width="22"></i>
-            </div>
-
-            <div class="sec-ttl">今月のキャンペーン</div>
-            <div class="card camp">
-              <div class="kick">7月限定 ・ 抽選で1,000名様</div>
-              <h3>ライフプラン診断キャンペーン</h3>
-              <p>診断に答えるほど、当選チャンスがアップ。ガチャを回すたびに応募が1回たまります。</p>
-              <div class="prog">
-                <div class="row"><span>あなたの応募回数</span><b id="entryN">3回</b></div>
-                <div class="bar"><span id="entryBar" style="width:30%"></span></div>
-              </div>
-              <button class="cbtn" onclick="enterCampaign()">診断に answer して応募する</button>
-            </div>
-
-            <div class="sec-ttl">お役立ち</div>
-            <div class="card tip">
-              <div class="ic"><i data-lucide="lightbulb" width="20"></i></div>
-              <div><h4>保険の見直しどき、知っていますか？</h4>
-              <p>結婚・出産・住宅購入などのタイミングは、保障を見直す good なきっかけ。担当者が無料でご相談を承ります。</p></div>
+            <div class="sec-ttl">次の抽選</div>
+            <div class="card hint-card">
+              <div class="ic"><i data-lucide="gift" width="20"></i></div>
+              <div><h4>友だち50万人達成で みんなで抽選！</h4>
+              <p>いまの友だち数は42万人。節目に全員で抽選を実施します。貯めたポイントが多いほど当選チャンスがアップ。毎日回してコツコツ貯めましょう。</p></div>
             </div>
           </div>
 
-          <!-- ===== GACHA ===== -->
-          <div class="view" id="view-gacha">
-            <div class="g-head">
-              <h2>デイリーガチャ</h2>
-              <p>1日1回、無料で回せます</p>
-            </div>
-            <div class="g-stage">
-              <div class="machine" id="machine">
-                <div class="globe">
-                  <span class="capsule c1"></span><span class="capsule c2"></span>
-                  <span class="capsule c3"></span><span class="capsule c4"></span>
-                </div>
-              </div>
-              <button class="g-btn" id="gachaBtn" onclick="drawGacha()">回す！</button>
-              <div class="g-note" id="gachaNote">今日のぶんはまだ回せます</div>
-            </div>
-
-            <div class="result" id="result">
-              <div class="rare" id="rareLabel">★ あたり ★</div>
-              <div class="prize">
-                <div class="pic" id="prizePic"><i data-lucide="coffee" width="34"></i></div>
-                <h3 id="prizeName">コーヒー引換券</h3>
-                <p id="prizeDesc">コンビニで使える1杯無料券。マイページに保存されました。</p>
-              </div>
-              <button class="rbtn" onclick="closeResult()">受け取る</button>
-              <button class="rlink" id="rareCta" onclick="go('connect')" style="display:none">担当者にこのプランを相談する →</button>
-            </div>
-          </div>
-
-          <!-- ===== 特典 / MYPAGE ===== -->
-          <div class="view" id="view-rewards">
+          <!-- ===== マイポイント ===== -->
+          <div class="view" id="view-points">
             <div class="greet">
               <div class="avatar">田</div>
-              <div><h2>マイページ</h2><p>あなたの特典と記録</p></div>
-            </div>
-            <div class="stat-row">
-              <div class="stat"><div class="n" id="drawTotal">12</div><div class="l">累計ガチャ回数</div></div>
-              <div class="stat"><div class="n" id="streakStat">7</div><div class="l">連続ログイン</div></div>
-              <div class="stat"><div class="n" id="couponTotal">4</div><div class="l">獲得した特典</div></div>
+              <div><h2>マイポイント</h2><p>抽選のチャンスは貯めた分だけ</p></div>
             </div>
 
-            <div class="sec-ttl">獲得した特典</div>
-            <div id="couponList"></div>
+            <div class="card bal-hero">
+              <div class="lbl">保有ポイント</div>
+              <div class="n"><span id="balBig">128</span><small>pt</small></div>
+              <div class="tk">＝ 抽選チケット 128口ぶん</div>
+            </div>
 
-            <div class="sec-ttl">最近の変化を教えてください</div>
-            <div class="card life">
-              <h3>ライフステージ チェック</h3>
-              <p>あてはまるものを選ぶと、あなたに合った保障のご案内や限定特典が届きます。</p>
-              <div class="chips" id="lifeChips">
-                <div class="chip" onclick="toggleLife(this,'結婚')"><i data-lucide="heart" width="14"></i>結婚した</div>
-                <div class="chip" onclick="toggleLife(this,'出産')"><i data-lucide="baby" width="14"></i>子どもが生まれた</div>
-                <div class="chip" onclick="toggleLife(this,'住宅')"><i data-lucide="home" width="14"></i>家を買った</div>
-                <div class="chip" onclick="toggleLife(this,'転職')"><i data-lucide="briefcase" width="14"></i>転職した</div>
-                <div class="chip" onclick="toggleLife(this,'該当なし')"><i data-lucide="minus" width="14"></i>特にない</div>
+            <div class="sec-ttl">みんなで達成 → 抽選</div>
+            <div class="card mile">
+              <div class="top"><h3>友だち数マイルストーン</h3><span class="cur">いま 42万人</span></div>
+              <div class="track"><span style="width:42%"></span></div>
+              <div class="ticks">
+                <div class="tick on"><b>30万</b>達成🎉</div>
+                <div class="tick"><b>50万</b>次の抽選</div>
+                <div class="tick"><b>100万</b></div>
               </div>
-              <div class="hint" id="lifeHint"></div>
+              <div class="expl">友だちが 30万・50万・100万人 に達するごとに、全員で抽選を実施。毎日のルーレットで貯めたポイントが多いほど当選しやすくなります。</div>
             </div>
+
+            <div class="sec-ttl">ポイント獲得履歴</div>
+            <div class="card" id="histList"></div>
           </div>
 
-          <!-- ===== つながる ===== -->
-          <div class="view" id="view-connect">
-            <div class="card agent">
-              <div class="ph">佐<span class="on-dot"></span></div>
-              <h3>佐藤 みなみ</h3>
-              <div class="role">あなたの担当 ・ ライフプランナー</div>
-              <div class="quote" id="agentQuote">こんにちは、担当の佐藤です。<br>ライフステージが変わるタイミングは、保障を見直す good なきっかけです。気になることがあれば、いつでもチャットでお声がけくださいね。</div>
-              <div class="btns">
-                <button class="primary" onclick="toast('トーク画面に移動します（デモ）')"><i data-lucide="message-circle" width="14"></i> チャットで相談</button>
-                <button class="ghost" onclick="toast('来店予約カレンダーへ（デモ）')">来店を予約</button>
+          <!-- ===== そうだん ===== -->
+          <div class="view" id="view-consult">
+            <div class="card consult">
+              <h3>保険のプロ（FP）に相談する</h3>
+              <p class="d">お金や保障の疑問を、ファイナンシャルプランナーに無料で相談できます。方法を選んでください。</p>
+              <div class="chips" id="mode">
+                <div class="chip on" onclick="pick(this)"><i data-lucide="video" class="ci" width="20"></i>オンライン</div>
+                <div class="chip" onclick="pick(this)"><i data-lucide="store" class="ci" width="20"></i>店舗で対面</div>
+              </div>
+              <button class="cbtn" onclick="toast('予約カレンダーへ（デモ）')">相談を予約する</button>
+              <div class="remind">
+                <span class="ic"><i data-lucide="bell-ring" width="18"></i></span>
+                <p>予約後は、前日と当日にLINEでリマインドが届きます。うっかりドタキャンを防ぎます。</p>
               </div>
             </div>
 
-            <div class="sec-ttl">あなたへのおすすめ</div>
+            <div class="sec-ttl">資料を取り寄せる</div>
             <div class="card reco">
-              <div class="ic"><i data-lucide="shield-check" width="20"></i></div>
-              <div><h4>保険料まるごと無料診断</h4><p>ガチャで当たった「見直しチケット」が使えます。5分の質問に答えるだけ。</p></div>
+              <div class="ic"><i data-lucide="file-text" width="20"></i></div>
+              <div><h4>気になる保障の資料請求</h4><p>PDFですぐ確認、または郵送でお届け。相談前の下調べにどうぞ。</p></div>
             </div>
-            <div class="card reco">
-              <div class="ic"><i data-lucide="gift" width="20"></i></div>
-              <div><h4>ご家族の紹介で特典ガチャ</h4><p>ご家族を招待すると、レア特典が当たるスペシャルガチャを1回プレゼント。</p></div>
+
+            <div class="sec-ttl">あなたの担当</div>
+            <div class="card fp">
+              <div class="ph">佐<span class="on-dot"></span></div>
+              <div><h4>佐藤 みなみ</h4><div class="role">ファイナンシャルプランナー</div></div>
+              <button class="cbtn line" style="width:auto;margin:0;padding:9px 14px" onclick="toast('トークへ移動します（デモ）')"><i data-lucide="message-circle" width="14"></i> 相談</button>
             </div>
+            <p class="note-fine" style="margin-top:10px">面談のあとも、担当者と継続的にやりとりできます。</p>
           </div>
         </div><!-- /body -->
+
+        <div class="result" id="result">
+          <div class="rare">★ ゲット！ ★</div>
+          <div class="prize">
+            <div class="pt" id="prizePt">＋5<small>pt</small></div>
+            <h3>ポイント獲得！</h3>
+            <p>マイポイントに加算されました。友だち数の節目で行う抽選のチャンスがアップします。</p>
+          </div>
+          <button class="rbtn" onclick="closeResult()">受け取る</button>
+        </div>
 
         <div class="toast" id="toast"></div>
 
         <div class="tabbar">
-          <button class="tab active" data-view="home" onclick="go('home')"><i data-lucide="home" width="22"></i>ホーム</button>
-          <button class="tab has-new" data-view="gacha" onclick="go('gacha')"><span class="n-badge"></span><i data-lucide="gift" width="22"></i>ガチャ</button>
-          <button class="tab" data-view="rewards" onclick="go('rewards')"><i data-lucide="ticket" width="22"></i>特典</button>
-          <button class="tab" data-view="connect" onclick="go('connect')"><i data-lucide="user-round" width="22"></i>つながる</button>
+          <button class="tab active" data-view="home" onclick="go('home')"><span class="n-badge"></span><i data-lucide="ferris-wheel" width="22"></i>ホーム</button>
+          <button class="tab" data-view="points" onclick="go('points')"><i data-lucide="coins" width="22"></i>マイポイント</button>
+          <button class="tab" data-view="consult" onclick="go('consult')"><i data-lucide="messages-square" width="22"></i>そうだん</button>
         </div>
       </div>
     </div>
     <div style="font-size:11px;color:var(--fg2);text-align:center;max-width:340px">
-      ※ 下のタブで画面を切り替えられます。「ガチャ」を回すと特典がマイページに貯まります。
+      ※ 下のタブで画面を切り替えられます。「まわす！」でポイントが貯まります。
     </div>
   </div>
 
   <!-- ===================== STORY PANEL ===================== -->
   <div class="panel">
     <div class="p-eyebrow">提案の骨子</div>
-    <h2>「毎日ひらく」が、成約への入口になる</h2>
-    <p class="lead">保険は検討期間が長く、接点が途切れがちです。デイリーガチャで毎日アプリをひらく習慣をつくり、その日々の接点からライフイベントの予兆をつかみ、担当者が最適なタイミングでご案内する——この一連の流れをミニアプリで実現します。</p>
+    <h2>「薄く長く」つながって、ブロックを防ぐ</h2>
+    <p class="lead">配信が多いとブロックされ、接点そのものが切れてしまいます。1日1回のルーレットで「毎日ひらく理由」をつくり、薄く長く関係を保つのが狙いです。貯めたポイントは友だち数の節目に行う全員抽選のチケットになり、日々の起動が自然な楽しみになります。</p>
 
     <div class="flow">
-      <div class="step"><div class="num">1</div><div class="txt"><h4>毎日のアクティベーション</h4><p>1日1回の無料ガチャと連続ログインで、来店・営業接点がない日もアプリが起点に。日次DAUを積み上げます。</p></div></div>
-      <div class="step"><div class="num">2</div><div class="txt"><h4>キャンペーンで意向を醸成</h4><p>毎月参加できるキャンペーン設計。応募回数の積み上げが検討度合いのシグナルになり、成約率の向上に寄与します。</p></div></div>
-      <div class="step"><div class="num">3</div><div class="txt"><h4>ライフイベントの予兆把握</h4><p>結婚・出産・住宅購入などの変化を自然に取得。ライフイベント直後は成約率が大きく高まる領域です。</p></div></div>
-      <div class="step"><div class="num">4</div><div class="txt"><h4>営業職員が最適タイミングでご案内</h4><p>取得したシグナルを担当者へ連携。「今」ご案内すべきお客さまが分かるので、キャンペーン直後のアプローチを逃しません。</p></div></div>
+      <div class="step"><div class="num">1</div><div class="txt"><h4>毎日9時、ルーレットで1〜10pt</h4><p>毎朝ひらく習慣をつくり、ブロック率を下げる。プッシュ頼みにせず、ユーザー側から開く動機を用意します。</p></div></div>
+      <div class="step"><div class="num">2</div><div class="txt"><h4>ポイントを貯める</h4><p>貯めるほど抽選のチャンスがアップ。継続利用のインセンティブが自然に働きます。</p></div></div>
+      <div class="step"><div class="num">3</div><div class="txt"><h4>友だち数の節目（30万/50万/100万）で全員抽選</h4><p>成長の節目をキャンペーン化。一斉配信で盛り上げ、休眠層の掘り起こしにもつながります。</p></div></div>
+      <div class="step"><div class="num">4</div><div class="txt"><h4>相談予約 → FPと面談</h4><p>相談導線へ自然に接続。予約リマインドでドタキャンを防ぎ、面談後も継続的な接点を保ちます。</p></div></div>
     </div>
 
-    <div class="sec-ttl" style="margin-left:0">狙う指標（イメージ）</div>
-    <div class="kpis">
-      <div class="kpi"><div class="n" id="k1">40<small>%+</small></div><div class="l">デイリー起動率<br>(継続接点)</div></div>
-      <div class="kpi"><div class="n">月次</div><div class="l">キャンペーン<br>継続参加</div></div>
-      <div class="kpi"><div class="n">×<span style="font-size:26px">10</span></div><div class="l">ライフイベント<br>把握時の成約差</div></div>
-    </div>
-
-    <div class="model">
-      <h4>ビジネスモデル：月額固定の利用料</h4>
-      <p>汎用ガチャ基盤を生保事業者様向けにカスタマイズ。開発を都度発生させず、月額固定の利用料で継続的にアクティベーションを回します。他案件と共通部品化しているため、短期での立ち上げが可能です。</p>
+    <div class="ops">
+      <h4>運用がとても軽い（＝前回の在庫の論点への回答）</h4>
+      <p>景品の個別在庫を持ちません。貯まったポイントは ME のカスタム属性を更新していくだけ。抽選は「一斉配信＋属性で当選判定」で完結するため、発送・在庫・原価リスクを最小化できます。物販景品を配るのではなく、ポイント→抽選に寄せるのがコツです。</p>
       <div class="row">
-        <span class="pill">月額固定 利用料</span>
-        <span class="pill">運用代行込み</span>
-        <span class="pill">短期ローンチ</span>
+        <span class="pill">属性を更新するだけ</span>
+        <span class="pill">一斉配信で完結</span>
+        <span class="pill">個別在庫なし</span>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-const state = { drawnToday:false, drawTotal:12, streak:7, coupons:[
-    {name:'コーヒー引換券', icon:'coffee', desc:'コンビニで使える1杯無料券'},
-    {name:'100 マイほけんポイント', icon:'coins', desc:'次回の特典交換に使えます'},
-    {name:'保険料 見直しチケット', icon:'shield-check', desc:'無料診断が受けられます'},
-    {name:'ドリンクバー無料券', icon:'cup-soda', desc:'提携カフェで利用可'},
-  ], entries:3, life:new Set() };
+const SEG = [5,10,3,8,1,6,9,2,7,4]; // clockwise from top
+const N = SEG.length, SLICE = 360/N;
+const state = { balance:128, streak:7, spunToday:false, rotation:0,
+  history:[ {d:'7/27',v:6},{d:'7/26',v:2},{d:'7/25',v:9},{d:'7/24',v:4},{d:'7/23',v:5} ] };
 
-const prizes = [
-  {name:'コーヒー引換券', icon:'coffee', desc:'コンビニで使える1杯無料券。マイページに保存されました。', rare:false},
-  {name:'50 マイほけんポイント', icon:'coins', desc:'ポイントがたまりました。特典と交換できます。', rare:false},
-  {name:'ドリンクバー無料券', icon:'cup-soda', desc:'提携カフェで使えます。', rare:false},
-  {name:'保険豆知識バッジ', icon:'lightbulb', desc:'豆知識をゲット。コレクションに追加されました。', rare:false},
-  {name:'★レア★ 保険料 無料診断チケット', icon:'shield-check', desc:'担当者による無料のライフプラン診断が受けられます。今のあなたにぴったりの見直しを。', rare:true},
-];
+function buildWheel(){
+  const w=document.getElementById('wheel');
+  // conic-gradient background (alternating)
+  const stops=[];
+  for(let i=0;i<N;i++){
+    const c = i%2===0 ? '#3438F0' : '#6E82FF';
+    stops.push(`${c} ${i*SLICE}deg ${(i+1)*SLICE}deg`);
+  }
+  w.style.background=`conic-gradient(${stops.join(',')})`;
+  // number labels at each slice center
+  for(let i=0;i<N;i++){
+    const ang=i*SLICE+SLICE/2;
+    const s=document.createElement('span');
+    s.className='num';
+    s.textContent=SEG[i];
+    s.style.transform=`rotate(${ang}deg) translateY(-96px) rotate(${-ang}deg)`;
+    w.appendChild(s);
+  }
+}
+
+let spinning=false;
+function spin(){
+  if(state.spunToday||spinning) return;
+  spinning=true;
+  const btn=document.getElementById('spinBtn');
+  btn.disabled=true; btn.textContent='回転中…';
+  document.getElementById('roulNote').textContent='どのマスに止まるかな…';
+  const idx=Math.floor(Math.random()*N);
+  const value=SEG[idx];
+  // rotate so slice center under top pointer
+  const target = 360*6 - (idx*SLICE + SLICE/2);
+  state.rotation += (target - (state.rotation % 360)) + 360*6;
+  document.getElementById('wheel').style.transform=`rotate(${state.rotation}deg)`;
+  setTimeout(()=>{ finishSpin(value); spinning=false; }, 3700);
+}
+
+function finishSpin(value){
+  state.balance += value;
+  state.spunToday = true;
+  const today = new Date(); const d=(today.getMonth()+1)+'/'+today.getDate();
+  state.history.unshift({d, v:value});
+  showResult(value);
+  refresh();
+}
+
+function showResult(value){
+  document.getElementById('prizePt').innerHTML = '＋'+value+'<small>pt</small>';
+  document.getElementById('result').classList.add('show');
+  confetti();
+}
+function closeResult(){
+  document.getElementById('result').classList.remove('show');
+  const btn=document.getElementById('spinBtn');
+  btn.textContent='また明日 9:00〜'; btn.disabled=true;
+  document.getElementById('roulNote').textContent='今日のぶんは回しました。明日もお楽しみに！';
+  toast('ポイントを獲得しました');
+}
+
+function refresh(){
+  ['balHome','balRoul','balBig'].forEach(id=>document.getElementById(id).textContent=state.balance);
+  document.querySelector('.bal-hero .tk').textContent='＝ 抽選チケット '+state.balance+'口ぶん';
+  renderHistory();
+}
+function renderHistory(){
+  document.getElementById('histList').innerHTML = state.history.map(h=>`
+    <div class="hist"><span class="d">${h.d}</span><span class="t">デイリールーレット</span><span class="v">＋${h.v}pt</span></div>`).join('');
+}
 
 function go(v){
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
@@ -480,119 +475,26 @@ function go(v){
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===v));
   document.querySelector('.body').scrollTop=0;
 }
-
-let spinning=false;
-function drawGacha(){
-  if(state.drawnToday||spinning) return;
-  spinning=true;
-  const btn=document.getElementById('gachaBtn');
-  btn.disabled=true; btn.textContent='回転中…';
-  document.getElementById('machine').classList.add('spin');
-  document.getElementById('gachaNote').textContent='いいことありますように…';
-  setTimeout(()=>{
-    document.getElementById('machine').classList.remove('spin');
-    const p = Math.random()<0.25 ? prizes[4] : prizes[Math.floor(Math.random()*4)];
-    showPrize(p);
-    spinning=false;
-  },1500);
-}
-
-function showPrize(p){
-  document.getElementById('prizeName').textContent=p.name;
-  document.getElementById('prizeDesc').textContent=p.desc;
-  document.getElementById('prizePic').innerHTML='<i data-lucide="'+p.icon+'" width="34"></i>';
-  document.getElementById('rareLabel').textContent = p.rare ? '★ ★ ★ 大あたり ★ ★ ★' : '★ あたり ★';
-  document.getElementById('rareCta').style.display = p.rare ? 'inline' : 'none';
-  document.getElementById('result').classList.add('show');
-  lucide.createIcons();
-  confetti();
-  // update state
-  state.drawnToday=true; state.drawTotal++; state.entries++;
-  state.coupons.unshift({name:p.name, icon:p.icon, desc:p.desc});
-  refresh();
-}
-
-function closeResult(){
-  document.getElementById('result').classList.remove('show');
-  const btn=document.getElementById('gachaBtn');
-  btn.textContent='本日は回しました'; btn.disabled=true;
-  document.getElementById('gachaNote').textContent='次は明日 0:00 に回せます（あと 08:19:00）';
-  toast('特典をマイページに保存しました');
-}
-
-function refresh(){
-  document.getElementById('drawTotal').textContent=state.drawTotal;
-  document.getElementById('couponTotal').textContent=state.coupons.length;
-  document.getElementById('entryN').textContent=state.entries+'回';
-  document.getElementById('entryBar').style.width=Math.min(100,state.entries*10)+'%';
-  // home cta -> done state
-  const cta=document.getElementById('homeGacha');
-  if(state.drawnToday){
-    cta.classList.add('cta-done');
-    document.getElementById('gachaBadge').style.display='none';
-    document.getElementById('gachaCtaTtl').textContent='本日のガチャは実施済み';
-    document.getElementById('gachaCtaSub').textContent='また明日ひいてくださいね';
-    document.querySelector('.tab[data-view="gacha"]').classList.remove('has-new');
-  }
-  renderCoupons();
-}
-
-function renderCoupons(){
-  const box=document.getElementById('couponList');
-  box.innerHTML = state.coupons.map(c=>`
-    <div class="card coupon">
-      <div class="ic"><i data-lucide="${c.icon}" width="20"></i></div>
-      <div><h4>${c.name}</h4><p>${c.desc}</p></div>
-      <button class="use" onclick="toast('特典を利用します（デモ）')">使う</button>
-    </div>`).join('');
-  lucide.createIcons();
-}
-
-function enterCampaign(){
-  state.entries++; refresh();
-  toast('キャンペーンに応募しました（+1回）');
-}
-
-function toggleLife(el,label){
-  el.classList.toggle('on');
-  const hint=document.getElementById('lifeHint');
-  if(label==='該当なし'){ hint.classList.remove('show'); return; }
-  if(el.classList.contains('on')){
-    state.life.add(label);
-    hint.classList.add('show');
-    hint.innerHTML='「'+label+'」に合わせて、担当の佐藤さんからおすすめの保障をご案内できます。<br>→ <b>つながる</b> タブから相談できます。';
-    document.querySelector('.tab[data-view="connect"]');
-  }else{
-    state.life.delete(label);
-    if(state.life.size===0) hint.classList.remove('show');
-  }
-}
+function pick(el){ el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
 
 let toastT;
 function toast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
-  clearTimeout(toastT);
-  toastT=setTimeout(()=>t.classList.remove('show'),2200);
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2200);
 }
-
 function confetti(){
   const colors=['#E7B94B','#3438F0','#6E82FF','#DBE1FF','#fff'];
   const wrap=document.getElementById('result');
   for(let i=0;i<28;i++){
-    const c=document.createElement('span');
-    c.className='confetti';
-    c.style.left=Math.random()*100+'%';
-    c.style.background=colors[i%colors.length];
-    c.style.animationDuration=(1.2+Math.random()*1.2)+'s';
-    c.style.animationDelay=(Math.random()*.3)+'s';
-    wrap.appendChild(c);
-    setTimeout(()=>c.remove(),2600);
+    const c=document.createElement('span'); c.className='confetti';
+    c.style.left=Math.random()*100+'%'; c.style.background=colors[i%colors.length];
+    c.style.animationDuration=(1.2+Math.random()*1.2)+'s'; c.style.animationDelay=(Math.random()*.3)+'s';
+    wrap.appendChild(c); setTimeout(()=>c.remove(),2600);
   }
 }
 
-// init
-renderCoupons();
+buildWheel(); renderHistory();
 lucide.createIcons();
 </script>
 </body>
