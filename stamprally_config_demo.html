@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スタンプラリー config駆動モック（設定ファイル↔画面 全項目連動）</title>
+<meta name="catalog:group" content="触れるデモ（最新・インタラクティブ）">
+<meta name="catalog:order" content="2">
+<meta name="catalog:icon" content="⚙️">
+<meta name="catalog:iconColor" content="var(--brand)">
+<meta name="catalog:title" content="スタンプラリー｜config駆動デモ（設定↔画面 連動）">
+<meta name="catalog:badge" content="設定連動">
+<meta name="catalog:badgeColor" content="var(--brand)">
+<meta name="catalog:desc" content="左の設定ファイル(config)を編集すると中央のモックが即反映。汎用スタンプラリーの全項目（campaign/areas/checkpoints/reward_rule/data_export等）をライブ編集でき、住宅型(multi)・回遊イベント型(single)のプリセット切替も可能。「管理画面なし・config直編集で動く中間方式」を実演（社名は架空）。">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--brand:#2E6BE6;--brand-d:#1f4fb5;--navy:#1F3864;--ink:#1b2330;--sub:#5b6573;--bg:#eef1f5;--card:#fff;--bd:#e4e8ee;--multi:#FFF3D6}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;color:var(--ink);background:#c9d2dd;line-height:1.6;-webkit-font-smoothing:antialiased}
+.stage{display:flex;gap:18px;align-items:flex-start;justify-content:center;min-height:100vh;padding:20px 12px;flex-wrap:wrap}
+/* config panel */
+.cfg{width:100%;max-width:360px;background:#fff;border:1px solid var(--bd);border-radius:14px;overflow:hidden;align-self:flex-start;box-shadow:0 1px 2px rgba(27,29,59,.06)}
+.cfg-top{background:var(--navy);color:#fff;padding:12px 15px;font-size:13px;font-weight:800;display:flex;align-items:center;gap:8px}
+.cfg-top .dot{width:8px;height:8px;border-radius:50%;background:#7fffa8}
+.cfg-body{padding:12px 14px;max-height:82vh;overflow-y:auto}
+.cfg-note{font-size:11px;color:var(--sub);background:#f4f7fb;border:1px solid var(--bd);border-radius:9px;padding:8px 10px;margin-bottom:12px;line-height:1.55}
+.cfg-grp{font-size:11.5px;font-weight:800;color:#fff;background:var(--navy);border-radius:6px;padding:5px 9px;margin:14px 0 8px}
+.cfg-sub{font-size:10.5px;font-weight:800;color:var(--navy);margin:8px 0 4px}
+.cfg-f{margin-bottom:9px}
+.cfg-f label{font-size:11px;font-weight:700;display:block;margin-bottom:3px;color:#33404d}
+.cfg-f .to{font-size:10px;color:var(--brand);font-weight:700}
+.cfg-f input[type=text],.cfg-f input[type=number],.cfg-f select,.cfg-f textarea{width:100%;padding:6px 8px;border:1.5px solid var(--bd);border-radius:7px;font-size:12px;font-family:inherit;background:#fff}
+.cfg-chk{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;margin-bottom:7px;cursor:pointer;color:#33404d}
+.cfg-chk input{width:15px;height:15px;flex:0 0 auto}
+.cfg-multi{display:inline-block;background:var(--multi);color:#7a5b00;font-size:9px;font-weight:800;border-radius:999px;padding:1px 6px;margin-left:4px}
+.cfg-card{border:1px solid var(--bd);border-radius:8px;padding:7px;margin-bottom:6px;background:#fafbfd}
+.cfg-card input,.cfg-card select{padding:5px 6px;border:1px solid var(--bd);border-radius:6px;font-size:11px;font-family:inherit;width:100%;background:#fff}
+.cfg-row{display:flex;gap:5px;align-items:center;margin-bottom:4px}
+.cfg-row.mini label{font-size:10px;display:flex;align-items:center;gap:3px;white-space:nowrap;font-weight:700;color:#5b6573}
+.cfg-del{background:#e2557b;color:#fff;border:none;border-radius:6px;min-width:24px;height:26px;cursor:pointer;flex:0 0 auto;font-size:13px}
+.cfg-add{background:#eef3fe;color:var(--brand-d);border:1px dashed var(--brand);border-radius:8px;padding:6px;width:100%;font-size:11.5px;font-weight:700;cursor:pointer;margin-bottom:8px}
+.cfg-json pre{background:#0f1620;color:#c8e1ff;font-size:9.5px;line-height:1.4;border-radius:9px;padding:10px;max-height:240px;overflow:auto;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,Menlo,Consolas,monospace}
+/* phone */
+.app{width:100%;max-width:392px;background:var(--bg);position:relative;display:flex;flex-direction:column;overflow:hidden;height:820px;max-height:92vh;border-radius:36px;box-shadow:0 20px 60px rgba(20,35,60,.28);border:10px solid #11161d}
+.banner{background:#11161d;color:#dfe7f2;font-size:11px;text-align:center;padding:6px 10px}
+.banner b{color:#7fffa8}
+.hd{background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:12px 15px;flex:0 0 auto;z-index:8}
+.hd .t{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.hd .pill{font-size:10px;font-weight:700;background:rgba(255,255,255,.22);padding:2px 8px;border-radius:999px}
+.hd .actions span{cursor:pointer}
+.scroll{flex:1;overflow-y:auto}
+.view{display:none;padding:16px 16px 88px}
+.view.on{display:block}
+h1{font-size:20px;margin:0 0 4px}
+p.lead{font-size:13px;color:var(--sub);margin:2px 0 14px}
+.btn{display:block;width:100%;background:var(--brand);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer}
+.btn:disabled{background:#c8ced7}
+.btn.scanbtn{display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;padding:16px;margin-top:12px}
+.sec{margin:16px 0 2px}
+.sec h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:8px;color:var(--navy)}
+.sec h2 .bar{width:4px;height:16px;background:var(--brand);border-radius:2px}
+.note{font-size:11.5px;color:var(--sub);background:#f4f7fb;border:1px solid var(--bd);border-radius:10px;padding:9px 11px;margin:8px 0}
+.top-hero{border-radius:16px;overflow:hidden;color:#fff;padding:28px 18px;text-align:center;margin-bottom:6px}
+.top-hero .em{font-size:52px;line-height:1}.top-hero .ar{font-size:20px;font-weight:800;margin-top:6px}.top-hero .sub{font-size:12px;opacity:.92;margin-top:2px}
+.field{margin:13px 0}.field label{font-size:13px;font-weight:700;display:block;margin-bottom:6px}.field .req{color:#e2557b;font-size:11px;margin-left:4px}
+.field input{width:100%;padding:11px;border:1.5px solid #dfe4ec;border-radius:10px;font-size:14px;background:#fff}
+.area-sel{width:100%;padding:11px;border:1.5px solid var(--bd);border-radius:11px;font-size:15px;font-weight:700;color:var(--brand);background:#f6f9fd;font-family:inherit}
+.progwrap{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+.prog{height:10px;background:#e7ebf1;border-radius:8px;overflow:hidden;margin:8px 0}.prog>i{display:block;height:100%;background:var(--brand);transition:width .4s}
+.cnt{font-size:13px;font-weight:800;color:var(--navy)}
+.stamps{display:grid;gap:6px;margin-top:8px}
+.st{aspect-ratio:.82;border-radius:12px;border:2px dashed #cdd5e0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:8px;color:#9aa4b2;background:#fff;text-align:center;padding:2px;overflow:hidden}
+.st.got{border:2px solid var(--brand);background:#eef3fe;color:var(--brand-d);font-weight:700}.st.got .e{font-size:20px}.st .e{font-size:16px}
+.tier{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:8px;opacity:.55}
+.tier.done{opacity:1;border-color:#bcd3fb;background:#f2f6fe}
+.tier .n{width:28px;height:28px;flex:0 0 auto;border-radius:50%;background:#c8ced7;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px}
+.tier.done .n{background:var(--brand)}.tier .txt{flex:1}.tier .txt b{font-size:13.5px}.tier .txt div{font-size:11px;color:var(--sub)}
+.cat{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.cat .ci{width:40px;height:40px;flex:0 0 auto;border-radius:10px;background:linear-gradient(135deg,#e7edf5,#d0dcf0);display:flex;align-items:center;justify-content:center;font-size:20px}
+.cat .cx{flex:1;min-width:0}.cat .cx b{font-size:13.5px;display:block}.cat .cx span{font-size:11px;color:var(--sub)}
+.vbtn{border:none;background:var(--brand);color:#fff;font-size:12px;font-weight:700;border-radius:9px;padding:9px 12px;white-space:nowrap}
+.vbtn.done{background:#eef3fe;color:var(--brand-d)}
+.nav{position:absolute;left:0;right:0;bottom:0;display:none;background:#fff;border-top:1px solid var(--bd);z-index:7}
+.nav.on{display:grid}
+.nav a{padding:9px 0 10px;text-align:center;font-size:10px;color:#9aa4b2;cursor:pointer;font-weight:700}
+.nav a .e{font-size:19px;display:block;margin-bottom:1px}.nav a.on{color:var(--brand)}
+.ov{position:absolute;inset:0;background:rgba(15,27,46,.55);display:none;align-items:center;justify-content:center;z-index:20;padding:26px}
+.ov.show{display:flex}
+.box{background:#fff;border-radius:18px;padding:24px 20px;text-align:center;max-width:300px;width:100%}
+.box .e{font-size:38px}.box h3{margin:8px 0 4px;font-size:17px}.box p{margin:0 0 16px;font-size:13px;color:var(--sub)}
+.box button{background:var(--brand);color:#fff;border:none;border-radius:11px;padding:12px;font-size:14px;font-weight:700;width:100%;cursor:pointer}
+.scan{position:absolute;inset:0;background:#0b1016;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:25;color:#fff}
+.scan.show{display:flex}
+.scan .pick{background:#fff;border-radius:14px;margin-top:8px;width:290px;max-height:360px;overflow-y:auto;text-align:left}
+.scan .pick .ph{padding:9px 14px;font-size:11px;font-weight:700;color:#9aa4b2;border-bottom:1px solid #eef1f4}
+.scan .pick .pk{padding:11px 14px;font-size:12.5px;color:#1b2330;border-bottom:1px solid #eef1f4;cursor:pointer;display:flex;justify-content:space-between;gap:8px}
+.scan .pick .pk .tag{color:var(--brand);font-weight:700;font-size:11px}
+.scan .pick .pk.disabled{color:#b7bfca}
+.scan-close{margin-top:12px;background:transparent;border:1.5px solid rgba(255,255,255,.5);color:#fff;border-radius:10px;padding:8px 20px;font-size:12px;font-weight:700;cursor:pointer}
+.side{width:100%;max-width:340px;display:flex;flex-direction:column;gap:14px;align-self:flex-start}
+.mepanel,.dbpanel{background:#fff;border:1px solid #E6E6E6;border-radius:14px;overflow:hidden;color:#282829}
+.me-top,.db-top{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;border-bottom:1px solid #E6E6E6}
+.me-brand{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.me-brand .logo{background:#3438F0;color:#fff;border-radius:999px;font-size:11px;font-weight:700;padding:3px 11px}
+.db-top{background:#eef1f4}.db-brand{font-size:13px;font-weight:700;color:#3d5566}
+.tag{font-size:11px;color:#666}
+.me-lbl{font-size:11px;font-weight:700;color:#3438F0;padding:11px 15px 3px;background:#FAF9FB;border-top:1px solid #F0EFF3}
+.me-lbl.db{color:#9C8D95;background:#FBF7F9}
+.attr{display:flex;justify-content:space-between;gap:14px;padding:9px 15px;border-bottom:1px solid #F0EFF3;font-size:12.5px}
+.attr .k{color:#666;flex:0 0 46%}.attr .v{text-align:right;font-weight:700;word-break:break-all}.attr .v.empty{color:#B3B3B3;font-weight:400}
+.foot{padding:11px 15px 14px;font-size:11px;color:#666;border-top:1px solid #E6E6E6;background:#FAF9FB;line-height:1.55}
+.db-btn{width:100%;background:#3d5566;color:#fff;border:none;border-radius:8px;padding:9px;font-size:12px;font-weight:700;cursor:pointer;margin-top:6px}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="stage">
+  <!-- CONFIG PANEL -->
+  <div class="cfg">
+    <div class="cfg-top"><span class="dot"></span> 設定ファイル（config）｜全項目ライブ編集</div>
+    <div class="cfg-body">
+      <div class="cfg-note">config の全項目を編集できます。変更は中央のモックに即反映（＝管理画面なし・configの直接編集で動く中間方式）。<span class="cfg-multi">multi</span>はarea_mode=multiのみ有効。</div>
+      <div class="cfg-f"><label>プリセット読み込み</label>
+        <select id="cfg-preset"><option value="housing">住宅型（multi・分譲共通QR＋ジョーカー）</option><option value="event">回遊イベント型（single・起点固定）</option></select></div>
+      <div id="cfg-dyn"></div>
+      <div class="cfg-json"><div class="cfg-grp">現在の config（全体・JSON）</div><pre id="cfg-jsonview"></pre></div>
+    </div>
+  </div>
+  <!-- PHONE -->
+  <div class="app">
+    <div class="banner" id="banner"></div>
+    <div class="hd"><span class="t">🏠 <span id="hd-name"></span> <span class="pill">ミニアプリ</span></span><span class="actions"><span id="reset" title="リセット">⟳</span></span></div>
+    <div class="scroll">
+      <section class="view on" id="v-gate"><h1 id="gate-title"></h1><p class="lead" id="gate-lead"></p><div id="gate-fields"></div><button class="btn" id="member-save" disabled>登録して始める</button></section>
+      <section class="view" id="v-top"><div class="top-hero" id="top-hero"></div><div class="sec"><h2><span class="bar"></span>このエリアのスポット</h2><div id="top-spots"></div></div><button class="btn scanbtn" id="top-cta">📷 スタンプをためる</button></section>
+      <section class="view" id="v-stamp"><h1>スタンプ確認</h1><div class="sec" id="area-sel-wrap"><h2><span class="bar"></span>エリアを選択</h2><select id="area-sel" class="area-sel"></select></div><div class="progwrap"><span class="cnt" id="st-cnt"></span> <span style="font-size:11px;color:var(--sub)" id="st-area"></span><div class="prog"><i id="st-bar" style="width:0%"></i></div><div class="stamps" id="st-grid"></div></div><div class="sec"><h2><span class="bar"></span>段階的景品</h2><div id="st-tiers"></div></div><div class="sec"><h2><span class="bar"></span>このエリアで押せる場所</h2><div id="area-spots"></div></div></section>
+      <section class="view" id="v-reward"><h1>プレゼント</h1><div class="sec" id="rw-sel-wrap"><h2><span class="bar"></span>エリアを選択</h2><select id="rw-sel" class="area-sel"></select></div><div id="rw-body" style="margin-top:12px"></div></section>
+    </div>
+    <div class="nav" id="nav"></div>
+    <div class="ov" id="ov"><div class="box"><div class="e" id="ov-e">🎉</div><h3 id="ov-h"></h3><p id="ov-p"></p><button id="ov-btn">OK</button></div></div>
+    <div class="scan" id="scan"><p id="scan-t">読み取るQRを選んでください（デモ）</p><div class="pick" id="pick"></div><button class="scan-close" id="scan-close">✕ とじる</button></div>
+  </div>
+  <!-- SIDE -->
+  <div class="side">
+    <div class="mepanel"><div class="me-top"><span class="me-brand"><span class="logo">Mico</span> Engage AI</span><span class="tag">顧客詳細</span></div><div id="me-body"></div><div class="foot">config の <b>data_export.custom_attributes</b> に列挙した属性がMEへ反映。</div></div>
+    <div class="dbpanel" id="db-panel"><div class="db-top"><span class="db-brand">🗄 拠点向けCSVダウンロード</span><span class="tag" id="db-scope"></span></div><div id="db-body"></div><div class="foot" id="db-foot"></div></div>
+  </div>
+</div>
+
+<script>
+/* ===================== PRESETS ===================== */
+const PRESETS = {
+  housing:{
+    campaign:{ id:"housing-stamp-2026a", name:"住まいスタンプラリー", client_name:"（クライアント）",
+      period:{start:"2026-10-01",end:"2026-12-31"}, timezone:"Asia/Tokyo",
+      area_mode:"multi", goal:5, entry_point:"richmenu_tile", onboarding:"in_app_gate", onboarding_fields:["name","zip","phone","email"],
+      announcement:{title:"住まいスタンプラリー",body:"展示場・相談・イベントをめぐってスタンプを集めよう！",hero_image:"",sub_images:[]},
+      expired_message:{before_start:"10/1から開催！",after_end:"今回のスタンプラリーは終了しました",next_campaign_note:""},
+      default_area_by_postal:{"1":"shutoken","5":"kinki","9":"tohoku"}, postal_map_source:"郵便番号→拠点_変換済み.csv", default_area_fallback:"shutoken" },
+    areas:[{id:"shutoken",name:"首都圏",announcement:null,notice:null},{id:"kinki",name:"近畿",announcement:null,notice:null},{id:"tohoku",name:"南東北",announcement:null,notice:null}],
+    checkpoints:[
+      cp("soten-omiya","大宮 総合展示場","総合展示場","shutoken","per_venue"),
+      cp("soten-tama","たまプラーザ 総合展示場","総合展示場","shutoken","per_venue"),
+      cp("bunten-st","分譲展示場（共通QR）","分譲展示場","shutoken","bunten_common",{require_venue_input:true,allow_multiple:true}),
+      cp("fund-st","資金相談カウンター","資金相談","shutoken","per_venue"),
+      cp("factory-st","ファクトリー（工場見学）","工場見学","shutoken","per_venue"),
+      cp("joker-st","首都圏 ジョーカーQR","ジョーカー","shutoken","joker",{require_venue_input:true}),
+      cp("soten-sakura","さくら台 総合展示場","総合展示場","kinki","per_venue"),
+      cp("bunten-kk","分譲展示場（共通QR）","分譲展示場","kinki","bunten_common",{require_venue_input:true,allow_multiple:true}),
+      cp("plan-kk","プラン相談カウンター","プラン相談","kinki","per_venue"),
+      cp("joker-kk","近畿 ジョーカーQR","ジョーカー","kinki","joker",{require_venue_input:true}),
+      cp("soten-sendai","仙台 総合展示場","総合展示場","tohoku","per_venue"),
+      cp("bunten-th","分譲展示場（共通QR）","分譲展示場","tohoku","bunten_common",{require_venue_input:true,allow_multiple:true}),
+      cp("screen-th","事前審査申込カウンター","事前審査申込","tohoku","per_venue"),
+      cp("joker-th","南東北 ジョーカーQR","ジョーカー","tohoku","joker",{require_venue_input:true})],
+    fraud_control:{daily_limit:{enabled:false,max:1},per_user_limit:{enabled:false,max:null},per_checkpoint_once:{enabled:true}},
+    start_gate:{enabled:false,checkpoint:null,block_message:""},
+    reward_rule:{scope:"per_area",visible:true,eligibility:[],output:"booth_manual",
+      tiers:[{threshold:1,label:"ご来場ノベルティ"},{threshold:2,label:"クオカード500円"},{threshold:3,label:"カタログギフト"},{threshold:4,label:"QUOカード2,000円"},{threshold:5,label:"コンプリート賞"}],per_area_tiers:{}},
+    notification:{remind_almost_there:{enabled:false,remaining:1}},
+    data_export:{channel:"me_only",custom_attributes:[{key:"エリア",value:"area"},{key:"スタンプ数",value:"stamp_count"}],
+      csv_download:{enabled:true,scope:"per_area",auth:"url_passcode",output:"cumulative",columns:["氏名","電話","メール","会場名","読込時刻","累計個数"],national_export:{enabled:true,note:"本部向け・全エリア横断"}}}
+  },
+  event:{
+    campaign:{ id:"event-expo-2026", name:"EXPO 回遊スタンプラリー", client_name:"（クライアント）",
+      period:{start:"2026-09-01",end:"2026-09-30"}, timezone:"Asia/Tokyo",
+      area_mode:"single", goal:5, entry_point:"talk_bubble", onboarding:"pre_survey", onboarding_fields:["name"], area_label:"会場",
+      announcement:{title:"EXPO 回遊スタンプラリー",body:"会場をめぐってスタンプを集めよう！まず本部ブースから。",hero_image:"",sub_images:[]},
+      expired_message:{before_start:"9/1スタート！",after_end:"終了しました",next_campaign_note:""},
+      default_area_by_postal:{}, postal_map_source:"", default_area_fallback:null },
+    areas:[],
+    checkpoints:[
+      cp("booth-start","本部ブース（起点）","起点","main","per_venue"),
+      cp("pav-a","パビリオンA","パビリオン","main","per_venue"),
+      cp("pav-b","パビリオンB","パビリオン","main","per_venue"),
+      cp("food","フードコート","飲食","main","per_venue"),
+      cp("stage","メインステージ","ステージ","main","per_venue")],
+    fraud_control:{daily_limit:{enabled:false,max:1},per_user_limit:{enabled:false,max:null},per_checkpoint_once:{enabled:true}},
+    start_gate:{enabled:true,checkpoint:"booth-start",block_message:"まず本部ブースのQRから1つ目のスタンプを獲得してください。"},
+    reward_rule:{scope:"total",visible:true,eligibility:[],output:"external_url",
+      tiers:[{threshold:1,label:"参加賞"},{threshold:3,label:"ドリンク券"},{threshold:5,label:"コンプリート賞"}],per_area_tiers:{}},
+    notification:{remind_almost_there:{enabled:false,remaining:1}},
+    data_export:{channel:"me_only",custom_attributes:[{key:"スタンプ数",value:"stamp_count"}],
+      csv_download:{enabled:false,scope:"total",auth:"url_passcode",output:"cumulative",columns:["氏名","会場名","読込時刻","累計個数"],national_export:{enabled:false,note:""}}}
+  }
+};
+function cp(id,name,category,area_ref,qr_type,extra){return Object.assign({id,name,category,area_ref,required:false,acquisition:{method:"qr"},qr_type,require_venue_input:false,route_url:"",allow_multiple:false,post_action:"none",redirect_url:"",note:"",attrs:{}},extra||{});}
+
+let CONFIG=deep(PRESETS.housing); CONFIG._preset="housing";
+let S=blank();
+function deep(o){return JSON.parse(JSON.stringify(o));}
+function blank(){return {area:null,viewArea:null,rwSel:null,zip:"",member:{},registered:false,stamps:[],redeem:{},shownTier:{},last_at:""};}
+const $=id=>document.getElementById(id);
+const CATEMOJI={"ジョーカー":"🃏","飲食":"🍔","ステージ":"🎤","起点":"📍"};
+const emojiOf=c=>CATEMOJI[c]||"🏠";
+function nowStr(){const d=new Date(),z=n=>String(n).padStart(2,'0');return `${d.getFullYear()}/${z(d.getMonth()+1)}/${z(d.getDate())} ${z(d.getHours())}:${z(d.getMinutes())}`;}
+function getP(o,p){return p.split('.').reduce((a,k)=>(a==null?a:a[k]),o);}
+function setP(o,p,v){const ks=p.split('.');let a=o;for(let i=0;i<ks.length-1;i++){if(a[ks[i]]==null)a[ks[i]]={};a=a[ks[i]];}a[ks[ks.length-1]]=v;}
+
+/* derived */
+function isMulti(){return CONFIG.campaign.area_mode==="multi";}
+function goal(){return CONFIG.campaign.goal;}
+function areaObjs(){return isMulti()?CONFIG.areas:[{id:"main",name:CONFIG.campaign.area_label||"会場"}];}
+function areaNames(){return areaObjs().map(a=>a.name);}
+function areaIdByName(nm){const a=areaObjs().find(x=>x.name===nm);return a?a.id:(areaObjs()[0]||{}).id;}
+function areaNameById(id){const a=areaObjs().find(x=>x.id===id);return a?a.name:id;}
+function spotsOfAreaId(id){return CONFIG.checkpoints.filter(c=>c.area_ref===id);}
+function tiers(){return CONFIG.reward_rule.tiers.slice().sort((a,b)=>a.threshold-b.threshold);}
+function onceOn(){return !!(CONFIG.fraud_control.per_checkpoint_once&&CONFIG.fraud_control.per_checkpoint_once.enabled);}
+function postalToAreaName(zip){ if(!isMulti())return areaNames()[0];
+  const d=(zip||"").replace(/[^0-9]/g,"").charAt(0); const id=CONFIG.campaign.default_area_by_postal[d]||CONFIG.campaign.default_area_fallback||(CONFIG.areas[0]||{}).id; return areaNameById(id); }
+function areaCount(nm){return S.stamps.filter(s=>s.area===nm).length;}
+function hasStamp(key){return S.stamps.some(s=>s.key===key);}
+function gateStarted(){ if(!CONFIG.start_gate.enabled)return true; return S.stamps.some(s=>s.cp===CONFIG.start_gate.checkpoint); }
+
+/* ===================== CONFIG PANEL (all fields) ===================== */
+const ENUM={
+ 'campaign.area_mode':['single','multi'],'campaign.entry_point':['talk_bubble','richmenu_tile','liff_standalone'],
+ 'campaign.onboarding':['none','pre_survey','in_app_gate'],'reward_rule.scope':['total','per_area'],
+ 'reward_rule.output':['booth_manual','external_url','in_app_redeem'],'data_export.channel':['me_only'],
+ 'data_export.csv_download.scope':['per_area','total'],'data_export.csv_download.auth':['url_passcode'],'data_export.csv_download.output':['cumulative','daily'],
+ 'checkpoints.qr_type':['per_venue','bunten_common','joker'],'checkpoints.post_action':['none','external_redirect'],'checkpoints.acquisition.method':['qr']
+};
+const ONBOARDING_ALL=["name","zip","phone","email"];
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function ctrl(path,label,ty,hint){
+ const val=getP(CONFIG,path); const h=hint?`<span class="to"> ${hint}</span>`:''; const m=path.indexOf('.')>0&&(path.startsWith('areas')||path.startsWith('campaign.default_area')||path.startsWith('campaign.postal_map'))?'<span class="cfg-multi">multi</span>':'';
+ if(ty==='bool')return `<label class="cfg-chk"><input type="checkbox" data-p="${path}" data-t="bool" ${val?'checked':''}> ${label}${h}</label>`;
+ let inner;
+ if(ty==='textarea')inner=`<textarea data-p="${path}" data-t="textarea" rows="2">${esc(val)}</textarea>`;
+ else if(ty==='num')inner=`<input type="number" data-p="${path}" data-t="num" value="${val==null?'':val}">`;
+ else if(ty==='csv')inner=`<input type="text" data-p="${path}" data-t="csv" value="${esc((val||[]).join(', '))}">`;
+ else if(ty==='enum'){const o=(ENUM[path]||[]).map(x=>`<option ${val===x?'selected':''}>${x}</option>`).join('');inner=`<select data-p="${path}" data-t="enum">${o}</select>`;}
+ else if(ty==='areaid'){const o=['<option value="">（未設定）</option>'].concat(areaObjs().map(a=>`<option value="${a.id}" ${val===a.id?'selected':''}>${a.id}</option>`)).join('');inner=`<select data-p="${path}" data-t="text">${o}</select>`;}
+ else if(ty==='cpid'){const o=['<option value="">（未設定）</option>'].concat(CONFIG.checkpoints.map(c=>`<option value="${c.id}" ${val===c.id?'selected':''}>${c.id}</option>`)).join('');inner=`<select data-p="${path}" data-t="text">${o}</select>`;}
+ else inner=`<input type="text" data-p="${path}" data-t="text" value="${esc(val)}">`;
+ return `<div class="cfg-f"><label>${label}${m}${h}</label>${inner}</div>`;
+}
+function onboardingFieldsEditor(){
+ return `<div class="cfg-f"><label>campaign.onboarding_fields <span class="to">→ 登録画面の入力欄</span></label>`+
+  ONBOARDING_ALL.map(f=>`<label class="cfg-chk" style="display:inline-flex;margin-right:10px"><input type="checkbox" data-of="${f}" ${CONFIG.campaign.onboarding_fields.includes(f)?'checked':''}> ${f}</label>`).join('')+`</div>`;
+}
+function postalMapEditor(){
+ const s=Object.entries(CONFIG.campaign.default_area_by_postal||{}).map(([k,v])=>k+':'+v).join(', ');
+ return `<div class="cfg-f"><label>campaign.default_area_by_postal <span class="cfg-multi">multi</span> <span class="to">郵便先頭桁:エリアid</span></label><input type="text" data-map="1" value="${esc(s)}" placeholder="1:shutoken, 5:kinki"></div>`;
+}
+function areasEditor(){
+ return CONFIG.areas.map((a,i)=>`<div class="cfg-card"><div class="cfg-row"><input data-col="areas" data-idx="${i}" data-key="id" data-t="text" value="${esc(a.id)}" placeholder="id"><input data-col="areas" data-idx="${i}" data-key="name" data-t="text" value="${esc(a.name)}" placeholder="名称"><button class="cfg-del" data-act="del" data-col="areas" data-idx="${i}">×</button></div><input data-col="areas" data-idx="${i}" data-key="notice" data-t="text" value="${esc(a.notice)}" placeholder="notice（エリア注意事項）"></div>`).join('')+`<button class="cfg-add" data-act="add" data-col="areas">＋ areas 追加</button>`;
+}
+function checkpointsEditor(){
+ const areaOpt=c=>areaObjs().map(a=>`<option value="${a.id}" ${c.area_ref===a.id?'selected':''}>${a.id}</option>`).join('');
+ const qrOpt=c=>ENUM['checkpoints.qr_type'].map(q=>`<option ${c.qr_type===q?'selected':''}>${q}</option>`).join('');
+ const paOpt=c=>ENUM['checkpoints.post_action'].map(q=>`<option ${c.post_action===q?'selected':''}>${q}</option>`).join('');
+ return CONFIG.checkpoints.map((c,i)=>`<div class="cfg-card">
+   <div class="cfg-row"><input data-col="checkpoints" data-idx="${i}" data-key="name" data-t="text" value="${esc(c.name)}" placeholder="name"><button class="cfg-del" data-act="del" data-col="checkpoints" data-idx="${i}">×</button></div>
+   <div class="cfg-row"><input data-col="checkpoints" data-idx="${i}" data-key="category" data-t="text" value="${esc(c.category)}" placeholder="category"><select data-col="checkpoints" data-idx="${i}" data-key="area_ref" data-t="text">${areaOpt(c)}</select></div>
+   <div class="cfg-row"><select data-col="checkpoints" data-idx="${i}" data-key="qr_type" data-t="text">${qrOpt(c)}</select><select data-col="checkpoints" data-idx="${i}" data-key="post_action" data-t="text">${paOpt(c)}</select></div>
+   <div class="cfg-row mini"><label><input type="checkbox" data-col="checkpoints" data-idx="${i}" data-key="require_venue_input" data-t="bool" ${c.require_venue_input?'checked':''}>会場入力</label><label><input type="checkbox" data-col="checkpoints" data-idx="${i}" data-key="allow_multiple" data-t="bool" ${c.allow_multiple?'checked':''}>複数可</label><label><input type="checkbox" data-col="checkpoints" data-idx="${i}" data-key="required" data-t="bool" ${c.required?'checked':''}>必須</label></div>
+   <input data-col="checkpoints" data-idx="${i}" data-key="route_url" data-t="text" value="${esc(c.route_url)}" placeholder="route_url（ME流入経路QRのURL）"></div>`).join('')+`<button class="cfg-add" data-act="add" data-col="checkpoints">＋ checkpoints 追加</button>`;
+}
+function tiersEditor(){
+ return CONFIG.reward_rule.tiers.map((t,i)=>`<div class="cfg-row"><input type="number" style="max-width:56px" data-col="tiers" data-idx="${i}" data-key="threshold" data-t="num" value="${t.threshold}"><input data-col="tiers" data-idx="${i}" data-key="label" data-t="text" value="${esc(t.label)}"><button class="cfg-del" data-act="del" data-col="tiers" data-idx="${i}">×</button></div>`).join('')+`<button class="cfg-add" data-act="add" data-col="tiers">＋ tier 追加</button>`;
+}
+function attrsEditor(){
+ return CONFIG.data_export.custom_attributes.map((a,i)=>`<div class="cfg-row"><input data-col="attrs" data-idx="${i}" data-key="key" data-t="text" value="${esc(a.key)}" placeholder="属性名"><input data-col="attrs" data-idx="${i}" data-key="value" data-t="text" value="${esc(a.value)}" placeholder="値source"><button class="cfg-del" data-act="del" data-col="attrs" data-idx="${i}">×</button></div>`).join('')+`<button class="cfg-add" data-act="add" data-col="attrs">＋ 属性追加</button>`;
+}
+function renderCfgPanel(){
+ let h='';
+ h+=`<div class="cfg-grp">1. campaign 基本</div>`;
+ [['campaign.id','campaign.id','text'],['campaign.name','campaign.name','text','→ ヘッダー名'],['campaign.client_name','campaign.client_name','text'],
+  ['campaign.period.start','period.start','text'],['campaign.period.end','period.end','text'],['campaign.timezone','timezone','text'],
+  ['campaign.area_mode','area_mode','enum','→ エリア選択の有無'],['campaign.goal','goal','num','→ スタンプ枠/景品段数'],['campaign.entry_point','entry_point','enum'],
+  ['campaign.onboarding','onboarding','enum','→ 登録画面の種別']].forEach(f=>h+=ctrl(f[0],f[1],f[2],f[3]));
+ h+=onboardingFieldsEditor();
+ [['campaign.announcement.title','announcement.title','text','→ TOP見出し'],['campaign.announcement.body','announcement.body','textarea','→ TOP説明'],['campaign.announcement.hero_image','announcement.hero_image','text'],['campaign.announcement.sub_images','announcement.sub_images','csv'],
+  ['campaign.expired_message.before_start','expired.before_start','text'],['campaign.expired_message.after_end','expired.after_end','text'],['campaign.expired_message.next_campaign_note','expired.next_campaign_note','text'],
+  ['campaign.postal_map_source','postal_map_source','text']].forEach(f=>h+=ctrl(f[0],f[1],f[2],f[3]));
+ h+=postalMapEditor();
+ h+=ctrl('campaign.default_area_fallback','default_area_fallback','areaid','→ 未ヒット時の既定エリア');
+ h+=`<div class="cfg-grp">2. areas <span class="cfg-multi">multi</span></div>`+ (isMulti()?areasEditor():`<div class="cfg-note">area_mode=single のため未使用。</div>`);
+ h+=`<div class="cfg-grp">3. checkpoints 会場</div>`+checkpointsEditor();
+ h+=`<div class="cfg-grp">4. fraud_control</div>`;
+ [['fraud_control.daily_limit.enabled','daily_limit.enabled','bool'],['fraud_control.daily_limit.max','daily_limit.max','num'],['fraud_control.per_user_limit.enabled','per_user_limit.enabled','bool'],['fraud_control.per_user_limit.max','per_user_limit.max','num'],['fraud_control.per_checkpoint_once.enabled','per_checkpoint_once.enabled','bool','→ 同一QR1回']].forEach(f=>h+=ctrl(f[0],f[1],f[2],f[3]));
+ h+=`<div class="cfg-grp">5. start_gate 起点固定</div>`;
+ [['start_gate.enabled','enabled','bool','→ 1個目は起点QRのみ'],['start_gate.checkpoint','checkpoint','cpid'],['start_gate.block_message','block_message','text']].forEach(f=>h+=ctrl(f[0],f[1],f[2],f[3]));
+ h+=`<div class="cfg-grp">6. reward_rule 景品</div>`;
+ [['reward_rule.scope','scope','enum','→ 判定単位'],['reward_rule.visible','visible','bool'],['reward_rule.output','output','enum','→ 渡し方'],['reward_rule.eligibility','eligibility（会場id,）','csv']].forEach(f=>h+=ctrl(f[0],f[1],f[2],f[3]));
+ h+=`<div class="cfg-sub">reward_rule.tiers[]（段階景品）</div>`+tiersEditor();
+ h+=`<div class="cfg-sub">reward_rule.per_area_tiers（エリア別景品：JSON）</div><div class="cfg-note">エリアごとに景品が違う場合に指定（デモは共通tiersを使用）。</div>`;
+ h+=`<div class="cfg-grp">7. notification</div>`;
+ [['notification.remind_almost_there.enabled','remind.enabled','bool'],['notification.remind_almost_there.remaining','remind.remaining','num']].forEach(f=>h+=ctrl(f[0],f[1],f[2],f[3]));
+ h+=`<div class="cfg-grp">8. data_export ME連携</div>`;
+ h+=ctrl('data_export.channel','channel','enum');
+ h+=`<div class="cfg-sub">data_export.custom_attributes[]</div>`+attrsEditor();
+ h+=`<div class="cfg-sub">8b. 拠点向けCSV</div>`;
+ [['data_export.csv_download.enabled','csv.enabled','bool','→ 拠点CSVパネル'],['data_export.csv_download.scope','csv.scope','enum'],['data_export.csv_download.auth','csv.auth','enum'],['data_export.csv_download.output','csv.output','enum'],['data_export.csv_download.columns','csv.columns（,区切り）','csv'],['data_export.csv_download.national_export.enabled','national_export.enabled','bool','→ 全国CSVボタン'],['data_export.csv_download.national_export.note','national_export.note','text']].forEach(f=>h+=ctrl(f[0],f[1],f[2],f[3]));
+ $("cfg-dyn").innerHTML=h;
+ $("cfg-preset").value=CONFIG._preset||"housing";
+ updateJson();
+}
+function updateJson(){ const c=deep(CONFIG); delete c._preset; $("cfg-jsonview").textContent=JSON.stringify(c,null,1); }
+
+/* delegated handlers (bound once; #cfg-dyn persists) */
+function onDyn(e){ const t=e.target, ds=t.dataset;
+ if(ds.p!==undefined){ let v; const ty=ds.t;
+   if(ty==='bool')v=t.checked; else if(ty==='num')v=(t.value===''?null:+t.value); else if(ty==='csv')v=t.value.split(',').map(s=>s.trim()).filter(Boolean); else v=t.value;
+   setP(CONFIG,ds.p,v);
+   if(ds.p==='campaign.area_mode'||ds.p==='campaign.onboarding'){resetAll();} else renderMock(); return; }
+ if(ds.of!==undefined){ const arr=CONFIG.campaign.onboarding_fields, f=ds.of; if(t.checked){if(!arr.includes(f))arr.push(f);}else{const i=arr.indexOf(f);if(i>=0)arr.splice(i,1);} resetAll(); return; }
+ if(ds.map!==undefined){ const m={}; t.value.split(',').forEach(p=>{const kv=p.split(':');const k=(kv[0]||'').trim();const val=(kv[1]||'').trim();if(k)m[k]=val;}); CONFIG.campaign.default_area_by_postal=m; renderMock(); return; }
+ if(ds.col!==undefined){ const col=ds.col, idx=+ds.idx, key=ds.key, ty=ds.t; let v=(ty==='num')?(t.value===''?null:+t.value):(ty==='bool'?t.checked:t.value); setColField(col,idx,key,v); renderMock(); return; }
+}
+function setColField(col,idx,key,v){ if(col==='areas')CONFIG.areas[idx][key]=v; else if(col==='checkpoints')CONFIG.checkpoints[idx][key]=v; else if(col==='tiers')CONFIG.reward_rule.tiers[idx][key]=v; else if(col==='attrs')CONFIG.data_export.custom_attributes[idx][key]=v; }
+function onDynClick(e){ const b=e.target.closest('[data-act]'); if(!b)return; const act=b.dataset.act,col=b.dataset.col,idx=+b.dataset.idx;
+ if(act==='del'){ if(col==='areas')CONFIG.areas.splice(idx,1); else if(col==='checkpoints')CONFIG.checkpoints.splice(idx,1); else if(col==='tiers')CONFIG.reward_rule.tiers.splice(idx,1); else if(col==='attrs')CONFIG.data_export.custom_attributes.splice(idx,1); }
+ else if(act==='add'){ if(col==='areas')CONFIG.areas.push({id:'area'+(CONFIG.areas.length+1),name:'新エリア',announcement:null,notice:null});
+   else if(col==='checkpoints')CONFIG.checkpoints.push(cp('cp'+Date.now(),'新会場','総合展示場',(areaObjs()[0]||{}).id||'main','per_venue'));
+   else if(col==='tiers')CONFIG.reward_rule.tiers.push({threshold:CONFIG.reward_rule.tiers.length+1,label:'新景品'});
+   else if(col==='attrs')CONFIG.data_export.custom_attributes.push({key:'新属性',value:''}); }
+ renderCfgPanel(); renderMock();
+}
+$("cfg-preset").addEventListener("change",e=>{ CONFIG=deep(PRESETS[e.target.value]); CONFIG._preset=e.target.value; resetAll(); });
+$("cfg-dyn").addEventListener("input",onDyn);
+$("cfg-dyn").addEventListener("change",onDyn);
+$("cfg-dyn").addEventListener("click",onDynClick);
+
+/* re-render mock (no panel rebuild) / full reset */
+function renderMock(){ renderBannerHead(); renderME(); if(S.registered){renderTop();renderStamp();renderReward();} renderNav(); updateJson(); }
+function resetAll(){ S=blank(); renderCfgPanel(); renderBannerHead(); renderGate(); renderNav(); $("nav").classList.remove("on"); showView("v-gate"); renderME(); }
+
+/* ===================== HEAD / BANNER ===================== */
+function renderBannerHead(){ $("hd-name").textContent=CONFIG.campaign.name;
+  const g=CONFIG.start_gate.enabled?"｜<b>起点固定ON</b>":""; const m=isMulti()?"複数エリア":"単一エリア";
+  $("banner").innerHTML=`config駆動デモ｜<b>${m}</b>・ゴール<b>${goal()}個</b>${g}｜左で全項目編集→即反映`; }
+
+/* ===================== GATE ===================== */
+function renderGate(){ const pre=CONFIG.campaign.onboarding==="pre_survey";
+  $("gate-title").textContent=CONFIG.campaign.onboarding==="none"?"ようこそ":(pre?"参加アンケート":"会員登録アンケート");
+  $("gate-lead").textContent=(isMulti()?"郵便番号から、お近くの拠点（デフォルト拠点）を自動設定します。":"はじめに以下をご登録ください。");
+  const LBL={name:"お名前",zip:"郵便番号",phone:"電話番号",email:"メールアドレス"},PH={name:"山田 太郎",zip:"150-0001",phone:"090-0000-0000",email:"taro@example.com"};
+  const fs=CONFIG.campaign.onboarding_fields||[];
+  $("gate-fields").innerHTML=fs.length?fs.map(f=>`<div class="field"><label>${LBL[f]||f}<span class="req">必須</span></label><input id="q-${f}" type="text" placeholder="${PH[f]||""}" autocomplete="off"></div>`).join(""):`<div class="note">onboarding_fields が空です（登録項目なし）。</div>`;
+  fs.forEach(f=>{const el=$("q-"+f);if(el)el.addEventListener("input",()=>{S.member[f]=el.value.trim();if(f==="zip")S.zip=el.value.trim();validateGate();renderME(f);});});
+  validateGate(); }
+function validateGate(){ const fs=CONFIG.campaign.onboarding_fields||[]; const ok=fs.every(f=>(S.member[f]||"").trim()); $("member-save").disabled=!ok; return ok; }
+$("member-save").addEventListener("click",()=>{ if(!validateGate())return;
+  S.registered=true; S.area=postalToAreaName(S.zip); S.viewArea=S.area; S.rwSel=S.area; S.last_at=nowStr();
+  $("nav").classList.add("on"); renderME(); renderTop(); renderStamp(); renderReward(); showView("v-top");
+  toast("✅","登録が完了しました", isMulti()?`郵便番号から「${S.area}」をデフォルト拠点に設定しました。`:"TOPからスタンプ集めを始めましょう。"); });
+
+/* ===================== TOP ===================== */
+function renderTop(){ const nm=S.area||areaNames()[0]; const idx=Math.max(0,areaNames().indexOf(nm)); const hue=(idx*47+205)%360;
+  $("top-hero").style.background=`linear-gradient(135deg,hsl(${hue} 55% 46%),hsl(${(hue+28)%360} 60% 56%))`;
+  $("top-hero").innerHTML=`<div class="em">🏠</div><div class="ar">${CONFIG.campaign.announcement.title||CONFIG.campaign.name}${isMulti()?"｜"+nm:""}</div><div class="sub">${CONFIG.campaign.announcement.body||""}</div>`;
+  const spots=spotsOfAreaId(areaIdByName(nm)).slice(0,4);
+  $("top-spots").innerHTML=spots.map(s=>`<div class="cat"><div class="ci">${emojiOf(s.category)}</div><div class="cx"><b>${s.category||s.name}</b><span>${s.name}</span></div></div>`).join("")||`<div class="note">このエリアの会場が未設定です。</div>`; }
+$("top-cta").addEventListener("click",openPicker);
+
+/* ===================== SCAN ===================== */
+function openPicker(){ $("scan").classList.add("show");
+  $("pick").innerHTML=`<div class="ph">拠点QR（MEの流入経路QR。読取→スタンプ付与）</div>`+
+    CONFIG.checkpoints.map(c=>{ const multi=c.qr_type==="bunten_common"||c.qr_type==="joker"; const once=onceOn()&&!multi; const done=once&&hasStamp(c.id);
+      const sub=(c.qr_type==="joker"?"ジョーカー・会場入力必須":(c.qr_type==="bunten_common"?"分譲共通・会場入力（複数回OK）":(once?"1会場1回":"複数回可")))+(isMulti()?"｜"+areaNameById(c.area_ref):"");
+      return `<div class="pk ${done?'disabled':''}" data-cp="${c.id}"><span>${emojiOf(c.category)} ${c.name}<br><span style="font-size:11px;color:#9aa4b2">${sub}</span></span><span class="tag">${done?'取得済':'読取'}</span></div>`;}).join(""); }
+$("scan-close").addEventListener("click",()=>$("scan").classList.remove("show"));
+$("pick").addEventListener("click",e=>{ const row=e.target.closest(".pk"); if(!row||row.classList.contains("disabled"))return;
+  const c=CONFIG.checkpoints.find(x=>x.id===row.dataset.cp); if(!c)return;
+  const areaNm=isMulti()?areaNameById(c.area_ref):areaNames()[0];
+  if(CONFIG.start_gate.enabled&&!gateStarted()&&c.id!==CONFIG.start_gate.checkpoint){ $("scan").classList.remove("show"); toast("🚧","起点が未取得です",CONFIG.start_gate.block_message); return; }
+  const needInput=c.qr_type==="bunten_common"||c.qr_type==="joker"; let vn=null;
+  if(needInput){ vn=window.prompt("読み取った会場名を入力してください（必須）", c.qr_type==="joker"?"例）お台場 分譲地 D-3":"例）〇〇分譲地 A区画"); if(vn===null||!vn.trim()){ toast("⚠","会場入力が必要です","分譲共通QR／ジョーカーQRは会場入力が必須です。"); return; } vn=vn.trim(); }
+  $("scan").classList.remove("show"); renderME();
+  if(onceOn()&&!needInput&&hasStamp(c.id)){ toast("✅","取得済みです","この会場は取得済みです（1会場1回）。"); return; }
+  if(areaCount(areaNm)>=goal()){ toast("🏁","上限です",`${areaNm}のスタンプは最大${goal()}個です。`); return; }
+  const key=needInput?c.id+"#"+Date.now():c.id; const label=needInput?((c.qr_type==="joker"?"🃏 ":"分譲：")+vn):c.name;
+  commit(key,c.id,label,areaNm); });
+function commit(key,cp,label,areaNm){ S.area=areaNm; S.stamps.push({key,cp,label,area:areaNm,at:nowStr()}); S.last_at=nowStr(); S.viewArea=areaNm; S.rwSel=areaNm;
+  const ac=areaCount(areaNm); renderStamp(); renderTop(); renderME(); showView("v-stamp");
+  const t=tiers().find(x=>x.threshold===ac), tk=areaNm+":"+ac;
+  if(t&&!S.shownTier[tk]){ S.shownTier[tk]=true; toast("🎉",`${ac}個達成！景品GET`,`${t.label} を獲得。プレゼントで交換できます。`);} else toast("🎫","スタンプGET！",`${label}／${areaNm} ${ac}/${goal()}個`); }
+
+/* ===================== STAMP ===================== */
+function renderStamp(){ if(!S.viewArea)S.viewArea=S.area||areaNames()[0];
+  $("area-sel-wrap").classList.toggle("hide",!isMulti());
+  $("area-sel").innerHTML=areaNames().map(a=>`<option ${S.viewArea===a?'selected':''}>${a}</option>`).join("");
+  const nm=S.viewArea, ac=areaCount(nm);
+  $("st-area").textContent=isMulti()?nm:""; $("st-cnt").textContent=`${ac} / ${goal()} 個`; $("st-bar").style.width=(Math.min(ac,goal())/goal()*100)+"%";
+  $("st-grid").style.gridTemplateColumns=`repeat(${goal()},1fr)`;
+  const as=S.stamps.filter(s=>s.area===nm); let cells="";
+  for(let i=0;i<goal();i++){ const s=as[i]; cells+=`<div class="st ${s?'got':''}"><span class="e">${s?'🏠':'？'}</span>${s?String(s.label).replace(/（.*/,'').slice(0,5):(i+1)+'個目'}</div>`; }
+  $("st-grid").innerHTML=cells;
+  $("st-tiers").innerHTML=tiers().map(t=>`<div class="tier ${ac>=t.threshold?'done':''}"><div class="n">${t.threshold}</div><div class="txt"><b>${t.label}</b><div>${ac>=t.threshold?'獲得済み':'スタンプ'+t.threshold+'個で解放'}</div></div><div style="font-size:18px">${ac>=t.threshold?'✅':'🔒'}</div></div>`).join("");
+  const spots=spotsOfAreaId(areaIdByName(nm));
+  $("area-spots").innerHTML=spots.map(s=>{ const multi=s.qr_type==="bunten_common"||s.qr_type==="joker"; const once=onceOn()&&!multi; const done=once&&hasStamp(s.id);
+    const note=s.qr_type==="joker"?"会場入力・+1":(s.qr_type==="bunten_common"?"共通QR・会場入力":(once?"1会場1回":"複数回可"));
+    const badge=multi?`<span class="vbtn" style="pointer-events:none;background:#eef2f3;color:#6b7c84">${s.qr_type==="joker"?"ジョーカー":"共通"}</span>`:`<span class="vbtn ${done?'done':''}" style="pointer-events:none">${done?'取得済':'未取得'}</span>`;
+    return `<div class="cat"><div class="ci">${emojiOf(s.category)}</div><div class="cx"><b>${s.category||s.name}</b><span>${s.name}（${note}）</span></div>${badge}</div>`;}).join("")||`<div class="note">会場が未設定です。</div>`; }
+$("area-sel").addEventListener("change",e=>{ S.viewArea=e.target.value; renderStamp(); });
+
+/* ===================== REWARD ===================== */
+function renderReward(){ if(!S.rwSel)S.rwSel=S.viewArea||S.area||areaNames()[0];
+  const perArea=CONFIG.reward_rule.scope==="per_area"&&isMulti();
+  $("rw-sel-wrap").classList.toggle("hide",!perArea);
+  $("rw-sel").innerHTML=areaNames().map(a=>`<option ${S.rwSel===a?'selected':''}>${a}（${areaCount(a)}個）</option>`).join("");
+  const nm=perArea?S.rwSel:null; const ac=perArea?areaCount(nm):S.stamps.length;
+  S.redeem=S.redeem||{}; const rk=perArea?nm:"__total__"; const rd=S.redeem[rk]||{};
+  const outLbl={booth_manual:"現地スタッフに提示して受け取り",external_url:"外部フォームへ移動して受け取り",in_app_redeem:"アプリ内で引換コードを発行"}[CONFIG.reward_rule.output];
+  if(!CONFIG.reward_rule.visible){ $("rw-body").innerHTML=`<div class="note">reward_rule.visible=false：景品は非表示（裏側で判定）。</div>`; return; }
+  if(ac===0){ $("rw-body").innerHTML=`<div class="progwrap" style="text-align:center;padding:22px"><div style="font-size:32px">🎁</div><p style="font-size:13px">まだスタンプがありません。TOPの「ためる」から読み取りましょう。</p></div>`; return; }
+  const rows=tiers().map(t=>{ const open=ac>=t.threshold, done=!!rd[t.threshold];
+    const right=!open?`<span class="vbtn" style="pointer-events:none;background:#c8ced7">未解放</span>`:(done?`<button class="vbtn done" disabled>交換済</button>`:`<button class="vbtn" data-r="${t.threshold}">交換する</button>`);
+    return `<div class="cat" style="${open?'':'opacity:.55'}"><div class="ci">🎁</div><div class="cx"><b>${t.threshold}個：${t.label}</b><span>${open?(done?'交換済み':'交換できます（別日OK）'):'スタンプ'+t.threshold+'個で解放'}</span></div>${right}</div>`;}).join("");
+  $("rw-body").innerHTML=`<div class="note">${perArea?'<b>'+nm+'</b>：':''}スタンプ ${ac} 個。景品は<b>${outLbl}</b>（output=${CONFIG.reward_rule.output}）。</div>`+rows; }
+$("rw-sel").addEventListener("change",e=>{ S.rwSel=e.target.value; renderReward(); });
+$("rw-body").addEventListener("click",e=>{ const b=e.target.closest("button[data-r]"); if(!b)return; const n=+b.dataset.r;
+  const perArea=CONFIG.reward_rule.scope==="per_area"&&isMulti(), rk=perArea?S.rwSel:"__total__";
+  S.redeem[rk]=S.redeem[rk]||{}; S.redeem[rk][n]=nowStr(); renderReward(); renderME(); const t=tiers().find(x=>x.threshold===n);
+  if(CONFIG.reward_rule.output==="external_url")toast("🔗","外部フォームへ",`${t.label}：受け取り用フォーム（外部サイト）へ移動します（デモ）。`);
+  else if(CONFIG.reward_rule.output==="in_app_redeem")toast("🎁","引換コード発行",`${t.label}／コード RD-2026-${1000+n}（アプリ内発行）。`);
+  else toast("🎁","景品を交換しました",`${t.label}／引換コード RD-2026-${1000+n}。会場スタッフに提示（現地・別日OK）。`); });
+
+/* ===================== ME + CSV ===================== */
+function renderME(flash){ const nm=S.member.name||'未登録ユーザー';
+  const base=[["エリア",S.area],["お名前",S.member.name],["郵便番号",S.zip],["電話番号",S.member.phone],["メールアドレス",S.member.email],["最終アクセス日時",S.last_at||null]];
+  const valMap={"スタンプ数":(S.stamps.length||null),"コンプリート":null};
+  const extra=CONFIG.data_export.custom_attributes.map(a=>a.key).filter(k=>!base.some(b=>b[0]===k)&&k!=="area").map(k=>[k,valMap[k]!==undefined?valMap[k]:null]);
+  const attrs=base.concat(extra);
+  const row=([k,v])=>`<div class="attr" data-k="${k}"><span class="k">${k}</span><span class="v ${v?'':'empty'}">${v||'—'}</span></div>`;
+  $("me-body").innerHTML=`<div class="attr" style="padding:12px 15px"><span class="k">顧客</span><span class="v">${nm}</span></div><div class="me-lbl">カスタム属性（config: data_export.custom_attributes）</div>${attrs.map(row).join("")}`;
+  if(flash){const map={name:'お名前',phone:'電話番号',email:'メールアドレス',zip:'郵便番号'};const el=$("me-body").querySelector(`.attr[data-k="${map[flash]||flash}"]`);if(el)el.style.background="#DBE1FF";}
+  renderDB(); }
+function renderDB(){ const cd=CONFIG.data_export.csv_download, on=!!cd.enabled;
+  $("db-panel").classList.toggle("hide",!on); if(!on)return;
+  $("db-scope").textContent=(cd.scope==="per_area"?"エリア別":"全体")+"・"+(cd.output==="cumulative"?"累計":"当日");
+  const nm=S.viewArea||S.area||areaNames()[0]; const evs=(cd.scope==="per_area"&&isMulti())?S.stamps.filter(s=>s.area===nm):S.stamps;
+  const rows=evs.map((e,i)=>`<div class="attr"><span class="k">${S.member.name||'（未登録）'}</span><span class="v">${e.label}／${e.at}／${i+1}個目</span></div>`).join("")||`<div class="attr"><span class="k" style="color:#9aa4b2">（記録なし）</span><span class="v empty">—</span></div>`;
+  const natl=cd.national_export.enabled?`<button class="db-btn" id="db-natl" style="background:#0B3D4F">全国分CSV（本部向け）</button>`:"";
+  $("db-body").innerHTML=`<div class="me-lbl db">${(cd.scope==="per_area"&&isMulti())?nm+'｜':''}${(cd.columns||[]).join('・')}</div>${rows}<div style="padding:10px 14px"><button class="db-btn" id="db-csv">CSVダウンロード（${cd.output==="cumulative"?"累計":"当日"}）</button>${natl}</div>`;
+  const b=$("db-csv"); if(b)b.onclick=()=>toast("⬇","CSV（デモ）",`項目＝${(cd.columns||[]).join('／')}。${cd.auth==="url_passcode"?"エリア別URL＋パスコード（MEログイン不要）。":""}`);
+  const bn=$("db-natl"); if(bn)bn.onclick=()=>toast("⬇","全国分CSV（デモ）","全エリア横断の集計CSVを1URLで出力（本部向け）。");
+  $("db-foot").innerHTML=cd.auth==="url_passcode"?"各拠点の運用担当向け。<b>エリア別URL＋パスコード</b>（MEログイン不要）。個人情報はURLに載せない。":""; }
+
+/* ===================== NAV / COMMON ===================== */
+function renderNav(){ $("nav").style.gridTemplateColumns="repeat(3,1fr)";
+  $("nav").innerHTML=`<a data-tab="v-top"><span class="e">🏠</span>TOP</a><a data-tab="v-stamp"><span class="e">🎫</span>スタンプ確認</a><a data-tab="v-reward"><span class="e">🎁</span>プレゼント</a>`;
+  $("nav").querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{ const t=a.dataset.tab; if(t==="v-top")renderTop(); if(t==="v-stamp")renderStamp(); if(t==="v-reward")renderReward(); showView(t); })); }
+function showView(id){ document.querySelectorAll(".view").forEach(v=>v.classList.remove("on")); $(id).classList.add("on"); const sc=document.querySelector(".scroll"); if(sc&&sc.scrollTo)sc.scrollTo({top:0}); document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.tab===id)); }
+function toast(e,h,p){ $("ov-e").textContent=e; $("ov-h").textContent=h; $("ov-p").textContent=p; $("ov").classList.add("show"); }
+$("ov-btn").addEventListener("click",()=>$("ov").classList.remove("show"));
+$("ov").addEventListener("click",e=>{if(e.target.id==="ov")$("ov").classList.remove("show");});
+$("reset").addEventListener("click",resetAll);
+
+/* ===================== BOOT ===================== */
+renderCfgPanel(); renderBannerHead(); renderGate(); renderNav(); renderME(); showView("v-gate");
+</script>
+</body>
+</html>
