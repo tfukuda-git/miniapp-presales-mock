@@ -651,12 +651,13 @@ renderB();
   <div id="pwerr"></div>
 </div></div>
 <script>
-(function(){var PW="kazoku-anshin";var g=document.getElementById("pwgate"),i=document.getElementById("pwin"),e=document.getElementById("pwerr");
-function ok(){if(i.value===PW){g.classList.add("hide");}else{e.textContent="パスワードが違います";i.value="";}}
+(function(){var PW="kazoku-anshin",K="hns_demo_ok";
+var g=document.getElementById("pwgate"),i=document.getElementById("pwin"),e=document.getElementById("pwerr");
+try{if(sessionStorage.getItem(K)==="1"){g.classList.add("hide");return;}}catch(_){}
+function ok(){if(i.value===PW){try{sessionStorage.setItem(K,"1");}catch(_){}g.classList.add("hide");}else{e.textContent="パスワードが違います";i.value="";}}
 document.getElementById("pwbtn").addEventListener("click",ok);
 i.addEventListener("keydown",function(ev){if(ev.key==="Enter")ok();});
 setTimeout(function(){i.focus();},100);})();
 </script>
-
 </body>
 </html>
