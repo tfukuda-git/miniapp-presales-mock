@@ -84,12 +84,10 @@ body{font-family:var(--font);background:#EEF0F7;color:var(--fg1);letter-spacing:
 .strip .big{font-size:26px;font-weight:900;line-height:1;margin-top:6px}
 .strip .big small{font-size:12px;font-weight:700;margin-left:2px}
 .strip .flame{position:absolute;right:-6px;top:-10px;font-size:60px;opacity:.14}
-.camp-banner{margin-top:12px;display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,#fff7e6,#fff);border:1px solid var(--gold);border-radius:var(--r-lg);padding:12px;overflow:hidden}
-.camp-ph{width:76px;height:76px;flex-shrink:0;border-radius:var(--r-md);background:repeating-linear-gradient(45deg,#f3e6c4,#f3e6c4 8px,#efdcae 8px,#efdcae 16px);display:flex;align-items:center;justify-content:center;text-align:center;font-size:9px;font-weight:700;color:#9a7b2e;line-height:1.35;padding:4px}
-.camp-txt{flex:1}
-.camp-badge{display:inline-block;background:var(--gold);color:#3a2a00;font-size:10px;font-weight:900;padding:2px 8px;border-radius:var(--r-pill)}
-.camp-txt h4{font-size:14px;font-weight:900;color:var(--navy);margin-top:5px}
-.camp-txt p{font-size:11px;color:var(--fg2);margin-top:3px;line-height:1.4}
+.camp-banner{margin-top:12px;border:1px solid var(--gold);border-radius:var(--r-lg);overflow:hidden;position:relative;line-height:0}
+.camp-img{width:100%;display:block}
+.camp-badge{position:absolute;top:8px;left:8px;background:var(--gold);color:#3a2a00;font-size:10px;font-weight:900;padding:3px 10px;border-radius:var(--r-pill);box-shadow:0 2px 6px rgba(0,0,0,.25);z-index:2;line-height:1.2}
+.camp-ph2{width:100%;height:130px;background:repeating-linear-gradient(45deg,#f3e6c4,#f3e6c4 10px,#efdcae 10px,#efdcae 20px);display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:700;color:#9a7b2e;line-height:1.4;padding:8px}
 
 /* roulette */
 .roul-card{margin-top:12px;text-align:center;background:radial-gradient(120% 100% at 50% 0%,#20224a,#141530);
@@ -287,8 +285,8 @@ body{font-family:var(--font);background:#EEF0F7;color:var(--fg1);letter-spacing:
             </div>
 
             <div class="camp-banner">
-              <div class="camp-ph">キャンペーン画像（仮）</div>
-              <div class="camp-txt"><span class="camp-badge">実施中</span><h4>ただいまキャンペーン実施中！</h4><p>期間中はポイントがたまりやすい！今すぐルーレットを回そう。</p></div>
+              <span class="camp-badge">実施中</span>
+              <div class="camp-ph2">キャンペーン画像（本番では実施中の告知バナーを掲載）</div>
             </div>
 
             <div class="strip">
