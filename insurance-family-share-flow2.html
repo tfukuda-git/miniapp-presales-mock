@@ -199,7 +199,7 @@ var I={
 };
 var SB='<div class="statusbar"><span>9:41</span><span class="icons"><svg width="18" height="12" viewBox="0 0 18 12"><g fill="#000"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4" width="3" height="8" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></g></svg><svg width="26" height="13" viewBox="0 0 26 13"><rect x="1" y="1" width="21" height="11" rx="3" fill="none" stroke="#000" stroke-opacity=".4"/><rect x="3" y="3" width="16" height="7" rx="1.5" fill="#000"/></svg></span></div>';
 
-var state={tab:"home",page:null,famTab:"by",addStep:0,addMode:"manual",c1:false,editIdx:0,memberIdx:0,tutorialDone:false,tuStep:0,tuReplay:false,profileDone:false,pconsent:false,newIns:{},photo:false};
+var state={tab:"home",page:null,famTab:"by",addStep:0,addMode:"manual",c1:false,editIdx:0,memberIdx:0,tutorialDone:false,tuStep:0,tuReplay:false,profileDone:false,pconsent:false,newIns:{},photo:false,inviteName:""};
 var famB={step:"line",notified:false,mtab:"family",mfamTab:"with",mpage:null,tuDone:false,tuStep:0,tuReplay:false,pname:"",ptel:"",pbd:"",consent:false};
 var sharedMembers=[["田中 花子","花"],["田中 一郎","郎"]];
 
@@ -339,7 +339,7 @@ function screenInvite(){
   var list=friends.map(function(n){var init=n.replace(/\s/g,"").slice(-2,-1);
     return '<div class="row" style="cursor:default"><div class="avatar" style="background:#cfd3da">'+init+'</div>'
       +'<div><div class="nm">'+n+'</div><div class="st muted">LINE友だち</div></div>'
-      +'<button class="addbtn" '+A("inviteSend",n)+'>追加</button></div>';}).join("");
+      +'<button class="addbtn" '+A("inviteConfirm",n)+'>選択</button></div>';}).join("");
   return '<div class="backbar"><button class="back" '+A("goTab","family")+'>'+I.back+' 共有相手に戻る</button></div>'
     +'<div class="head-row"><div class="h1" style="font-size:22px">共有相手を追加</div></div>'
     +'<div class="note">LINEの友だちから共有相手を選びます。<b>追加すると相手にLINEで通知が届きます。</b>（その後の修正・削除では通知は送られません）<br>※「'+FAM+'さん」を追加すると、右の端末に通知が届きます。</div>'
@@ -377,7 +377,7 @@ function render(){
   else if(!state.profileDone)html=screenProfile();
   else if(state.page=="tutorial")html=screenTutorial();
   else if(state.page=="profileEdit")html=screenProfileEdit();
-  else if(state.page=="add")html=screenAdd();else if(state.page=="edit")html=screenEdit();else if(state.page=="invite")html=screenInvite();
+  else if(state.page=="add")html=screenAdd();else if(state.page=="edit")html=screenEdit();else if(state.page=="invite")html=screenInvite();else if(state.page=="inviteConfirm")html=screenInviteConfirm();
   else if(state.page=="member")html=screenMember();
   else if(state.tab=="home")html=screenHome();else if(state.tab=="family")html=screenFamily();else html=screenSettings();
   c.className="pad fade";c.innerHTML=html;document.getElementById("view").scrollTop=0;
@@ -418,6 +418,19 @@ function registerDone(){if(!state.c1){toast("同意が必要です");return;}var
 function saveEdit(){toast("変更を保存しました（家族には通知されません）");setTimeout(function(){goTab("home");},1000);}
 function deleteIns(){myInsurances.splice(state.editIdx,1);toast("保険を削除しました（家族には通知されません）");setTimeout(function(){goTab("home");},1000);}
 function removeShare(n){toast(n+"さんへの共有を停止しました（家族に通知されません）");}
+function inviteConfirm(n){state.inviteName=n;state.page="inviteConfirm";render();}
+function screenInviteConfirm(){
+  var n=state.inviteName;var init=n.replace(/\s/g,"").slice(-2,-1);
+  var shared=myInsurances.filter(function(x){return x.shared;});
+  var list=shared.map(function(x){return '<div class="field full"><div><div class="lbl">'+esc(x.co)+'</div><div class="val">'+esc(x.name)+'</div></div></div>';}).join("");
+  return '<div class="backbar"><button class="back" '+A("go","invite")+'>'+I.back+' 共有相手の選択に戻る</button></div>'
+    +'<div class="person-head"><div class="av">'+esc(init)+'</div><div class="nm">'+esc(n)+'さん</div></div>'
+    +'<div class="center-title" style="margin-top:4px"><h2>マイ保険の情報を共有しますか？</h2><p>「共有」をオンにしている保険（'+shared.length+'件）を'+esc(n)+'さんに共有します</p></div>'
+    +'<div class="card" style="padding:6px 16px">'+(list||'<div class="note" style="margin:8px 0">共有をオンにしている保険がありません。マイ保険で共有をオンにしてください。</div>')+'</div>'
+    +'<div class="note">共有すると'+esc(n)+'さんのLINEに通知が届き、'+esc(n)+'さんが「受け取る」と閲覧できるようになります。共有はいつでも停止できます。</div>'
+    +'<button class="btn btn-primary btn-block" '+A("inviteSend",n)+'>この内容で共有する</button>'
+    +'<button class="btn btn-ghost btn-block" style="margin-top:10px" '+A("go","invite")+'>キャンセル</button>';
+}
 function inviteSend(n){toast(n+"さんに共有の申請を送りました（LINEで通知）");if(n==FAM){famB.step="line";famB.notified=true;renderB();toastB(OWNER+"さんからLINEが届きました");}setTimeout(function(){goTab("family");},1100);}
 
 /* ===== 家族 端末 ===== */
@@ -614,6 +627,7 @@ document.addEventListener("click",function(e){
     case "addBack": addBack(); break;
     case "saveEdit": saveEdit(); break;
     case "deleteIns": deleteIns(); break;
+    case "inviteConfirm": inviteConfirm(v); break;
     case "inviteSend": inviteSend(v); break;
     case "removeShare": removeShare(v); break;
     case "toast": toast(v); break;
