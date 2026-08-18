@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>住まいスタンプラリー 触れるモック v0.7（v0.6設計書 回答反映）</title>
+<title>住まいスタンプラリー 触れるモック v0.8（流入分岐＋QR2パターン反映）</title>
 <meta name="catalog:group" content="触れるデモ（最新・インタラクティブ）">
 <meta name="catalog:order" content="1">
 <meta name="catalog:icon" content="🎫">
 <meta name="catalog:iconColor" content="var(--brand)">
 <meta name="catalog:title" content="住まいスタンプラリー｜触れるモック（最新 v0.7）">
-<meta name="catalog:badge" content="最新DEMO">
+<meta name="catalog:badge" content="最新v0.8">
 <meta name="catalog:badgeColor" content="var(--brand)">
-<meta name="catalog:desc" content="実際に触れる通しプロトタイプ。会員登録（郵便番号→既定拠点）→TOP→QR読取→エリア別スタンプカード→段階景品→プレゼント。分譲は共通QR＋会場入力、エリアまたぎ用のジョーカーQR、拠点別＋全国のCSV出力に対応。右側にME属性＋拠点向けCSVをリアルタイム表示（社名は架空）。">
+<meta name="catalog:desc" content="実際に触れる通しプロトタイプ。流入分岐（現地QR→エリア別案内／URL流入は都道府県属性あり→エリア別案内・なし→総合案内）→エリア別スタンプカード→段階景品→プレゼント。QRは2パターン（フォームON・Limit無し／フォームOFF・Limit1回）。分譲は共通QR＋会場入力、エリアまたぎ用のジョーカーQR、拠点別＋全国のCSV出力に対応。右側にME属性＋拠点向けCSVをリアルタイム表示（社名は架空）。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -114,6 +114,9 @@
   .box button{background:var(--brand);color:#fff;border:none;border-radius:11px;padding:12px;font-size:14px;font-weight:700;width:100%;cursor:pointer}
   .scan{position:absolute;inset:0;background:#0b1016;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:25;color:#fff}
   .scan.show{display:flex}
+  /* 選択中は「カメラ黒背景＋QR枠」を隠し、明るい選択シートにする */
+  .scan.picking{background:rgba(20,30,46,.55)}
+  .scan.picking .frame,.scan.picking #scan-t{display:none}
   .frame{width:180px;height:180px;border-radius:20px;position:relative;box-shadow:0 0 0 2000px rgba(0,0,0,.55)}
   .frame:before,.frame:after{content:"";position:absolute;width:34px;height:34px;border:3px solid var(--brand)}
   .frame:before{top:-2px;left:-2px;border-right:0;border-bottom:0;border-radius:12px 0 0 0}
@@ -121,8 +124,9 @@
   .laser{position:absolute;left:6px;right:6px;height:2px;background:var(--brand);top:10px;animation:sc 1.1s ease-in-out infinite;box-shadow:0 0 12px var(--brand)}
   @keyframes sc{0%{top:10px}50%{top:166px}100%{top:10px}}
   .scan p{margin-top:18px;font-size:13px;opacity:.9}
-  .scan .pick{background:#fff;border-radius:14px;margin-top:16px;width:280px;max-height:230px;overflow-y:auto;text-align:left}
-  .scan .pick .ph{padding:9px 14px;font-size:11px;font-weight:700;color:#9aa4b2;border-bottom:1px solid #eef1f4}
+  .scan .pick{background:#fff;border-radius:16px;margin-top:16px;width:300px;max-height:260px;overflow-y:auto;text-align:left;box-shadow:0 16px 40px rgba(0,0,0,.35)}
+  .scan .pick .ph{padding:12px 14px;font-size:12px;font-weight:700;color:var(--navy);border-bottom:1px solid #eef1f4;background:#f6f9fd;border-radius:16px 16px 0 0}
+  .scan .pick .pk{padding:14px}
   .scan .pick .pk{padding:11px 14px;font-size:12.5px;color:#1b2330;border-bottom:1px solid #eef1f4;cursor:pointer;display:flex;justify-content:space-between;gap:8px}
   .scan .pick .pk:active{background:#f2f6fe}
   .scan .pick .pk .tag{color:var(--brand);font-weight:700;font-size:11px;white-space:nowrap}
@@ -160,14 +164,49 @@
 <div class="stage">
   <!-- PHONE -->
   <div class="app">
-    <div class="banner">プロトタイプ｜QRはタップで疑似スキャン。<b>郵便番号</b>で拠点自動設定／<b>分譲</b>は共通QR＋会場入力／<b>ジョーカーQR</b>でエリアまたぎ対応／景品は<b>現地スタッフ交換</b>｜右上⟳でリセット</div>
+    <div class="banner">プロトタイプ｜TOPの入り方は<b>3パターン</b>（①現地QR→QR紐づきエリア ②配信URL＋<b>都道府県属性</b>→エリア別 ③属性もQRも無し→<b>汎用トップ</b>）。QRは<b>フォーム軸</b>×<b>リミット軸</b>で管理｜右上⟳で最初から</div>
     <div class="hd">
       <span class="t">🏠 住まいスタンプラリー <span class="pill">ミニアプリ</span></span>
       <span class="actions"><span id="reset" title="リセット">⟳</span></span>
     </div>
     <div class="scroll">
+      <!-- ENTRY（TOPの入り方 3パターン｜デモ操作） -->
+      <section class="view on" id="v-entry">
+        <h1>TOPの入り方（3パターン）</h1>
+        <p class="lead">議事録8/17確定：TOP画像の出し分けは<b>入口で3パターン</b>。デモで切り替えて確認できます。</p>
+        <div class="sec"><h2><span class="bar"></span>① 現地QRから入る</h2>
+          <div class="note"><b>QRに紐づくエリア</b>でトップ画像を表示（カスタム属性の上書きなし）。</div>
+          <select id="entry-area" class="area-sel" style="margin:8px 0"></select>
+          <button class="btn" id="entry-qr">現地QRで参加 → エリア別トップ</button>
+        </div>
+        <div class="sec"><h2><span class="bar"></span>② 配信URLから入る（都道府県カスタム属性あり）</h2>
+          <div class="note"><b>都道府県カスタム属性</b>で判断してエリア別トップを表示。</div>
+          <button class="btn" id="entry-url-attr" style="background:var(--navy)">配信URL（属性あり：首都圏）→ エリア別トップ</button>
+        </div>
+        <div class="sec"><h2><span class="bar"></span>③ 属性もQRも無い（リッチメニュー流入）</h2>
+          <div class="note">友だち登録済みだが<b>アンケート未回答</b>でリッチメニューから起動＝<b>拠点属性もQRも無し</b>→<b>汎用トップ</b>。会員登録（郵便番号）で拠点を設定しエリア別へ。</div>
+          <button class="btn" id="entry-url-noattr" style="background:#6b7c84">リッチメニュー流入（属性・QRなし）→ 汎用トップ</button>
+        </div>
+        <div class="note" style="margin-top:12px">※ 実装：①QRのエリア値／②ME<b>都道府県</b>カスタム属性／③どちらも無し。郵便番号入力時に判定エリアを新規カスタム属性<b>「拠点」（18拠点・単一選択）</b>へ自動格納（議事録8/17）。</div>
+      </section>
+
+      <!-- 汎用トップ（属性もQRも無い時） -->
+      <section class="view" id="v-general">
+        <div class="fl-inner">
+          <div class="fl-org">全国のみなさまへ</div>
+          <div class="fl-title">住まい</div>
+          <div class="fl-en">STAMP RALLY</div>
+          <p class="fl-sub">展示場・相談・イベントをめぐってスタンプを集めよう!<br>エリアごとに5つ集めて景品をGET🎁</p>
+          <div class="fl-term"><span class="lb">開催期間</span><b>10月1日(水)〜12月31日(水)</b></div>
+        </div>
+        <h1>汎用トップ</h1>
+        <p class="lead"><b>拠点カスタム属性もQRも無い</b>ため、特定エリアを前面化しない<b>汎用トップ</b>を表示しています。会員登録で<b>郵便番号</b>を入力すると、判定エリアが<b>拠点属性</b>に自動格納され、エリア別トップに切り替わります。</p>
+        <button class="btn" id="gen-register">会員登録して地域を設定 → エリア別トップ</button>
+        <div class="note" style="margin-top:12px">参考：トップには「対象会場はこちら」（エリア別の展示場一覧URL）も設置予定（先方素材・8/28）。</div>
+      </section>
+
       <!-- GATE（タブなし・会員登録アンケート） -->
-      <section class="view on" id="v-gate">
+      <section class="view" id="v-gate">
         <div class="fl-inner">
           <div class="fl-org">エリアのみなさまへ</div>
           <div class="fl-title">住まい</div>
@@ -299,11 +338,13 @@ const TIERS=[
   {n:4,name:"QUOカード2,000円"},{n:5,name:"コンプリート賞"}
 ];
 const GOAL=5;
-const KEY="misawa_stamp_proto_v12";
+const KEY="stamprally_proto_v15";
+const PREF_PRESET="首都圏"; // URL流入（属性あり）のデモ用 都道府県カスタム属性
 
 /* ---- state ---- */
 let S=load();
 function blank(){return {area:null,viewArea:null,rwSel:null,zip:"",member:{name:"",phone:"",email:""},registered:false,
+  inflow:"",pref:null,basho:null,pendingArea:null,
   stamps:[],redeem:{},shownTier:{},last_at:""};}
 function load(){try{const r=localStorage.getItem(KEY);return r?Object.assign(blank(),JSON.parse(r)):blank();}catch(e){return blank();}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
@@ -326,7 +367,8 @@ function renderME(flashKey){
   const nm=S.member.name||'未登録ユーザー';
   const sub=[S.member.phone,S.member.email].filter(Boolean).join('　/　')||'LINE連携済み';
   const attrs=[
-    ["エリア",S.area],
+    ["流入経路",S.inflow],["都道府県",S.pref],["拠点(カスタム属性)",S.basho],
+    ["エリア(表示)",S.area],
     ["お名前",S.member.name],["郵便番号",S.zip],["電話番号",S.member.phone],["メールアドレス",S.member.email],
     ["最終アクセス日時",S.last_at||null],
   ];
@@ -355,7 +397,7 @@ function renderTop(){const area=S.area||AREAS[0];
   const idx=Math.max(0,AREAS.indexOf(area));
   const hue=(idx*37)%360;
   $("top-hero").style.background=`linear-gradient(135deg,hsl(${hue} 60% 46%),hsl(${(hue+30)%360} 62% 56%))`;
-  $("top-hero").innerHTML=`<div class="em">🏠</div><div class="ar">${area}エリア</div><div class="sub">住まいスタンプラリー 開催中（10/1〜12/31）</div><div class="imgnote">※ configでエリアごとのキービジュアルを出し分け（郵便番号から自動設定）</div>`;
+  $("top-hero").innerHTML=`<div class="em">🏠</div><div class="ar">${area}エリア</div><div class="sub">エリア別案内｜住まいスタンプラリー 開催中（10/1〜12/31）</div><div class="imgnote">※ 流入：${S.inflow||'—'}｜configでエリアごとのキービジュアルを出し分け</div>`;
   const spots=spotsOf(area).slice(0,4);
   $("top-spots").innerHTML=spots.map(s=>{const c=catOf(s.cat);return `<div class="cat"><div class="ci">${c.emoji}</div><div class="cx"><b>${c.name}</b><span>${s.venue}</span></div></div>`;}).join("");
 }
@@ -364,39 +406,40 @@ function renderTop(){const area=S.area||AREAS[0];
 $("top-cta").addEventListener("click",()=>{openPicker();});
 function openPicker(){
   const s=$("scan"),pick=$("pick");
+  const area=S.area||S.viewArea||AREAS[0];
   s.classList.add("show");$("scan-t").textContent="読み取るQRを選んでください（デモ）";
   pick.style.display="block";
-  pick.innerHTML=`<div class="ph">拠点に貼られたQR（MEの流入経路QR。読取で流入を記録→スタンプ付与）</div>`+
-    QRS.map(q=>{const cat=catOf(q.cat);const multi=q.common||q.joker;const done=!multi&&hasStamp(q.key);
-      const sub=q.joker?'エリア別ジョーカー・スタッフ提示｜読取後に会場入力':(q.common?'分譲 共通QR｜読取後に会場入力（複数回OK）':'1会場1回');
-      return `<div class="pk ${done?'disabled':''}" data-q="${q.key}">`+
-        `<span>${cat.emoji} ${q.venue}<br><span style="font-size:11px;color:#9aa4b2">属性: ${attrText(q.attrs)}｜${sub}</span></span>`+
-        `<span class="tag">${done?'取得済':'読取'}</span></div>`;}).join("");
+  s.classList.add("picking");
+  const noformDone=hasStamp("noform-"+area);
+  // QRは2パターンのみ：①制限なし・フォームあり ②1回きり・フォームなし
+  pick.innerHTML=`<div class="ph">読み取るQRを選択（${area}エリア）</div>`+
+    `<div class="pk" data-form="1">`+
+      `<span>📷 制限なし・フォームあり<br><span style="font-size:11px;color:#9aa4b2">読取後に会場入力｜何回でも取得OK（分譲共通QR・相談系など）</span></span>`+
+      `<span class="tag">読取</span></div>`+
+    `<div class="pk ${noformDone?'disabled':''}" data-form="0">`+
+      `<span>📷 1回きり・フォームなし<br><span style="font-size:11px;color:#9aa4b2">即スタンプ｜同一QRは1回のみ（総合展示場など）</span></span>`+
+      `<span class="tag">${noformDone?'取得済':'読取'}</span></div>`;
 }
-$("scan-close").addEventListener("click",()=>{$("scan").classList.remove("show");});
+$("scan-close").addEventListener("click",()=>{$("scan").classList.remove("show","picking");});
 $("pick").addEventListener("click",e=>{const row=e.target.closest(".pk");if(!row||row.classList.contains("disabled"))return;
-  const q=QRS.find(x=>x.key===row.dataset.q);if(!q)return;
-  const multi=q.common||q.joker;
-  // 分譲共通QR／ジョーカーQRは読取後に「どこで押したか」の会場入力を必須にする
+  const form=row.dataset.form==="1";
+  const area=S.area||S.viewArea||AREAS[0];
+  // 制限なし・フォームあり＝読取後に「どこで押したか」の会場入力を必須にする
   let venueInput=null;
-  if(multi){
-    const ph=q.joker?"例）お台場 分譲地 D-3（ジョーカーは来場場所を入力）":"例）〇〇分譲地 A区画（分譲の共通QR）";
-    venueInput=window.prompt("読み取った会場名を入力してください（必須）\n"+ph,"");
-    if(venueInput===null||venueInput.trim()==="" ){toast("⚠","会場入力が必要です","分譲の共通QR／ジョーカーQRは、どこで押したかの会場入力が必須です。");return;}
+  if(form){
+    venueInput=window.prompt("読み取った会場名を入力してください（必須）\n例）〇〇分譲地 A区画 ／ 資金相談 など","");
+    if(venueInput===null||venueInput.trim()===""){toast("⚠","会場入力が必要です","制限なし・フォームありQRは、どこで押したかの会場入力が必須です。");return;}
     venueInput=venueInput.trim();
   }
-  $("pick").style.display="none";$("scan-t").textContent="QRコードを読み取り中…";
+  $("pick").style.display="none";$("scan").classList.remove("picking");$("scan-t").textContent="QRコードを読み取り中…";
   setTimeout(()=>{
     $("scan").classList.remove("show");
-    applyAttrs(q.attrs);save();renderME("エリア");
-    if(!multi&&hasStamp(q.key)){toast("✅","取得済みです","この会場のスタンプは取得済みです（1会場1回）。");return;}
-    if(areaCount(qArea(q))>=GOAL){toast("🏁","このエリアは上限です",qArea(q)+"エリアのスタンプは最大"+GOAL+"個です。別エリアで集められます。");return;}
-    if(multi){
-      const label=(q.joker?"🃏 ":"分譲：")+venueInput;
-      commit(q.key+"#"+Date.now(),label,qArea(q));
-    }else{
-      commit(q.key,q.venue,qArea(q));
-    }
+    applyAttrs({"エリア":area});save();renderME("エリア(表示)");
+    const noformKey="noform-"+area;
+    if(!form&&hasStamp(noformKey)){toast("✅","取得済みです","1回きり・フォームなしのQRは取得済みです（同一QRは1回のみ）。");return;}
+    if(areaCount(area)>=GOAL){toast("🏁","このエリアは上限です",area+"エリアのスタンプは最大"+GOAL+"個です。別エリアで集められます。");return;}
+    if(form){commit("form-"+area+"#"+Date.now(),"フォームあり："+venueInput,area);}
+    else{commit(noformKey,"フォームなし（"+area+"）",area);}
   },900);
 });
 
@@ -407,7 +450,7 @@ function commit(key,label,area){
   S.viewArea=a; S.rwSel=a;
   save();
   const ac=areaCount(a);
-  renderStamp();renderTop();renderME("エリア");show("v-stamp"); // 読み取ったらスタンプ確認へ
+  renderStamp();renderTop();renderME("エリア(表示)");show("v-stamp"); // 読み取ったらスタンプ確認へ
   const tier=TIERS.find(t=>t.n===ac),tk=a+":"+ac;
   if(tier&&!S.shownTier[tk]){S.shownTier[tk]=true;save();toast("🎉",a+"で"+ac+"個達成！景品GET",tier.name+" を獲得しました。プレゼントタブで交換できます（別日でもOK・受け取りは現地）。");}
   else toast("🎫","スタンプGET！",label+"（"+a+"）／"+a+"エリア "+ac+" / "+GOAL+" 個");
@@ -428,11 +471,33 @@ function renderStamp(){
   $("st-tiers").innerHTML=TIERS.map(t=>`<div class="tier ${ac>=t.n?'done':''}"><div class="n">${t.n}</div><div class="txt"><b>${t.name}</b><div>${ac>=t.n?'獲得済み':'スタンプ'+t.n+'個で解放'}</div></div><div style="font-size:18px">${ac>=t.n?'✅':'🔒'}</div></div>`).join("");
   $("area-spots").innerHTML=`<div class="note"><b>${area}</b>エリア：スタンプ ${ac} / ${GOAL} 個</div>`+
     spots.map(s=>{const cat=catOf(s.cat);const multi=s.common||s.joker;const done=!multi&&hasStamp(s.key);
-      const note=s.joker?'会場入力・+1':(s.common?'共通QR・会場入力（複数回OK）':'1会場1回');
+      const note=s.joker?'フォーム有/リミット無・会場入力':(s.common?'フォーム有/リミット無・会場入力':'フォーム無/リミット1回');
       const badge=multi?'<span class="vbtn" style="pointer-events:none;background:#eef2f3;color:#6b7c84">'+(s.joker?'ジョーカー':'共通')+'</span>':'<span class="vbtn '+(done?'done':'')+'" style="pointer-events:none">'+(done?'取得済':'未取得')+'</span>';
       return `<div class="cat"><div class="ci">${cat.emoji}</div><div class="cx"><b>${cat.name}</b><span>${s.venue}（${note}）</span></div>${badge}</div>`;}).join("");
 }
 document.getElementById("area-sel").addEventListener("change",e=>{S.viewArea=e.target.value;save();renderStamp();});
+
+/* ---- ENTRY（TOPの入り方 3パターン） ---- */
+function renderEntry(){
+  $("entry-area").innerHTML=AREAS.map(a=>`<option value="${a}" ${a==="首都圏"?"selected":""}>${a}</option>`).join("");
+}
+$("entry-qr").addEventListener("click",()=>{startInflow("現地QR",$("entry-area").value,"qr");});
+$("entry-url-attr").addEventListener("click",()=>{startInflow("配信URL（都道府県属性あり）",PREF_PRESET,"attr");});
+$("entry-url-noattr").addEventListener("click",()=>{
+  S.inflow="リッチメニュー（属性・QRなし）";S.pref=null;S.basho=null;S.area=null;save();renderME("流入経路");show("v-general");
+  toast("🗺","汎用トップを表示","拠点カスタム属性もQRも無いため、特定エリアを前面化しない汎用トップを表示します。会員登録（郵便番号）で拠点を設定するとエリア別トップに切り替わります。");});
+
+// ①現地QR＝QRのエリアで表示（カスタム属性の上書きなし）／②都道府県属性あり＝属性で判断しエリア別トップへ直行
+function startInflow(inflow,area,mode){
+  S.inflow=inflow;S.area=area;S.viewArea=area;S.rwSel=area;
+  if(mode==="attr"){S.pref=area;S.basho=area;}else{S.pref=null;S.basho=null;} // QRは属性を書き換えない
+  S.registered=true;S.last_at=nowStr();save();
+  $("nav").classList.add("on");renderME("流入経路");renderTop();renderStamp();renderReward();show("v-top");
+  toast("✅",inflow+"で参加",area+"エリアのエリア別トップを表示します。TOPの「ためる」からQRを読み取ってスタンプを集めましょう。");}
+
+/* ---- 汎用トップ → 会員登録（郵便番号→拠点属性） ---- */
+$("gen-register").addEventListener("click",()=>{show("v-gate");
+  toast("📝","会員登録へ","郵便番号を入力すると、判定エリアが拠点カスタム属性に自動格納され、エリア別トップに進みます。");});
 
 /* ---- member form (gate) ---- */
 function validate(){const ok=$("q-name").value.trim()&&$("q-zip").value.trim()&&$("q-phone").value.trim()&&$("q-email").value.trim();$("member-save").disabled=!ok;return ok;}
@@ -441,10 +506,13 @@ const MEMLBL={name:"お名前",phone:"電話番号",email:"メールアドレス
 $("q-zip").addEventListener("input",()=>{S.zip=$("q-zip").value.trim();renderME("郵便番号");validate();save();});
 $("member-save").addEventListener("click",()=>{if(!validate())return;
   S.registered=true; S.zip=$("q-zip").value.trim();
-  S.area=postalToArea(S.zip); S.viewArea=S.area; S.rwSel=S.area; S.last_at=nowStr(); save();
-  $("nav").classList.add("on"); renderME(); renderTop(); renderStamp(); renderReward();
+  // 郵便番号から判定したエリアを「拠点」カスタム属性に自動格納（議事録8/17）
+  S.area = postalToArea(S.zip);
+  S.basho = S.area; S.pref = S.area; if(!S.inflow) S.inflow="会員登録";
+  S.viewArea=S.area; S.rwSel=S.area; S.pendingArea=null; S.last_at=nowStr(); save();
+  $("nav").classList.add("on"); renderME("拠点(カスタム属性)"); renderTop(); renderStamp(); renderReward();
   show("v-top");
-  toast("✅","会員登録が完了しました","郵便番号から「"+S.area+"エリア」をデフォルト拠点に設定しました。TOPからスタンプ集めを始めましょう。");});
+  toast("✅","会員登録が完了しました","郵便番号から「"+S.area+"」を判定し、拠点カスタム属性に格納しました。エリア別トップを表示します。次回の配信URL流入では汎用トップをスキップします。");});
 
 /* ---- reward（交換する＋交換済み記録／受け取りは現地・別日OK） ---- */
 function renderReward(){
@@ -474,13 +542,13 @@ document.querySelectorAll("#nav a").forEach(a=>a.addEventListener("click",()=>{c
   show(t);}));
 $("reset").addEventListener("click",()=>{S=blank();save();
   ["q-name","q-zip","q-phone","q-email"].forEach(id=>$(id).value="");validate();
-  $("nav").classList.remove("on");renderME();show("v-gate");});
+  $("nav").classList.remove("on");renderME();renderEntry();show("v-entry");});
 
 /* ---- boot ---- */
 $("q-name").value=S.member.name;$("q-zip").value=S.zip;$("q-phone").value=S.member.phone;$("q-email").value=S.member.email;validate();
-renderME();
+renderME();renderEntry();
 if(S.registered){$("nav").classList.add("on");renderTop();renderStamp();renderReward();show("v-top");}
-else{show("v-gate");}
+else{show("v-entry");}
 </script>
 </body>
 </html>
