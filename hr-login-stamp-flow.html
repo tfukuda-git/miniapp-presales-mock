@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>毎日ログインスタンプ ミニアプリ｜触れるモック（SAMPLE）</title>
+<meta name="catalog:group" content="触れるデモ（最新・インタラクティブ）">
+<meta name="catalog:order" content="0">
+<meta name="catalog:icon" content="🗓️">
+<meta name="catalog:iconColor" content="var(--brand)">
+<meta name="catalog:title" content="毎日ログインスタンプ｜触れるモック（HR）">
+<meta name="catalog:badge" content="最新">
+<meta name="catalog:badgeColor" content="var(--brand)">
+<meta name="catalog:desc" content="毎日ログイン→スタンプ→節目でデジタルギフト(URL)のミニアプリ。初回のみ概要モーダル、押印演出、15日/30日のマイルストーン、30日は応募フォーム入力後にギフトURLをタップで受け取り（採用管理システムへ連携）。ギフトはコードでなくURL方式、日数・金額・回数は設定変更可。社名/ブランドは架空。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+:root{
+  --accent:#FF6A2B; --accent-light:#FFE6D6; --mid:#FF9552; --deep:#B03C00; --navy:#22262E;
+  --white:#fff; --bg:#FAF8F6; --fg1:#282829; --fg2:#6B6B6B; --gray:#B3B3B3; --border:#EAE7E3;
+  --gold:#E7B94B; --line-green:#06C755; --ink:#1C2130;
+  --font:'Noto Sans JP',-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
+  --r-sm:6px; --r-md:10px; --r-lg:14px; --r-pill:999px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font);background:#EFEDEA;color:var(--fg1);letter-spacing:-.01em;
+  font-feature-settings:'palt' 1;-webkit-font-smoothing:antialiased;min-height:100vh;padding:32px 16px 64px;
+  background:radial-gradient(1200px 600px at 50% -10%,#fff3ec 0%,#EFEDEA 55%);}
+.stage{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:390px 1fr;gap:40px;align-items:start}
+@media(max-width:900px){.stage{grid-template-columns:1fr;gap:28px;justify-items:center}}
+.headline{grid-column:1/-1;text-align:center;margin-bottom:4px}
+.headline .eyebrow{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700}
+.headline h1{font-size:26px;font-weight:900;margin-top:6px;color:var(--navy)}
+.headline p{color:var(--fg2);font-size:13px;margin-top:8px}
+.headline .tag{display:inline-block;margin-top:10px;font-size:11px;color:var(--fg2);background:#fff;border:1px solid var(--border);padding:4px 12px;border-radius:var(--r-pill)}
+
+/* iphone */
+.phone-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;position:sticky;top:24px}
+.phone{width:390px;height:800px;background:#000;border-radius:52px;padding:12px;
+  box-shadow:0 30px 70px rgba(34,38,46,.28),0 0 0 2px #1a1a1a;position:relative}
+.screen{width:100%;height:100%;background:var(--bg);border-radius:42px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:150px;height:30px;background:#000;border-radius:0 0 20px 20px;z-index:60}
+.statusbar{height:44px;flex:0 0 44px;display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 26px 6px;font-size:13px;font-weight:700;color:var(--fg1);background:var(--white)}
+.statusbar .r{display:flex;gap:6px;align-items:center}
+.linebar{flex:0 0 auto;background:var(--white);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;padding:8px 16px 12px}
+.linebar .back{color:var(--fg2)}
+.linebar .app-ic{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--mid));
+  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:13px}
+.linebar .ttl{font-size:15px;font-weight:700}
+.linebar .ttl small{display:block;font-size:10px;color:var(--fg2);font-weight:500}
+.linebar .info{margin-left:auto;color:var(--fg2);cursor:pointer;display:flex;align-items:center;gap:2px;font-size:10px;font-weight:700}
+.body{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.body::-webkit-scrollbar{display:none}
+.view{display:none;padding:16px 16px 24px;animation:fade .25s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px}
+.card+.card{margin-top:12px}
+.sec-ttl{font-size:12px;font-weight:700;color:var(--fg2);margin:18px 2px 8px;letter-spacing:.02em}
+
+/* greeting + strip */
+.greet{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.avatar{width:46px;height:46px;border-radius:50%;background:var(--accent-light);color:var(--deep);
+  display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;flex-shrink:0}
+.greet h2{font-size:17px;font-weight:900;color:var(--navy)}
+.greet p{font-size:12px;color:var(--fg2);margin-top:1px}
+.strip{display:flex;gap:10px;margin-bottom:12px}
+.strip .box{flex:1;background:linear-gradient(135deg,var(--navy),#3a4150);color:#fff;border-radius:var(--r-lg);padding:14px;position:relative;overflow:hidden}
+.strip .box.pt{background:linear-gradient(135deg,var(--accent),var(--mid))}
+.strip .lbl{font-size:10px;opacity:.85;letter-spacing:.03em}
+.strip .big{font-size:26px;font-weight:900;line-height:1;margin-top:6px}
+.strip .big small{font-size:12px;font-weight:700;margin-left:2px}
+.strip .flame{position:absolute;right:-6px;top:-10px;font-size:60px;opacity:.14}
+
+/* stamp card */
+.stampcard{margin-top:0;background:radial-gradient(120% 100% at 50% 0%,#2b3040,#1a1e29);border:none;color:#fff;padding:18px 16px 20px;text-align:center}
+.stampcard h3{font-size:16px;font-weight:900}
+.stampcard .sub{font-size:11px;opacity:.72;margin-top:2px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin:16px 4px 4px}
+.cell{aspect-ratio:1;border-radius:50%;border:2px dashed rgba(255,255,255,.28);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:rgba(255,255,255,.5);position:relative}
+.cell .d{position:relative;z-index:2}
+.cell.done{border:2px solid var(--accent);background:linear-gradient(135deg,var(--accent),var(--mid));color:#fff;box-shadow:0 4px 12px rgba(255,106,43,.4)}
+.cell.done .d{display:none}
+.cell.done::after{content:"";position:absolute;inset:0;background:no-repeat center/58% url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");z-index:2}
+.cell.mile{border-color:var(--gold)}
+.cell.mile .gift{position:absolute;top:-7px;right:-4px;background:var(--gold);color:#3a2a00;font-size:8px;font-weight:900;
+  border-radius:var(--r-pill);padding:1px 5px;z-index:3;white-space:nowrap;box-shadow:0 2px 5px rgba(0,0,0,.3)}
+.cell.pop{animation:stamp .5s cubic-bezier(.2,1.5,.4,1)}
+@keyframes stamp{0%{transform:scale(2.4);opacity:0}55%{transform:scale(.86)}100%{transform:scale(1);opacity:1}}
+.stamp-btn{margin-top:16px;width:220px;border:none;font-family:inherit;font-weight:900;font-size:16px;color:#fff;
+  background:linear-gradient(135deg,var(--accent),var(--mid));padding:14px;border-radius:var(--r-pill);
+  cursor:pointer;box-shadow:0 10px 24px rgba(255,106,43,.42);transition:transform .12s}
+.stamp-btn:active{transform:scale(.96)}
+.stamp-btn:disabled{opacity:.45;background:var(--gray);color:#fff;box-shadow:none;cursor:default}
+.stamp-note{font-size:11px;opacity:.72;margin-top:10px}
+.setting-note{font-size:10px;opacity:.6;margin-top:6px}
+.demo-next{margin-top:10px;background:none;border:1px dashed rgba(255,255,255,.35);color:rgba(255,255,255,.85);
+  font-family:inherit;font-size:11px;font-weight:700;padding:8px 14px;border-radius:var(--r-pill);cursor:pointer;display:none}
+.demo-next.show{display:inline-block}
+
+/* milestone progress */
+.mile .top{display:flex;justify-content:space-between;align-items:baseline}
+.mile h3{font-size:14px;font-weight:900;color:var(--navy)}
+.mile .cur{font-size:12px;color:var(--accent);font-weight:900}
+.mile .track{margin-top:12px;position:relative;height:8px;background:var(--accent-light);border-radius:4px}
+.mile .track span{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,var(--accent),var(--mid));border-radius:4px;transition:width .5s}
+.mile .ticks{display:flex;justify-content:space-between;margin-top:8px}
+.mile .tick{font-size:10px;color:var(--fg2);text-align:center;flex:1}
+.mile .tick b{display:block;color:var(--fg1);font-weight:900;font-size:11px}
+.mile .tick.on b{color:var(--accent)}
+.mile .expl{margin-top:12px;font-size:11px;color:var(--fg2);line-height:1.6;background:var(--bg);border-radius:var(--r-md);padding:10px 12px}
+
+/* history / gift links */
+.gcard{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--border)}
+.gcard:last-child{border-bottom:none}
+.gcard .gi{width:40px;height:40px;border-radius:var(--r-md);background:var(--accent-light);color:var(--deep);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gcard .gt{flex:1;min-width:0}
+.gcard .gt h4{font-size:13px;font-weight:900}
+.gcard .gt .sub{font-size:11px;color:var(--fg2);margin-top:2px}
+.gcard .open{border:none;background:var(--accent);color:#fff;font-family:inherit;font-weight:700;font-size:11px;
+  padding:8px 12px;border-radius:var(--r-md);cursor:pointer;flex-shrink:0;display:flex;align-items:center;gap:4px}
+.empty{text-align:center;color:var(--gray);font-size:12px;padding:24px 0}
+
+/* result overlay (gift URL) */
+.result{position:absolute;inset:0;background:rgba(20,17,14,.93);display:none;flex-direction:column;
+  align-items:center;justify-content:center;gap:14px;padding:28px;z-index:40;backdrop-filter:blur(3px)}
+.result.show{display:flex;animation:fade .3s}
+.result .rare{font-size:12px;font-weight:900;letter-spacing:.14em;color:var(--gold)}
+.prize{width:250px;background:#fff;border-radius:var(--r-lg);padding:24px 22px;text-align:center;
+  animation:pop .45s cubic-bezier(.2,1.4,.4,1);box-shadow:0 0 40px rgba(231,185,75,.35)}
+@keyframes pop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+.prize .ptn{font-size:13px;font-weight:900;color:var(--deep)}
+.prize h3{font-size:20px;font-weight:900;color:var(--navy);margin-top:4px}
+.prize .rtm{margin-top:12px;background:#e9f8ee;border:1px solid #b9e7c8;border-radius:var(--r-md);padding:9px 10px;font-size:10px;color:#1c7a3f;font-weight:700;display:none;align-items:center;gap:6px;text-align:left;line-height:1.4}
+.prize .rtm.show{display:flex}
+.prize .gifturl{margin-top:14px;width:100%;border:none;background:var(--accent);color:#fff;font-family:inherit;font-weight:900;font-size:14px;padding:13px;border-radius:var(--r-pill);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.prize .howto{margin-top:8px;width:100%;border:1px solid var(--border);background:#fff;color:var(--fg1);font-family:inherit;font-weight:700;font-size:12px;padding:10px;border-radius:var(--r-pill);cursor:pointer}
+.result .rbtn{width:250px;border:none;font-family:inherit;font-weight:700;font-size:14px;color:#fff;background:rgba(255,255,255,.16);padding:12px;border-radius:var(--r-pill);cursor:pointer}
+.confetti{position:absolute;width:9px;height:14px;top:-20px;z-index:45;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(840px) rotate(540deg);opacity:.2}}
+
+/* form overlay (before big gift) */
+.formov{position:absolute;inset:0;background:rgba(20,17,14,.6);display:none;align-items:flex-end;justify-content:center;z-index:48;backdrop-filter:blur(2px)}
+.formov.show{display:flex;animation:fade .25s}
+.formsheet{width:100%;max-height:92%;background:#fff;border-radius:20px 20px 0 0;overflow-y:auto;animation:slideup .3s cubic-bezier(.2,.9,.3,1)}
+.formsheet::-webkit-scrollbar{display:none}
+@keyframes slideup{from{transform:translateY(60px);opacity:.6}to{transform:none;opacity:1}}
+.formsheet .fhead{padding:18px 18px 8px;position:sticky;top:0;background:#fff}
+.formsheet .fhead .k{font-size:10px;font-weight:900;letter-spacing:.08em;color:var(--accent)}
+.formsheet .fhead h3{font-size:17px;font-weight:900;color:var(--navy);margin-top:4px}
+.formsheet .fhead p{font-size:11px;color:var(--fg2);margin-top:6px;line-height:1.5}
+.fform{padding:6px 18px 20px}
+.frow{margin-top:12px}
+.frow label{font-size:11px;font-weight:700;color:var(--fg1);display:block;margin-bottom:5px}
+.frow label .req{color:#d94b3b;font-size:10px;margin-left:4px}
+.frow input,.frow select{width:100%;border:1px solid var(--border);border-radius:var(--r-md);padding:11px 12px;font-family:inherit;font-size:13px;background:#fff;color:var(--fg1)}
+.frow input:focus,.frow select:focus{outline:none;border-color:var(--accent)}
+.fsubmit{margin-top:18px;width:100%;border:none;background:var(--accent);color:#fff;font-family:inherit;font-weight:900;font-size:15px;padding:14px;border-radius:var(--r-pill);cursor:pointer}
+.fnote{margin-top:10px;font-size:10px;color:var(--fg2);line-height:1.5;text-align:center}
+
+/* overview modal */
+.overlay{position:absolute;inset:0;background:rgba(20,17,14,.55);display:none;align-items:center;justify-content:center;padding:24px;z-index:50;backdrop-filter:blur(2px)}
+.overlay.show{display:flex;animation:fade .25s}
+.ovmodal{width:100%;max-width:300px;background:#fff;border-radius:18px;overflow:hidden;animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
+.ovmodal .hero{height:120px;background:linear-gradient(135deg,var(--accent),var(--mid));display:flex;align-items:center;justify-content:center;color:#fff;text-align:center;position:relative}
+.ovmodal .hero .big{font-size:15px;font-weight:900;line-height:1.4;text-shadow:0 1px 6px rgba(0,0,0,.15)}
+.ovmodal .hero .ph{position:absolute;bottom:6px;right:10px;font-size:9px;opacity:.7}
+.ovmodal .oc{padding:18px 18px 20px}
+.ovmodal .badge{display:inline-block;background:var(--accent-light);color:var(--deep);font-size:10px;font-weight:900;padding:3px 10px;border-radius:var(--r-pill)}
+.ovmodal h3{font-size:16px;font-weight:900;color:var(--navy);margin-top:8px}
+.ovmodal p{font-size:12px;color:var(--fg2);line-height:1.6;margin-top:8px}
+.ovmodal .period{font-size:11px;color:var(--fg1);font-weight:700;margin-top:10px;display:flex;align-items:center;gap:5px}
+.ovmodal .start{margin-top:16px;width:100%;border:none;background:var(--accent);color:#fff;font-family:inherit;font-weight:900;font-size:14px;padding:13px;border-radius:var(--r-pill);cursor:pointer}
+
+.toast{position:absolute;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;
+  background:var(--navy);color:#fff;font-size:12px;font-weight:700;padding:10px 18px;border-radius:var(--r-pill);
+  z-index:70;transition:all .3s;white-space:nowrap;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.tabbar{flex:0 0 auto;display:flex;background:var(--white);border-top:1px solid var(--border);padding:6px 4px 22px}
+.tab{flex:1;background:none;border:none;font-family:inherit;color:var(--gray);cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;font-size:10px;font-weight:700;position:relative}
+.tab.active{color:var(--accent)}
+.tab .n-badge{position:absolute;top:2px;right:calc(50% - 22px);width:8px;height:8px;border-radius:50%;background:var(--gold);display:none}
+.tab.has-new .n-badge{display:block}
+
+/* story panel (client-facing) */
+.panel{max-width:640px}
+.panel .p-eyebrow{font-size:11px;letter-spacing:.12em;color:var(--accent);font-weight:700}
+.panel h2{font-size:20px;font-weight:900;color:var(--navy);margin-top:6px}
+.panel .lead{font-size:13px;color:var(--fg2);margin-top:10px;line-height:1.7}
+.flow{margin-top:22px;display:flex;flex-direction:column;gap:0}
+.step{display:flex;gap:14px;position:relative;padding-bottom:22px}
+.step:not(:last-child)::before{content:"";position:absolute;left:17px;top:38px;bottom:0;width:2px;background:var(--accent-light)}
+.step .num{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;z-index:1}
+.step .txt h4{font-size:14px;font-weight:900;color:var(--navy)}
+.step .txt p{font-size:12px;color:var(--fg2);margin-top:4px;line-height:1.6}
+.feat{margin-top:6px;background:var(--accent-light);border-radius:var(--r-lg);padding:18px 20px}
+.feat h4{font-size:13px;font-weight:900;color:var(--deep)}
+.feat ul{margin:10px 0 0;padding-left:0;list-style:none}
+.feat li{font-size:12px;color:var(--deep);line-height:1.65;margin-bottom:7px;padding-left:20px;position:relative}
+.feat li::before{content:"";position:absolute;left:0;top:6px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.note-fine{margin-top:16px;font-size:11px;color:var(--gray);line-height:1.6}
+
+@media(max-width:480px){
+  body{padding:12px 8px 32px;overflow-x:hidden}
+  .stage{gap:18px}
+  .headline h1{font-size:21px}
+  .phone-wrap{position:static;width:100%;max-width:420px;margin:0 auto}
+  .phone{width:100%;height:auto;border-radius:34px;padding:8px}
+  .screen{height:auto;border-radius:26px}
+  .body{overflow:visible;flex:none}
+  .notch{width:118px;height:24px}
+  .result,.overlay,.formov{position:fixed}
+  .panel{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="headline">
+    <div class="eyebrow">工場お仕事ナビ SAMPLE ｜ 毎日ログインスタンプ ミニアプリ（デモ）</div>
+    <h1>毎日ひらく理由をつくり、ブロックを防ぐ</h1>
+    <p>毎日スタンプ → 節目でデジタルギフト。大きな特典の受け取り時にはフォーム入力で応募情報を取得。</p>
+    <span class="tag">スマホで動くモックです。「今日のスタンプを押す」を押してみてください（数値・金額・日数は設定変更できます）</span>
+  </div>
+
+  <!-- ===================== PHONE ===================== -->
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+        <div class="statusbar">
+          <span>9:41</span>
+          <span class="r"><i data-lucide="signal" width="15"></i><i data-lucide="wifi" width="15"></i><i data-lucide="battery-full" width="20"></i></span>
+        </div>
+        <div class="linebar">
+          <i data-lucide="chevron-left" class="back" width="22"></i>
+          <div class="app-ic">求</div>
+          <div class="ttl">毎日ログインスタンプ<small>工場お仕事ナビ SAMPLE</small></div>
+          <span class="info" onclick="openOverview()"><i data-lucide="info" width="18"></i></span>
+        </div>
+
+        <div class="body">
+          <!-- ===== STAMP (home) ===== -->
+          <div class="view active" id="view-stamp">
+            <div class="greet">
+              <div class="avatar">山</div>
+              <div><h2>山本さん、こんにちは</h2><p>今日もログインありがとうございます</p></div>
+            </div>
+
+            <div class="strip">
+              <div class="box"><span class="flame">🔥</span><div class="lbl">連続ログイン</div><div class="big" id="streakN">14<small>日</small></div></div>
+              <div class="box pt"><div class="lbl">たまったスタンプ</div><div class="big"><span id="stampN">14</span><small>/30</small></div></div>
+            </div>
+
+            <div class="card stampcard">
+              <h3>ログインスタンプカード</h3>
+              <div class="sub">毎日1回ログインでスタンプGET / 節目でデジタルギフト</div>
+              <div class="grid" id="grid"></div>
+              <button class="stamp-btn" id="stampBtn" onclick="pressStamp()">今日のスタンプを押す</button>
+              <div class="stamp-note" id="stampNote">今日のスタンプはまだ押せます</div>
+              <div class="setting-note">※ ギフトの日数・金額・回数は管理側で自由に設定できます</div>
+              <button class="demo-next" id="demoNext" onclick="nextDay()">（デモ）翌日にする →</button>
+            </div>
+
+            <div class="sec-ttl">ギフトまでの進捗</div>
+            <div class="card mile">
+              <div class="top"><h3>マイルストーン</h3><span class="cur" id="mileCur">14 / 30日</span></div>
+              <div class="track"><span id="mileBar" style="width:47%"></span></div>
+              <div class="ticks">
+                <div class="tick" id="tick15"><b>15日</b>500円</div>
+                <div class="tick" id="tick30"><b>30日</b>1,000円</div>
+              </div>
+              <div class="expl">15日で500円クーポン、30日で1,000円のデジタルギフトを進呈（金額・日数は設定変更可）。30日の特典は、受け取り前に応募フォームのご入力をお願いします。</div>
+            </div>
+          </div>
+
+          <!-- ===== GIFTS (history) ===== -->
+          <div class="view" id="view-gifts">
+            <div class="greet">
+              <div class="avatar">山</div>
+              <div><h2>獲得したギフト</h2><p>受け取ったギフトはいつでも開けます</p></div>
+            </div>
+            <div class="card" id="giftList"><div class="empty">まだギフトはありません。<br>スタンプをためて節目に到達しよう！</div></div>
+          </div>
+        </div><!-- /body -->
+
+        <!-- result overlay: gift URL -->
+        <div class="result" id="result">
+          <div class="rare">★ マイルストーン到達！ ★</div>
+          <div class="prize">
+            <div class="ptn" id="prizeName">15日達成 特典</div>
+            <h3 id="prizeTitle">500円クーポン</h3>
+            <div class="rtm" id="prizeRtm"><i data-lucide="check-circle" width="14"></i><span>応募情報を採用管理システム（RTM）に連携しました</span></div>
+            <button class="gifturl" id="prizeUrlBtn" onclick="openGiftUrl()"><i data-lucide="external-link" width="15"></i> 特典を受け取る</button>
+            <button class="howto" onclick="toast('使い方ページを開きます（デモ）')">使い方はこちら</button>
+          </div>
+          <button class="rbtn" onclick="closeResult()">閉じる</button>
+        </div>
+
+        <!-- form overlay: before big gift -->
+        <div class="formov" id="formov">
+          <div class="formsheet">
+            <div class="fhead">
+              <div class="k">特典の受け取りに必要です</div>
+              <h3 id="formTitle">応募フォームのご入力</h3>
+              <p>ご入力いただくと特典を受け取れます。内容は応募情報として採用管理システムに連携されます。</p>
+            </div>
+            <div class="fform">
+              <div class="frow"><label>お名前<span class="req">必須</span></label><input id="f_name" value="山本 太郎"></div>
+              <div class="frow"><label>ふりがな<span class="req">必須</span></label><input id="f_kana" value="やまもと たろう"></div>
+              <div class="frow"><label>郵便番号<span class="req">必須</span></label><input id="f_zip" value="812-0011" inputmode="numeric"></div>
+              <div class="frow"><label>都道府県<span class="req">必須</span></label>
+                <select id="f_pref"><option>福岡県</option><option>東京都</option><option>大阪府</option><option>愛知県</option><option>北海道</option></select></div>
+              <div class="frow"><label>市区町村<span class="req">必須</span></label><input id="f_city" value="福岡市博多区"></div>
+              <div class="frow"><label>番地・建物名・部屋番号<span class="req">必須</span></label><input id="f_addr" value="博多駅前1-2-3 ○○ビル301"></div>
+              <div class="frow"><label>電話番号<span class="req">必須</span></label><input id="f_tel" value="090-1234-5678" inputmode="tel"></div>
+              <div class="frow"><label>メールアドレス<span class="req">必須</span></label><input id="f_mail" value="taro.yamamoto@example.com" inputmode="email"></div>
+              <button class="fsubmit" onclick="submitForm()">入力して特典を受け取る</button>
+              <div class="fnote">＊本モックはデモです。初期値はサンプルで、そのまま送信できます。</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- overview modal -->
+        <div class="overlay" id="overview">
+          <div class="ovmodal">
+            <div class="hero"><div class="big">毎日ログインで<br>デジタルギフトを<br>ゲット！</div><span class="ph">キャンペーン画像（仮）</span></div>
+            <div class="oc">
+              <span class="badge">開催中</span>
+              <h3>毎日ログインスタンプ キャンペーン</h3>
+              <p>毎日ミニアプリをひらいてスタンプをためよう。15日・30日の節目で、デジタルギフトがもらえます。</p>
+              <div class="period"><i data-lucide="calendar" width="14"></i> 2026/12/1（火）〜 12/30（水）</div>
+              <button class="start" onclick="closeOverview()">はじめる</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+
+        <div class="tabbar">
+          <button class="tab active" data-view="stamp" onclick="go('stamp')"><i data-lucide="stamp" width="22"></i>スタンプ</button>
+          <button class="tab" data-view="gifts" onclick="go('gifts')"><span class="n-badge"></span><i data-lucide="gift" width="22"></i>ギフト</button>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--fg2);text-align:center;max-width:340px">
+      ※ 15日でクーポン、30日は応募フォーム入力後にギフトURLを受け取り。ヘッダーの ⓘ で概要を再表示。
+    </div>
+  </div>
+
+  <!-- ===================== STORY PANEL (client) ===================== -->
+  <div class="panel">
+    <div class="p-eyebrow">この施策でできること</div>
+    <h2>「毎日ログイン → スタンプ → 節目でギフト」</h2>
+    <p class="lead">毎日ミニアプリをひらく理由をつくり、ブロック率を下げてDAUを高める施策です。大きな特典の受け取り時にはフォーム入力をはさむことで、エンゲージと同時に応募情報の取得までつなげられます。</p>
+
+    <div class="flow">
+      <div class="step"><div class="num">1</div><div class="txt"><h4>初回だけ概要モーダル</h4><p>画像＋説明＋開催期間を提示。2回目以降は自動スキップし、ヘッダーの ⓘ からいつでも再表示。</p></div></div>
+      <div class="step"><div class="num">2</div><div class="txt"><h4>今日のスタンプを押す</h4><p>押印アニメ＋紙吹雪でフィードバック。1日1回、連続ログインとして積み上がる。</p></div></div>
+      <div class="step"><div class="num">3</div><div class="txt"><h4>節目でギフト（URL）を受け取り</h4><p>小さな特典（15日）はそのままURLを進呈。大きな特典（30日）は応募フォーム入力後にギフトURLがタップ可能に。</p></div></div>
+      <div class="step"><div class="num">4</div><div class="txt"><h4>応募情報を採用管理システムへ連携</h4><p>フォーム回答は MicoEngageAI 経由で採用管理システム（RTM）へWebhook連携。既存のLINE応募と同じ仕組みでデータ化。</p></div></div>
+    </div>
+
+    <div class="feat">
+      <h4>今回ご要望を反映したポイント</h4>
+      <ul>
+        <li>ギフトはコードではなく<b>URL方式</b>。事前にご用意いただいた必要数のURLを、到達順に消し込み。</li>
+        <li>大きな特典の受け取り前に<b>応募フォーム入力を必須</b>化 → 完了で <b>RTM連携</b>。</li>
+        <li>マイルストーンの<b>日数・金額・回数は自由に設定可能</b>（ポイント到達での付与にも対応）。</li>
+        <li>当日スタンプ未取得の方へ<b>リマインド配信</b>が可能。</li>
+        <li>キャンペーン期間はリッチメニューに導線を設置、残り日数に応じた<b>画像の出し分け</b>も可能。</li>
+      </ul>
+    </div>
+
+    <div class="note-fine">本モックはデモです。数値・ギフト金額・日数・住所等はサンプルです。ギフトURLはダミーで、タップしても遷移しません。</div>
+  </div>
+</div>
+
+<script>
+const TOTAL = 30;
+const MILES = {
+  15:{name:'15日達成 特典', title:'500円クーポン', form:false},
+  30:{name:'30日達成 特典', title:'デジタルギフト 1,000円', form:true},
+};
+const state = { day:14, stampedToday:false, gifts:[], pendingMile:null, currentUrl:null };
+
+function buildGrid(){
+  const g=document.getElementById('grid'); g.innerHTML='';
+  for(let i=1;i<=TOTAL;i++){
+    const c=document.createElement('div');
+    c.className='cell'+(state.day>=i?' done':'')+(MILES[i]?' mile':'');
+    c.id='cell'+i;
+    c.innerHTML=`<span class="d">${i}</span>`+(MILES[i]?`<span class="gift">🎁</span>`:'');
+    g.appendChild(c);
+  }
+}
+function refresh(){
+  document.getElementById('streakN').innerHTML=state.day+'<small>日</small>';
+  document.getElementById('stampN').textContent=state.day;
+  document.getElementById('mileCur').textContent=state.day+' / 30日';
+  document.getElementById('mileBar').style.width=Math.min(100,state.day/TOTAL*100)+'%';
+  [15,30].forEach(m=>document.getElementById('tick'+m).classList.toggle('on',state.day>=m));
+  renderGifts();
+  const btn=document.getElementById('stampBtn'), note=document.getElementById('stampNote'), dn=document.getElementById('demoNext');
+  if(state.day>=TOTAL){ btn.disabled=true; btn.textContent='30日コンプリート！'; note.textContent='全スタンプ達成！ありがとうございました🎉'; dn.classList.remove('show'); }
+  else if(state.stampedToday){ btn.disabled=true; btn.textContent='また明日 押せます'; note.textContent='今日のスタンプは押しました。明日もお待ちしています！'; dn.classList.add('show'); }
+  else { btn.disabled=false; btn.textContent='今日のスタンプを押す'; note.textContent='今日のスタンプはまだ押せます'; dn.classList.remove('show'); }
+}
+function pressStamp(){
+  if(state.stampedToday||state.day>=TOTAL) return;
+  state.day++; state.stampedToday=true;
+  const cell=document.getElementById('cell'+state.day);
+  cell.classList.add('done','pop');
+  setTimeout(()=>cell.classList.remove('pop'),600);
+  document.querySelector('.body').scrollTo({top:0,behavior:'smooth'});
+  if(MILES[state.day]){ setTimeout(()=>reachMilestone(state.day),480); }
+  else { toast('スタンプGET！ ＋1'); }
+  refresh();
+}
+function nextDay(){
+  if(state.day>=TOTAL) return;
+  state.stampedToday=false; refresh();
+  toast('翌日になりました（デモ）');
+}
+function reachMilestone(m){
+  state.pendingMile=m;
+  if(MILES[m].form){ openForm(m); }
+  else { showGift(m,false); }
+}
+function dummyUrl(m){
+  const s=Math.random().toString(36).slice(2,8).toUpperCase();
+  return 'https://gift.example/'+(m===30?'gift1000':'coupon500')+'/'+s;
+}
+function showGift(m, viaForm){
+  const M=MILES[m];
+  const url=dummyUrl(m);
+  state.currentUrl=url;
+  document.getElementById('prizeName').textContent=M.name;
+  document.getElementById('prizeTitle').textContent=M.title;
+  document.getElementById('prizeRtm').classList.toggle('show', !!viaForm);
+  document.getElementById('result').classList.add('show');
+  confetti();
+  state.gifts.unshift({m, title:M.title, url, d:dateStr(), viaForm:!!viaForm});
+  document.querySelector('.tab[data-view="gifts"]').classList.add('has-new');
+  lucide.createIcons();
+}
+function openGiftUrl(){ toast('特典ページへ遷移します（デモ）'); }
+function closeResult(){ document.getElementById('result').classList.remove('show'); toast('ギフトを受け取りました'); }
+
+function openForm(m){
+  document.getElementById('formTitle').textContent='応募フォームのご入力（'+MILES[m].name+'）';
+  document.getElementById('formov').classList.add('show');
+}
+function submitForm(){
+  const ids=['f_name','f_kana','f_zip','f_pref','f_city','f_addr','f_tel','f_mail'];
+  const empty=ids.some(id=>!document.getElementById(id).value.trim());
+  if(empty){ toast('未入力の項目があります'); return; }
+  document.getElementById('formov').classList.remove('show');
+  setTimeout(()=>{ showGift(state.pendingMile, true); }, 250);
+}
+
+function dateStr(){ const t=new Date(); return (t.getMonth()+1)+'/'+t.getDate(); }
+function renderGifts(){
+  const el=document.getElementById('giftList');
+  if(!state.gifts.length){ el.innerHTML='<div class="empty">まだギフトはありません。<br>スタンプをためて節目に到達しよう！</div>'; return; }
+  el.innerHTML=state.gifts.map(g=>`
+    <div class="gcard">
+      <div class="gi"><i data-lucide="gift" width="18"></i></div>
+      <div class="gt"><h4>${g.title}</h4><div class="sub">${g.d} 受け取り${g.viaForm?' ・ 応募情報連携済み':''}</div></div>
+      <button class="open" onclick="toast('特典ページへ遷移します（デモ）')"><i data-lucide="external-link" width="12"></i>開く</button>
+    </div>`).join('');
+  lucide.createIcons();
+}
+function go(v){
+  document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===v));
+  if(v==='gifts') document.querySelector('.tab[data-view="gifts"]').classList.remove('has-new');
+  document.querySelector('.body').scrollTop=0;
+}
+function openOverview(){ document.getElementById('overview').classList.add('show'); }
+function closeOverview(){ document.getElementById('overview').classList.remove('show'); }
+
+let toastT;
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2000);
+}
+function confetti(){
+  const colors=['#E7B94B','#FF6A2B','#FF9552','#FFE6D6','#fff'];
+  const wrap=document.getElementById('result');
+  for(let i=0;i<30;i++){
+    const c=document.createElement('span'); c.className='confetti';
+    c.style.left=Math.random()*100+'%'; c.style.background=colors[i%colors.length];
+    c.style.animationDuration=(1.2+Math.random()*1.2)+'s'; c.style.animationDelay=(Math.random()*.3)+'s';
+    wrap.appendChild(c); setTimeout(()=>c.remove(),2600);
+  }
+}
+
+buildGrid(); refresh();
+lucide.createIcons();
+setTimeout(openOverview,350);
+</script>
+</body>
+</html>
