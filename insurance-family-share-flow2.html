@@ -163,12 +163,8 @@
 
 <script>
 var CUST="はなさく生命",COMP="第一生命",OWNER="田中 太郎",FAM="佐藤 美咲";
-var myInsurances=[
-  {name:"はなさく医療（医療保険）",co:CUST,no:"HN-2024-0831",fee:"¥2,340",agent:"田中 誠",tel:"090-1234-5678",shared:true}];
-var members=[
-  {name:"田中 花子",init:"花",insurances:[{name:"はなさく医療（医療保険）",co:CUST,no:"HN-2022-0310",fee:"¥7,200",agent:"田中 誠",tel:"090-1234-5678"}]},
-  {name:"田中 健一",init:"健",insurances:[{name:"はなさく医療（医療保険）",co:CUST,no:"HN-2020-5521",fee:"¥5,400",agent:"田中 誠",tel:"090-1234-5678"},{name:"ジャスト（死亡保険）",co:COMP,no:"DL-2019-3092",fee:"¥9,800",agent:"佐藤 雅人",tel:"090-9876-5432"}]},
-  {name:"田中 節子",init:"節",insurances:[{name:"はなさくがん（がん保険）",co:CUST,no:"HN-2018-7744",fee:"¥3,600",agent:"田中 誠",tel:"090-1234-5678"}]}];
+var myInsurances=[];
+var members=[];
 var friends=["田中 花子","田中 一郎","田中 健一","佐藤 美咲"];
 var memberDetail={name:"田中 花子",init:"花",emergency:[{lbl:"保険会社の担当者",val:"田中 誠",green:false},{lbl:CUST,val:"0120-000-000",green:true}],insurances:[{name:"はなさく医療（医療保険）",co:CUST,no:"HN-2022-0310",fee:"¥7,200",agent:"田中 誠",tel:"090-1234-5678"}]};
 var ocrResult=[{lbl:"保険会社",val:CUST},{lbl:"保険種類",val:"はなさく収入保障（収入保障保険）"},{lbl:"証券番号",val:"HN-2025-0226"},{lbl:"月額保険料",val:"¥6,800"},{lbl:"契約者名",val:OWNER},{lbl:"担当者名",val:"佐藤 美咲"},{lbl:"担当者連絡先",val:"090-9876-5432"}];
@@ -201,7 +197,7 @@ var SB='<div class="statusbar"><span>9:41</span><span class="icons"><svg width="
 
 var state={tab:"home",page:null,famTab:"by",addStep:0,addMode:"manual",c1:false,editIdx:0,memberIdx:0,tutorialDone:false,tuStep:0,tuReplay:false,profileDone:false,pconsent:false,newIns:{},photo:false,inviteName:"",inviteConfirmed:false,pickerSel:[]};
 var famB={step:"line",notified:false,mtab:"family",mfamTab:"with",mpage:null,tuDone:false,tuStep:0,tuReplay:false,pname:"",ptel:"",pbd:"",consent:false};
-var sharedMembers=[["田中 花子","花"],["田中 一郎","郎"]];
+var sharedMembers=[];
 
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
 function toast(msg){toastAt("toast",msg);}
@@ -227,7 +223,8 @@ function screenHome(){
   return '<div class="head-row"><div><div class="h1">マイ保険</div><div class="sub">'+myInsurances.length+'件の保険を管理中</div></div>'
     +'<button class="btn-add" '+A("go","add")+'>'+I.plus+' 保険を追加</button></div>'
     +'<div class="note">保険情報の追加・編集・削除は契約者ご本人のみ行えます（右上「⋮」）。共有された家族は閲覧のみ可能です。</div>'
-    +myInsurances.map(insCard).join("");
+    +(myInsurances.length? myInsurances.map(insCard).join("")
+      : '<div class="card" style="text-align:center;color:var(--muted);padding:32px 16px"><div style="color:#cfd1d6;margin-bottom:8px;display:flex;justify-content:center">'+I.shield.replace('width="22" height="22"','width="34" height="34"')+'</div>まだ保険が登録されていません<div style="font-size:12.5px;margin-top:6px">右上の「保険を追加」から登録できます</div></div>');
 }
 function screenFamily(){
   var seg='<div class="seg"><button class="'+(state.famTab=="by"?"act":"")+'" '+A("setFam","by")+'>共有している</button>'
@@ -238,14 +235,16 @@ function screenFamily(){
     body+='<div class="row" style="background:var(--brand-soft)" '+A("go","invite")+'><div class="avatar" style="background:var(--brand)">'+I.plus+'</div>'
       +'<div><div class="nm" style="color:var(--brand)">共有相手を追加</div><div class="st" style="color:#b03a6b">LINEの友だちから選択</div></div><span class="chev">'+I.chev+'</span></div>';
     body+='<div class="section-label">共有中</div>';
-    body+=sharedMembers.map(function(a){
+    body+=(sharedMembers.length? sharedMembers.map(function(a){
       return '<div class="row" '+A("toast","共有設定を表示")+'><div class="avatar">'+a[1]+'</div>'
       +'<div><div class="nm">'+a[0]+'</div><div class="st">共有中</div></div>'
-      +'<button class="kebab" '+A("removeShare",a[0])+'>'+I.kebab+'</button></div>';}).join("");
+      +'<button class="kebab" '+A("removeShare",a[0])+'>'+I.kebab+'</button></div>';}).join("")
+      : '<div class="card" style="text-align:center;color:var(--muted);padding:22px 16px">共有している家族がまだいません</div>');
   } else {
     body+='<div class="note">あなたが契約者になった場合も、「共有している」情報と「共有されている」情報の両方をここで確認できます。</div>';
-    body+=members.map(function(m,i){return '<div class="row" '+A("openMember",String(i))+'><div class="avatar">'+m.init+'</div>'
-      +'<div><div class="nm">'+m.name+'</div><div class="st muted">'+m.insurances.length+'件の保険</div></div><span class="chev">'+I.chev+'</span></div>';}).join("");
+    body+=(members.length? members.map(function(m,i){return '<div class="row" '+A("openMember",String(i))+'><div class="avatar">'+m.init+'</div>'
+      +'<div><div class="nm">'+m.name+'</div><div class="st muted">'+m.insurances.length+'件の保険</div></div><span class="chev">'+I.chev+'</span></div>';}).join("")
+      : '<div class="card" style="text-align:center;color:var(--muted);padding:22px 16px">共有された保険がまだありません</div>');
   }
   return '<div class="head-row"><div class="h1">共有相手</div></div>'+seg+body;
 }
@@ -701,6 +700,7 @@ document.getElementById("pwbtn").addEventListener("click",ok);
 i.addEventListener("keydown",function(ev){if(ev.key==="Enter")ok();});
 setTimeout(function(){i.focus();},100);})();
 </script>
+
 
 
 
