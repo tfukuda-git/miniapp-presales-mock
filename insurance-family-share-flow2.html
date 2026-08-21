@@ -431,7 +431,7 @@ function setStep(s){state.addStep=s;render();}
 function setMode(m){state.addMode=m;state.addStep=0;render();}
 function addBack(){if(state.addStep>0){state.addStep--;render();}else{go(null);}}
 function toggleC(n){state.c1=!state.c1;if(!setCheck("ccb","cbtn",state.c1))render();}
-function registerDone(){if(!state.c1){toast("同意が必要です");return;}var n=state.newIns||{};myInsurances.push({name:n.name||"（保険の種類未入力）",co:n.co||"—",no:n.no||"—",fee:n.fee||"—",agent:n.agent||"—",tel:n.tel||"—",memo:n.memo||"",shared:false});toast("保険を登録しました");setTimeout(function(){goTab("home");},900);}
+function registerDone(){if(!state.c1){toast("同意が必要です");return;}var n=state.newIns||{};myInsurances.push({name:n.name||"（保険の種類未入力）",co:n.co||"—",no:n.no||"—",fee:n.fee||"—",agent:n.agent||"—",tel:n.tel||"—",memo:n.memo||"",shared:true});toast("保険を登録しました");setTimeout(function(){goTab("home");},900);}
 function saveEdit(){toast("変更を保存しました（家族には通知されません）");setTimeout(function(){goTab("home");},1000);}
 function deleteIns(){myInsurances.splice(state.editIdx,1);toast("保険を削除しました（家族には通知されません）");setTimeout(function(){goTab("home");},1000);}
 function removeShare(n){toast(n+"さんへの共有を停止しました（家族に通知されません）");}
@@ -699,6 +699,7 @@ document.getElementById("pwbtn").addEventListener("click",ok);
 i.addEventListener("keydown",function(ev){if(ev.key==="Enter")ok();});
 setTimeout(function(){i.focus();},100);})();
 </script>
+
 
 
 
