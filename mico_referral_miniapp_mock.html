@@ -149,6 +149,24 @@
     color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:8px;}
   .campaign-banner h1{font-size:19px;font-weight:800;line-height:1.4;margin-bottom:6px;}
   .campaign-banner .period{font-size:12px;color:#dfe2ff;margin-bottom:14px;}
+  .how-to-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+  .how-step{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;}
+  .how-step .how-icon{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .how-step .how-t{font-size:10.5px;font-weight:700;color:#fff;white-space:nowrap;}
+  .how-arrow{color:rgba(255,255,255,.55);font-size:14px;padding-top:12px;}
+  .how-to-caption{font-size:10.5px;color:#dfe2ff;text-align:center;margin-bottom:14px;line-height:1.6;
+    background:rgba(255,255,255,.1);border-radius:8px;padding:7px 10px;}
+  .how-to-caption b{color:#fff;}
+  .link-preview-card{background:#fff;border-radius:12px;overflow:hidden;cursor:pointer;
+    box-shadow:0 1px 2px rgba(0,0,0,.08);}
+  .link-preview-card .lp-thumb{height:88px;background:linear-gradient(135deg,var(--mico-accent),var(--mico-accent-deep));
+    display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff;}
+  .link-preview-card .lp-body{padding:10px 12px;}
+  .link-preview-card .lp-title{font-size:12.5px;font-weight:700;color:#1a1a1a;margin-bottom:3px;}
+  .link-preview-card .lp-desc{font-size:11px;color:#666;line-height:1.4;margin-bottom:5px;}
+  .link-preview-card .lp-domain{font-size:10px;color:#999;}
+  #screen-line-preview-incoming{background:linear-gradient(180deg,#8db0c8,#9cb9ce);}
   .reward-row{display:flex;gap:8px;}
   .reward-box{flex:1;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);
     border-radius:12px;padding:10px;text-align:center;}
@@ -391,7 +409,6 @@
         <!-- ============ CUSTOMER REGISTRATION (generic LINE OA feature) ============ -->
         <div class="screen" id="screen-customer-register">
           <div class="content">
-            <div class="info-banner neutral"><b>LINE公式アカウント標準機能</b>紹介キャンペーン専用ではなく、新規ご登録時に共通で表示される情報登録フォームです。</div>
             <div class="q-title">お客様情報のご登録</div>
             <div class="q-sub">今後のご案内のため、いくつか情報のご登録をお願いいたします。</div>
             <div class="form-row2">
@@ -416,6 +433,16 @@
               <span class="tag">実施中</span>
               <h1>ご紹介キャンペーン</h1>
               <div class="period">2026年7月1日〜9月30日</div>
+
+              <div class="how-to-row">
+                <div class="how-step"><div class="how-icon">🔗</div><div class="how-t">①紹介する</div></div>
+                <div class="how-arrow">→</div>
+                <div class="how-step"><div class="how-icon">💬</div><div class="how-t">②ご相談</div></div>
+                <div class="how-arrow">→</div>
+                <div class="how-step"><div class="how-icon">🎁</div><div class="how-t">③特典GET</div></div>
+              </div>
+              <div class="how-to-caption">友だちが<b>無料相談に進んだ時点</b>で、お二人とも特典の対象になります</div>
+
               <div class="reward-row">
                 <div class="reward-box"><div class="who">紹介した方に</div><div class="amount">3,000<span>円分</span></div></div>
                 <div class="reward-box"><div class="who">紹介された方に</div><div class="amount">3,000<span>円分</span></div></div>
@@ -453,7 +480,7 @@
               ・特典（Amazonギフト）はご相談月の翌々月末までにメールでお送りします
             </div>
 
-            <span class="link-text" onclick="goTo('friend-landing')">→ 紹介された方の画面イメージを見る（プレビュー）</span>
+            <span class="link-text" onclick="goTo('line-preview-incoming')">→ 送信後の相手側の画面イメージを見る（プレビュー）</span>
           </div>
         </div>
 
@@ -524,6 +551,35 @@
             <div class="q-title" id="hd-name">田中 様</div>
             <div class="q-sub" id="hd-date">2026/7/3 ご紹介</div>
             <div class="timeline" id="hd-timeline"></div>
+          </div>
+        </div>
+
+        <!-- ============ RECIPIENT'S LINE TALK PREVIEW (after method 1 share) ============ -->
+        <div class="screen" id="screen-line-preview-incoming">
+          <div class="content">
+            <div class="line-date-pill">今日</div>
+            <div class="line-msg-row">
+              <div class="line-avatar">山</div>
+              <div class="line-msg-group">
+                <div class="line-name">山田 太郎</div>
+                <div class="line-bubble">この前話してた不動産の相談、良かったら見てみて😊</div>
+                <div class="line-time">10:15</div>
+              </div>
+            </div>
+            <div class="line-msg-row">
+              <div class="line-avatar">山</div>
+              <div class="line-msg-group" style="max-width:82%;">
+                <div class="link-preview-card" onclick="goTo('friend-landing')">
+                  <div class="lp-thumb">🏠</div>
+                  <div class="lp-body">
+                    <div class="lp-title">Mico不動産 ご紹介キャンペーン</div>
+                    <div class="lp-desc">ご相談で3,000円分のAmazonギフトプレゼント</div>
+                    <div class="lp-domain">liff.line.me</div>
+                  </div>
+                </div>
+                <div class="line-time">10:15</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -691,6 +747,11 @@
 let stack = ['home'];
 let justCompletedReferral = false;
 let registered = false;
+let currentSheetTitle = 'Mico不動産 ご紹介キャンペーン';
+let currentSheetHost = 'liff.line.me/mico-fudousan';
+const headerOverrides = {
+  'line-preview-incoming': { title: '山田 太郎', host: 'LINE' }
+};
 
 /* ---------- LINE chat: staged bot messages ---------- */
 function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
@@ -735,8 +796,10 @@ function openSheetGeneric(target, opts){
   overlay.classList.add('show');
   setTimeout(()=>{
     overlay.classList.remove('show');
-    document.getElementById('liffTitle').textContent = opts.title || 'Mico不動産';
-    document.getElementById('liffHost').textContent = opts.host || 'liff.line.me/mico-fudousan';
+    currentSheetTitle = opts.title || 'Mico不動産';
+    currentSheetHost = opts.host || 'liff.line.me/mico-fudousan';
+    document.getElementById('liffTitle').textContent = currentSheetTitle;
+    document.getElementById('liffHost').textContent = currentSheetHost;
     const sheet = document.getElementById('miniappSheet');
     sheet.classList.add('open');
     stack = [target];
@@ -833,6 +896,9 @@ function afterNav(id){
   document.getElementById('nav-history').classList.toggle('active', id==='history-list');
   const leftBtn = document.getElementById('liffLeftBtn');
   leftBtn.textContent = stack.length>1 ? '‹' : '✕';
+  const ov = headerOverrides[id];
+  document.getElementById('liffTitle').textContent = ov ? ov.title : currentSheetTitle;
+  document.getElementById('liffHost').textContent = ov ? ov.host : currentSheetHost;
   fixLayout();
 }
 
@@ -856,7 +922,7 @@ function toggleNativeFriend(el){
 }
 function sendToFriends(){
   showToast('友だちにリンクを送信しました');
-  setTimeout(()=>resetTo('home'), 900);
+  setTimeout(()=>goTo('line-preview-incoming'), 900);
 }
 
 /* ---------- zip lookup (method: friend self-entry) ---------- */
