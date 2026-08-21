@@ -562,7 +562,7 @@
               <div class="line-avatar">山</div>
               <div class="line-msg-group">
                 <div class="line-name">山田 太郎</div>
-                <div class="line-bubble">この前話してた不動産の相談、良かったら見てみて😊</div>
+                <div class="line-bubble">この前話してた賃貸のお部屋探し、良かったら見てみて😊</div>
                 <div class="line-time">10:15</div>
               </div>
             </div>
@@ -588,17 +588,17 @@
           <div class="content">
             <div class="friend-hero">
               <div class="from">👤 <b>山田 様</b>からのご紹介です</div>
-              <h2>不動産のご相談で<br>3,000円分のAmazonギフトが<br>もらえます</h2>
+              <h2>賃貸のご相談で<br>3,000円分のAmazonギフトが<br>もらえます</h2>
               <div class="amt">3,000円分</div>
             </div>
             <div class="section-title">こんなご相談を承っています</div>
             <div class="method-card" style="cursor:default;">
               <div class="icon-circle">🏠</div>
-              <div><div class="m-title">売却・購入のご相談</div><div class="m-desc">経験豊富な担当者が無料で査定・ご提案</div></div>
+              <div><div class="m-title">お部屋探しのご相談</div><div class="m-desc">経験豊富な担当者がご希望条件に合うお部屋をご提案</div></div>
             </div>
             <div class="method-card" style="cursor:default;">
               <div class="icon-circle">📦</div>
-              <div><div class="m-title">空き家・相続のご相談</div><div class="m-desc">実家じまい等もお気軽にご相談ください</div></div>
+              <div><div class="m-title">空室のご相談</div><div class="m-desc">オーナー様の入居者募集もお気軽にご相談ください</div></div>
             </div>
             <button class="btn-primary" onclick="goTo('friend-step1')">無料相談を申し込む</button>
           </div>
@@ -666,21 +666,30 @@
             <div class="form-group">
               <label>ご要望</label>
               <div class="chip-group" id="fr-want-chips">
-                <div class="chip" onclick="selectChip(this,'fr-want-chips');toggleFriendAddr(this.textContent)">購入</div>
-                <div class="chip" onclick="selectChip(this,'fr-want-chips');toggleFriendAddr(this.textContent)">売却</div>
+                <div class="chip" onclick="selectChip(this,'fr-want-chips');toggleFriendAddr(this.textContent)">お部屋探し</div>
+                <div class="chip" onclick="selectChip(this,'fr-want-chips');toggleFriendAddr(this.textContent)">空室のご相談</div>
               </div>
             </div>
             <div class="form-group">
               <label>種別（任意）</label>
               <div class="chip-group" id="fr-type-chips">
                 <div class="chip" onclick="selectChip(this,'fr-type-chips')">マンション</div>
-                <div class="chip" onclick="selectChip(this,'fr-type-chips')">土地</div>
+                <div class="chip" onclick="selectChip(this,'fr-type-chips')">アパート</div>
                 <div class="chip" onclick="selectChip(this,'fr-type-chips')">戸建</div>
                 <div class="chip" onclick="selectChip(this,'fr-type-chips')">その他</div>
               </div>
             </div>
+            <div class="form-group">
+              <label>ご希望の時期（任意）</label>
+              <div class="chip-group" id="fr-timing-chips">
+                <div class="chip" onclick="selectChip(this,'fr-timing-chips')">すぐにでも</div>
+                <div class="chip" onclick="selectChip(this,'fr-timing-chips')">1ヶ月以内</div>
+                <div class="chip" onclick="selectChip(this,'fr-timing-chips')">3ヶ月以内</div>
+                <div class="chip" onclick="selectChip(this,'fr-timing-chips')">まだ検討中</div>
+              </div>
+            </div>
             <div class="form-group" id="friend-addr-block" style="display:none;">
-              <label>物件の郵便番号（売却の場合）</label>
+              <label>物件の郵便番号（空室のご相談の場合）</label>
               <div class="zip-row">
                 <input type="text" id="fr-zip" placeholder="例）150-0002" maxlength="8"
                   oninput="lookupZip('fr-zip','fr-addr-result')">
@@ -690,7 +699,7 @@
             </div>
             <div class="form-group">
               <label>ご要望の詳細（任意）</label>
-              <textarea id="fr-free" placeholder="例）近いうちに売却を検討しています"></textarea>
+              <textarea id="fr-free" placeholder="例）来月から一人暮らしを始めたいと考えています"></textarea>
             </div>
             <button class="btn-primary" onclick="fillFriendConfirm();goTo('friend-confirm')">確認画面へ</button>
           </div>
@@ -710,7 +719,7 @@
               <div class="confirm-row"><span class="k">お名前</span><span class="v" id="fcf-name">鈴木 一郎 様</span></div>
               <div class="confirm-row"><span class="k">電話番号</span><span class="v" id="fcf-phone">080-9876-5432</span></div>
               <div class="confirm-row"><span class="k">メール</span><span class="v" id="fcf-email">ichiro@example.com</span></div>
-              <div class="confirm-row"><span class="k">ご要望</span><span class="v" id="fcf-want">売却</span></div>
+              <div class="confirm-row"><span class="k">ご要望</span><span class="v" id="fcf-want">お部屋探し</span></div>
             </div>
             <div class="consent-row">
               <input type="checkbox" id="consent3" onchange="toggleBtn('btn-fconfirm','consent3')">
@@ -911,7 +920,7 @@ function toggleBtn(btnId, checkboxId){
   document.getElementById(btnId).disabled = !document.getElementById(checkboxId).checked;
 }
 function toggleFriendAddr(want){
-  document.getElementById('friend-addr-block').style.display = (want==='売却') ? 'block' : 'none';
+  document.getElementById('friend-addr-block').style.display = (want==='空室のご相談') ? 'block' : 'none';
 }
 
 /* ---------- native friend picker (method 1) ---------- */
