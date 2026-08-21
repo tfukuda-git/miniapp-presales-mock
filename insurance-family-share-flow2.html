@@ -297,13 +297,13 @@ function screenAdd(){
   var body="";
   if(s==0){
     var ni=state.newIns||{};
-    body='<div class="center-title"><h2>保険情報を入力する</h2><p>保険会社名は必須です。証券を見ながら手入力で登録できます</p></div>'
+    body='<div class="center-title"><h2>保険情報を入力する</h2><p>保険会社名・連絡先は必須です。証券を見ながら手入力で登録できます</p></div>'
       +formFieldId("f_co","保険会社（必須）","例）はなさく生命",ni.co,75)
       +formFieldId("f_name","保険の種類","例）はなさく医療（医療保険）",ni.name,75)
       +formFieldId("f_no","証券番号（任意）","例）HN-2024-0831",ni.no,80)
       +formFieldId("f_fee","保険料","例）月額 ¥6,800 / 年払い など",ni.fee,75)
-      +formFieldId("f_agent","担当者名","例）佐藤 美咲",ni.agent,75)
-      +formFieldId("f_tel","連絡先","例）担当者または請求窓口の電話番号",ni.tel,75)
+      +formFieldId("f_agent","担当者名（任意）","例）佐藤 美咲",ni.agent,75)
+      +formFieldId("f_tel","連絡先（必須）","例）担当者または請求窓口の電話番号",ni.tel,75)
       +formFieldId("f_memo","メモ（任意）","例）更新時期・受取人・自分用のメモ など",ni.memo,200)
       +'<div style="color:#98a2b3;font-size:12px;margin:-4px 2px 8px;line-height:1.5">※メモはご自身用です。ご家族には共有されません。</div>'
       +'<button class="btn btn-primary btn-block" style="margin-top:4px" '+A("confirmManual")+'>入力内容を確認する</button>'
@@ -415,7 +415,7 @@ function screenProfile(){
 function setCheck(cbId,btnId,on){var cb=document.getElementById(cbId);if(cb){cb.className="cb"+(on?" on":"");cb.innerHTML=on?I.check:"";}var b=document.getElementById(btnId);if(b){b.style.opacity=on?1:.45;}return !!cb;}
 function toggleP(){state.pconsent=!state.pconsent;if(!setCheck("ppcb","ppbtn",state.pconsent))render();}
 function saveProfile(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var nm=g("p_name");if(!nm){toast("お名前を入力してください");return;}if(!state.pconsent){toast("プライバシーポリシー・利用規約への同意が必要です");return;}state.pname=nm;state.ptel=g("p_tel");state.pbd=g("p_bd");state.profileDone=true;toast("プロフィールを登録しました");render();}
-function confirmManual(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var co=g("f_co");if(!co){toast("保険会社を入力してください");return;}state.newIns={co:co,name:g("f_name"),no:g("f_no"),fee:g("f_fee"),agent:g("f_agent"),tel:g("f_tel"),memo:g("f_memo")};state.addStep=1;render();}
+function confirmManual(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var co=g("f_co");if(!co){toast("保険会社を入力してください");return;}var tel=g("f_tel");if(!tel){toast("連絡先を入力してください");return;}state.newIns={co:co,name:g("f_name"),no:g("f_no"),fee:g("f_fee"),agent:g("f_agent"),tel:tel,memo:g("f_memo")};state.addStep=1;render();}
 function attachPhoto(){state.photo=true;toast("証券写真を添付しました（自動入力は今後対応）");render();}
 function tuNext(){if((state.tuStep||0)<2){state.tuStep=(state.tuStep||0)+1;render();}else{tuFinish();}}
 function tuFinish(){if(state.tuReplay){state.tuReplay=false;state.tuStep=0;state.page=null;state.tab="settings";}else{state.tutorialDone=true;state.tuStep=0;}render();}
@@ -700,6 +700,7 @@ document.getElementById("pwbtn").addEventListener("click",ok);
 i.addEventListener("keydown",function(ev){if(ev.key==="Enter")ok();});
 setTimeout(function(){i.focus();},100);})();
 </script>
+
 
 
 
