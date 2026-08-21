@@ -94,6 +94,7 @@ tr:last-child td{border-bottom:none}
     <nav class="nav" id="nav">
       <a data-act="nav" data-v="dash" class="on">📊 <span>ダッシュボード</span></a>
       <a data-act="nav" data-v="members">👤 <span>契約者一覧</span></a>
+      <a data-act="nav" data-v="policies">🛡 <span>マイ保険</span></a>
       <a data-act="nav" data-v="shares">👨‍👩‍👧 <span>共有関係</span></a>
     </nav>
     <div class="navlab">その他</div>
@@ -120,24 +121,34 @@ tr:last-child td{border-bottom:none}
 /* ===== sample data ===== */
 var stats={contractors:1284, policies:2761, shares:642, families:598, thisMonth:143, sharedMembers:840, noShareMembers:444};
 var insurers=[["はなさく生命",520],["第一生命",312],["日本生命",268],["ソニー生命",190],["メットライフ生命",151],["その他",320]];
+/* csv1：契約者ベース（1行=1契約者） */
 var members=[
- {uid:"U-1001",name:"田中 太郎",tel:"090-1234-5678",bd:"1975-03-20",reg:"2026-09-14",p:3,sp:2},
- {uid:"U-1002",name:"佐藤 花子",tel:"080-2222-3333",bd:"1982-07-02",reg:"2026-09-15",p:1,sp:1},
- {uid:"U-1003",name:"鈴木 一郎",tel:"090-9999-0000",bd:"1968-11-11",reg:"2026-09-16",p:5,sp:0},
- {uid:"U-1004",name:"高橋 美咲",tel:"070-4444-5555",bd:"1990-01-30",reg:"2026-09-17",p:2,sp:1}
+ {uid:"U-1001",mico:"1a4iUAZtRZiFRIy2zRq1tg",name:"田中 花子",tel:"090-1234-5678",bd:"1985-03-12",start:"2026-08-10",upd:"2026-08-17",p:3,sp:2,status:"シェア完了"},
+ {uid:"U-1002",mico:"2b5jVBaugSjGSJz3aRr2uh",name:"佐藤 太郎",tel:"080-3333-4444",bd:"1978-11-05",start:"2026-08-12",upd:"2026-08-18",p:2,sp:1,status:"シェア完了"},
+ {uid:"U-1003",mico:"3c6kWCbvhTkHTKa4bSs3vi",name:"鈴木 一郎",tel:"090-5555-6666",bd:"1990-07-21",start:"2026-08-14",upd:"2026-08-14",p:0,sp:0,status:"プロフィール登録完了"},
+ {uid:"U-1004",mico:"4d7lXDcwiUlIULb5cTt4wj",name:"高橋 美咲",tel:"070-1111-2222",bd:"1982-09-30",start:"2026-08-15",upd:"2026-08-16",p:1,sp:0,status:"マイ保険登録完了"}
 ];
-/* 共有関係：続柄・ステータス・共有保険数は現フェーズ非対応のため保持しない */
+/* csv3：マイ保険ベース（1行=1保険） */
+var policies=[
+ {uid:"U-1001",name:"田中 花子",insurer:"はなさく生命",kind:"はなさく医療（医療保険）",no:"HN-2024-0831",sdate:"2024-08-31",edate:"",fee:"2340",agent:"田中 誠",tel:"090-1234-5678",memo:"",photos:1,shared:"TRUE"},
+ {uid:"U-1001",name:"田中 花子",insurer:"第一生命",kind:"",no:"DL-2023-5567",sdate:"2023-05-01",edate:"2043-05-01",fee:"8500",agent:"",tel:"",memo:"更新は毎年4月",photos:0,shared:"FALSE"},
+ {uid:"U-1001",name:"田中 花子",insurer:"ソニー生命",kind:"変額個人年金",no:"SNY-2022-1180",sdate:"2022-11-18",edate:"2042-11-18",fee:"15000",agent:"佐藤 誠一",tel:"03-1234-5678",memo:"",photos:2,shared:"TRUE"},
+ {uid:"U-1002",name:"佐藤 太郎",insurer:"明治安田生命",kind:"じぶんの積立",no:"MY-2025-0042",sdate:"2025-01-04",edate:"2035-01-04",fee:"10000",agent:"",tel:"",memo:"",photos:0,shared:"FALSE"},
+ {uid:"U-1002",name:"佐藤 太郎",insurer:"かんぽ生命",kind:"新ながいきくん",no:"KP-2021-7788",sdate:"2021-07-08",edate:"2051-07-08",fee:"3200",agent:"鈴木 一郎",tel:"080-9999-8888",memo:"",photos:1,shared:"TRUE"}
+];
+/* csv2：共有関係ベース（1行=1共有関係）。招待中は相手UID未確定（LINE仕様） */
 var shares=[
- {cuid:"U-1001",cname:"田中 太郎",fuid:"F-2001",fname:"田中 花子",date:"2026-09-20"},
- {cuid:"U-1001",cname:"田中 太郎",fuid:"F-2002",fname:"田中 一郎",date:"2026-09-21"},
- {cuid:"U-1002",cname:"佐藤 花子",fuid:"F-2003",fname:"佐藤 健",date:"2026-09-22"},
- {cuid:"U-1004",cname:"高橋 美咲",fuid:"F-2004",fname:"高橋 節子",date:"2026-09-23"}
+ {suid:"U-1001",sname:"田中 花子",tuid:"U-1002",tname:"佐藤 太郎",status:"有効",cnt:2,date:"2026-08-15 10:30"},
+ {suid:"U-1001",sname:"田中 花子",tuid:"U-1004",tname:"高橋 美咲",status:"有効",cnt:2,date:"2026-08-16 11:05"},
+ {suid:"U-1002",sname:"佐藤 太郎",tuid:"U-1001",tname:"田中 花子",status:"有効",cnt:1,date:"2026-08-16 14:20"},
+ {suid:"U-1001",sname:"田中 花子",tuid:"",tname:"（招待中・未確定）",status:"招待中",cnt:0,date:"2026-08-18 09:00"},
+ {suid:"U-1002",sname:"佐藤 太郎",tuid:"U-1003",tname:"鈴木 一郎",status:"解除",cnt:0,date:"2026-08-10 08:00"}
 ];
 
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");}
 function el(id){return document.getElementById(id);}
 function toast(m){var t=el("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("show");},2400);}
-var titles={dash:["ダッシュボード","登録・共有状況のサマリ"],members:["契約者一覧","契約者を検索・確認、CSV出力"],shares:["共有関係","誰が誰に共有したか、CSV出力"]};
+var titles={dash:["ダッシュボード","登録・共有状況のサマリ"],members:["契約者一覧","1行=1契約者。CSV出力（契約者ベース／csv1）"],policies:["マイ保険","1行=1保険。CSV出力（マイ保険ベース／csv3）"],shares:["共有関係","1行=1共有関係。CSV出力（共有関係ベース／csv2）"]};
 
 function table(head,rows,numCols){
   return '<div class="tblwrap"><table><thead><tr>'+head.map(function(h,i){return '<th class="'+((numCols&&numCols.indexOf(i)>=0)?"num":"")+'">'+esc(h)+'</th>';}).join("")+'</tr></thead><tbody>'
@@ -154,7 +165,7 @@ function viewDash(){
    +'<span><span class="dot" style="background:#e9e6ee"></span>未共有 <b>'+ns.toLocaleString()+'</b></span>'
    +'<span class="small">共有された家族 '+stats.families.toLocaleString()+' 名</span></div></div>';
   return '<div class="tag-taki">たたき版 v0.2 ・ サンプルデータ</div>'
-   +'<div class="note">7/25FB反映：既存データで算出できる項目のみ表示。更新時期・担当者退職・承認待ちなど<b>入力/ステータスに依存する指標は現フェーズでは非表示</b>。表示項目が定義されればダッシュボードは実装可能（畑さん）。</div>'
+   +'<div class="note">CSV出力は<b>契約者ベース（csv1）／マイ保険ベース（csv3）／共有関係ベース（csv2）</b>の3軸で確定。各画面から該当CSVをダウンロードできます。共有ステータス・共有保険数も出力対象（8/19方針）。※招待中の共有は相手UIDがLINE仕様上未確定。</div>'
    +'<div class="kpis">'
    +kpi("登録契約者数",stats.contractors.toLocaleString(),"+"+stats.thisMonth+" 今月")
    +kpi("登録保険（マイ保険）",stats.policies.toLocaleString(),"1人あたり 2.2件")
@@ -165,40 +176,54 @@ function viewDash(){
    +'<div class="panel"><h3>保険会社別の登録件数</h3><div class="bars">'+bars+'</div><div class="small" style="margin-top:8px">※ 他社証券も含む。自社（はなさく生命）シェアの把握に利用。</div></div>'
    +'<div class="panel"><h3>共有状況</h3>'+donut+'</div>'
    +'</div>'
-   +'<div class="panel"><h3>直近の登録</h3>'+table(["契約者UID","氏名","登録日","マイ保険登録数","共有保険数"],members.map(function(m){return [m.uid,m.name,m.reg,m.p,m.sp];}),[3,4])+'</div>';
+   +'<div class="panel"><h3>直近の登録</h3>'+table(["契約者UID","氏名","ミニアプリ起動日","マイ保険登録数","共有中の保険数"],members.map(function(m){return [m.uid,m.name,m.start,m.p,m.sp];}),[3,4])+'</div>';
 }
 function kpi(l,v,d){return '<div class="kpi"><div class="l">'+l+'</div><div class="v">'+v+'</div><div class="d">'+d+'</div></div>';}
 
 function viewMembers(){
-  return '<div class="tag-taki">たたき版 v0.2</div>'
+  return '<div class="tag-taki">たたき版 v0.3（csv整理反映）</div>'
    +'<div class="toolbar">'
-   +'<div class="field grow"><label>検索</label><input placeholder="契約者UID・氏名・電話で検索…"></div>'
-   +'<div class="field"><label>保険会社（フィルタ）</label><select><option>すべて</option><option>はなさく生命</option><option>第一生命</option><option>日本生命</option><option>他社のみ</option></select></div>'
+   +'<div class="field grow"><label>検索</label><input placeholder="契約者UID・micoID・氏名・電話で検索…"></div>'
+   +'<div class="field"><label>ステータス</label><select><option>すべて</option><option>未登録</option><option>プロフィール登録完了</option><option>マイ保険登録完了</option><option>シェア完了</option></select></div>'
    +'<div class="field"><label>共有</label><select><option>すべて</option><option>共有あり</option><option>未共有</option></select></div>'
-   +'<button class="btn btn-primary" data-act="dl" data-v="契約者ベース">⬇️ CSVダウンロード</button>'
+   +'<button class="btn btn-primary" data-act="dl" data-v="契約者ベース（csv1）">⬇️ CSVダウンロード</button>'
    +'</div>'
-   +'<div class="panel" style="padding:0">'+table(["契約者UID","氏名","電話番号","生年月日","登録日","マイ保険登録数","共有保険数"],members.map(function(m){return [m.uid,m.name,m.tel,m.bd,m.reg,m.p,m.sp];}),[5,6])+'</div>'
-   +'<div class="fmt"><b>CSV出力項目（契約者ベース）</b> ／ 1行=1保険（契約者×マイ保険）'
-   +'<div class="cols">'+cols([["契約者UID"],["氏名"],["電話番号"],["生年月日"],["登録日"],["保険会社"],["保険の種類"],["保険料"],["担当者名","opt"],["連絡先","opt"],["自由記入欄","opt"],["共有有無"]])+'</div>'
-   +'<div class="small" style="margin-top:6px">※ 保険会社ベースの一覧は本画面の「保険会社フィルタ」で代替（専用ページは廃止）。証券番号はOCR実装後に付与。</div></div>';
+   +'<div class="panel" style="padding:0">'+table(["契約者UID","micoID","氏名","電話番号","生年月日","ミニアプリ起動日","最終更新日","マイ保険登録数","共有中の保険数","ステータス"],members.map(function(m){return [m.uid,m.mico,m.name,m.tel,m.bd,m.start,m.upd,m.p,m.sp,m.status];}),[7,8])+'</div>'
+   +'<div class="fmt"><b>CSV出力項目（契約者ベース／csv1）</b> ／ 1行=1契約者'
+   +'<div class="cols">'+cols([["UID"],["micoID"],["契約者氏名"],["電話番号"],["生年月日"],["ミニアプリ起動日"],["最終更新日"],["マイ保険登録数"],["共有中の保険数"],["ステータス"]])+'</div>'
+   +'<div class="small" style="margin-top:6px">※ 保険会社での絞り込み・保険明細は「マイ保険」画面（csv3）へ。micoIDはDB未保存のためカラム追加が必要。</div></div>';
+}
+function viewPolicies(){
+  return '<div class="tag-taki">たたき版 v0.3（csv整理反映）</div>'
+   +'<div class="toolbar">'
+   +'<div class="field grow"><label>検索</label><input placeholder="契約者・保険会社・証券番号で検索…"></div>'
+   +'<div class="field"><label>保険会社（フィルタ）</label><select><option>すべて</option><option>はなさく生命</option><option>第一生命</option><option>ソニー生命</option><option>明治安田生命</option><option>かんぽ生命</option><option>他社のみ</option></select></div>'
+   +'<div class="field"><label>共有</label><select><option>すべて</option><option>共有ON</option><option>共有OFF</option></select></div>'
+   +'<button class="btn btn-primary" data-act="dl" data-v="マイ保険ベース（csv3）">⬇️ CSVダウンロード</button>'
+   +'</div>'
+   +'<div class="panel" style="padding:0">'+table(["契約者UID","契約者氏名","保険会社","保険の種類","証券番号","契約開始日","契約満了日","保険料(円)","担当者名","連絡先","メモ","証券写真枚数","証券写真URL(S3)","共有"],policies.map(function(p){return [p.uid,p.name,p.insurer,p.kind||"—",p.no,p.sdate,p.edate||"—",p.fee,p.agent||"—",p.tel||"—",p.memo||"—",p.photos,(p.photos>0?"s3://…/"+p.no+"/1.jpg":"—"),p.shared];}),[7,11])+'</div>'
+   +'<div class="fmt"><b>CSV出力項目（マイ保険ベース／csv3）</b> ／ 1行=1保険（ユーザ1：保険N）'
+   +'<div class="cols">'+cols([["UID"],["契約者氏名"],["保険会社"],["保険の種類"],["証券番号"],["契約開始日"],["契約満了日"],["保険料(円)"],["担当者名","opt"],["連絡先","opt"],["メモ","opt"],["証券写真枚数"],["証券写真URL(S3)"],["共有"]])+'</div>'
+   +'<div class="small" style="margin-top:6px">※ 証券写真URLはS3キー（公開URLは非掲載。閲覧は認証／署名付きURL経由）。保険証券情報の保存場所はセキュリティ要件を確認中。</div></div>';
 }
 function viewShares(){
-  return '<div class="tag-taki">たたき版 v0.2</div>'
+  return '<div class="tag-taki">たたき版 v0.3（csv整理反映）</div>'
    +'<div class="toolbar">'
-   +'<div class="field grow"><label>検索</label><input placeholder="契約者・共有先で検索…"></div>'
-   +'<button class="btn btn-primary" data-act="dl" data-v="共有された家族ベース">⬇️ CSVダウンロード</button>'
+   +'<div class="field grow"><label>検索</label><input placeholder="共有元・共有先で検索…"></div>'
+   +'<div class="field"><label>ステータス</label><select><option>すべて</option><option>有効</option><option>招待中</option><option>解除</option></select></div>'
+   +'<button class="btn btn-primary" data-act="dl" data-v="共有関係ベース（csv2）">⬇️ CSVダウンロード</button>'
    +'</div>'
-   +'<div class="panel" style="padding:0">'+table(["契約者","共有先","共有開始日"],shares.map(function(s){return [s.cname+"（"+s.cuid+"）",s.fname+"（"+s.fuid+"）",s.date];}))+'</div>'
-   +'<div class="fmt"><b>CSV出力項目（共有された家族ベース）</b> ／ 1行=1共有関係（誰が誰に共有したか）'
-   +'<div class="cols">'+cols([["契約者UID"],["契約者氏名"],["共有先UID"],["共有先氏名"],["共有開始日"]])
-   +'<span class="col off">続柄</span><span class="col off">ステータス</span><span class="col off">共有保険数</span></div>'
-   +'<div class="small" style="margin-top:6px">※ 「承認待ち」ステータスはLINE個人チャットを取得できず判定不可のため非表示。共有保険数は保険単位で共有先を選ぶ仕様ではないため一旦非対応。続柄は削除。</div></div>';
+   +'<div class="panel" style="padding:0">'+table(["共有元","共有先","ステータス","共有保険数","共有開始日時"],shares.map(function(s){return [s.sname+"（"+s.suid+"）",(s.tuid?s.tname+"（"+s.tuid+"）":s.tname),s.status,s.cnt,s.date];}),[3])+'</div>'
+   +'<div class="fmt"><b>CSV出力項目（共有関係ベース／csv2）</b> ／ 1行=1共有関係（誰が誰に共有したか）'
+   +'<div class="cols">'+cols([["共有元UID"],["共有元氏名"],["共有先UID"],["共有先氏名"],["共有ステータス"],["共有保険数"],["共有開始日時"]])
+   +'<span class="col off">続柄</span></div>'
+   +'<div class="small" style="margin-top:6px">※ ステータス（有効/招待中/解除）・共有保険数も出力対象。招待中は相手UID未確定（LINE個人チャット取得不可）。続柄は削除。</div></div>';
 }
 function cols(arr){return arr.map(function(c){return '<span class="col'+(c[1]?" opt":"")+'">'+esc(c[0])+'</span>';}).join("");}
 
 function render(v){
   var t=titles[v]||titles.dash; el("ttl").textContent=t[0]; el("tsub").textContent=t[1];
-  el("content").innerHTML = v==="members"?viewMembers() : v==="shares"?viewShares() : viewDash();
+  el("content").innerHTML = v==="members"?viewMembers() : v==="policies"?viewPolicies() : v==="shares"?viewShares() : viewDash();
   var links=document.querySelectorAll('#nav a'); for(var i=0;i<links.length;i++){links[i].classList.toggle("on", links[i].getAttribute("data-v")===v);}
   window.scrollTo(0,0);
 }
