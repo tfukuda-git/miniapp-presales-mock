@@ -353,11 +353,10 @@ function screenInvite(){
     +'<div style="width:30px;height:30px;border-radius:50%;background:#cfd3da;color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0">太</div>'
     +'<div style="max-width:82%">'
     +'<div style="font-size:11px;color:#fff;opacity:.92;margin-bottom:3px">'+esc(state.pname||OWNER)+'</div>'
-    +'<div style="background:#fff;border-radius:4px 12px 12px 12px;padding:8px 10px;font-size:12.5px;color:#1f2430;line-height:1.5">「家族あんしん共有」で保険情報を送ったよ。もしもの時のために確認しておいてね。</div>'
+    +'<div style="background:#fff;border-radius:4px 12px 12px 12px;padding:8px 10px;font-size:12.5px;color:#1f2430;line-height:1.5">'+esc(state.pname||OWNER)+'さんから、保険情報共有の招待が届いています。下のリンクを開いてご確認ください。</div>'
     +'<div style="background:#fff;border-radius:12px;margin-top:6px;overflow:hidden;border:1px solid #e7e9ef">'
-    +'<div style="padding:9px 11px;font-size:12px;font-weight:700;color:var(--brand);display:flex;align-items:center;gap:6px">'+I.shield.replace(/width="22" height="22"/,'width="13" height="13"')+' はなさく生命 家族あんしん共有</div>'
-    +'<div style="padding:0 11px 9px;font-size:11.5px;color:var(--ink2);line-height:1.5">'+esc(state.pname||OWNER)+'さんから保険情報の共有が届いています。内容の確認には友だち追加が必要です。</div>'
-    +'<div style="border-top:1px solid #eef1f6;padding:9px 11px;font-size:12px;font-weight:700;color:var(--brand)">内容を確認する ›</div>'
+    +'<div style="padding:9px 11px;font-size:12px;font-weight:700;color:var(--brand);display:flex;align-items:center;gap:6px">'+I.shield.replace(/width="22" height="22"/,'width="13" height="13"')+' 家族あんしん共有ミニアプリ</div>'
+    +'<div style="padding:0 11px 9px;font-size:11.5px;color:var(--ink2);line-height:1.5">リンクを開くにはこちらをタップ</div>'
     +'</div></div></div></div></div>'
     +'<div class="check-row" '+A("inviteToggle")+'><div id="ivcb" class="cb'+(state.inviteConfirmed?' on':'')+'">'+(state.inviteConfirmed?I.check:"")+'</div><div class="ctxt">上記の注意事項を確認しました</div></div>'
     +'<button id="ivbtn" class="btn btn-primary btn-block" style="opacity:'+(state.inviteConfirmed?1:.45)+'" '+A("openPicker")+'>LINEの友だちを選んで送る</button>';
@@ -462,11 +461,11 @@ function renderB(){
 function bLine(){
   function inMsg(t,card){return '<div class="msg"><div class="mic" style="background:#cfd3da;color:#fff;font-size:14px;font-weight:700">太</div><div class="wrap"><div class="who">'+OWNER+'</div><div class="bubble">'+t+'</div>'+(card||"")+'</div></div>';}
   function outMsg(t){return '<div class="msg out"><div class="wrap"><div class="bubble me">'+t+'</div></div></div>';}
-  var card='<div class="linkcard2"><div class="lc-top">'+I.shield+' はなさく生命 家族あんしん共有</div>'
-    +'<div class="lc-d">'+OWNER+'さんから保険情報の共有が届いています。内容の確認には友だち追加が必要です。</div>'
-    +'<div class="lc-btn" '+A("famGo","add")+'>内容を確認する ›</div></div>';
+  var card='<div class="linkcard2" '+A("famGo","add")+' style="cursor:pointer"><div class="lc-top">'+I.shield+' 家族あんしん共有ミニアプリ</div>'
+    +'<div class="lc-d">リンクを開くにはこちらをタップ</div>'
+    +'<div class="lc-btn">開く ›</div></div>';
   var shareMsg = famB.notified
-    ? inMsg("ところで、この前話してた保険の件、「家族あんしん共有」ってアプリで送っておくね。もしもの時のために、確認しておいてくれると安心だよ。",card)
+    ? inMsg(OWNER+"さんから、保険情報共有の招待が届いています。下のリンクを開いてご確認ください。",card)
     : "";
   var hint = famB.notified ? "" : '<div class="daystamp" style="margin-top:10px"><span>契約者が「共有相手を追加」で招待すると、ここに共有メッセージが届きます</span></div>';
   return SB
@@ -700,6 +699,7 @@ document.getElementById("pwbtn").addEventListener("click",ok);
 i.addEventListener("keydown",function(ev){if(ev.key==="Enter")ok();});
 setTimeout(function(){i.focus();},100);})();
 </script>
+
 
 
 
