@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Micoクーポン｜プロダクトデモ v0.3（4キャンペーン × 選べる特典 × 管理画面）</title>
+<title>Micoクーポン｜プロダクトデモ v0.4（Micoブランド）（4キャンペーン × 選べる特典 × 管理画面）</title>
 <meta name="catalog:group" content="触れるデモ（最新・インタラクティブ）">
 <meta name="catalog:order" content="0">
 <meta name="catalog:icon" content="🎟️">
@@ -11,21 +11,21 @@
 <meta name="catalog:title" content="Micoクーポン｜プロダクトデモ（4キャンペーン×選べる特典）">
 <meta name="catalog:badge" content="最新">
 <meta name="catalog:badgeColor" content="var(--brand)">
-<meta name="catalog:desc" content="LINEミニアプリで毎日ひらく理由をつくりブロックを防ぐエンゲージ基盤。ガチャ/ログイン/おみくじ/ルーレットのどれも『スタンプがもらえる』に統一（1日1回）→共通カードに貯めて節目でギフト(URL)。特典はデジタルギフト(えらべるPay)/商品交換(コンビニ引換)から選択。事業者の管理画面プレビューも同梱。フォーム→採用管理(RPM)連携。社名/数値はサンプル。">
+<meta name="catalog:desc" content="LINEミニアプリで毎日ひらく理由をつくりブロックを防ぐエンゲージ基盤。ガチャ/ログイン/おみくじ/ルーレットのどれも『スタンプがもらえる』に統一（1日1回制限）→共通カード10個で特典(URL)。特典はデジタルギフト(えらべるPay)/商品交換(コンビニ引換)。在庫0フォールバック・管理画面プレビュー同梱。Mico Blue配色。社名/数値はサンプル。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
 :root{
-  --accent:#FF6A2B; --accent-light:#FFE6D6; --mid:#FF9552; --deep:#B03C00; --navy:#22262E;
-  --white:#fff; --bg:#FAF8F6; --fg1:#282829; --fg2:#6B6B6B; --gray:#B3B3B3; --border:#EAE7E3;
-  --gold:#E7B94B; --line-green:#06C755; --ink:#1C2130;
+  --accent:#3438F0; --accent-light:#DBE1FF; --mid:#6E82FF; --deep:#201DB6; --navy:#1B1D3B;
+  --white:#fff; --bg:#FAF9FB; --fg1:#282829; --fg2:#666666; --gray:#B3B3B3; --border:#E6E6E6;
+  --gold:#6E82FF; --line-green:#06C755; --ink:#1C2130;
   --font:'Noto Sans JP',-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
   --r-sm:6px; --r-md:10px; --r-lg:14px; --r-pill:999px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:var(--font);background:#EFEDEA;color:var(--fg1);letter-spacing:-.01em;
+body{font-family:var(--font);background:#EFEEF4;color:var(--fg1);letter-spacing:-.01em;
   font-feature-settings:'palt' 1;-webkit-font-smoothing:antialiased;min-height:100vh;padding:32px 16px 64px;
   background:radial-gradient(1200px 600px at 50% -10%,#fff3ec 0%,#EFEDEA 55%);}
 .stage{max-width:1140px;margin:0 auto;display:grid;grid-template-columns:390px 1fr;gap:40px;align-items:start}
@@ -68,10 +68,10 @@ body{font-family:var(--font);background:#EFEDEA;color:var(--fg1);letter-spacing:
 .strip .flame{position:absolute;right:-6px;top:-10px;font-size:56px;opacity:.14}
 
 .card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px}
-.stagecard{background:radial-gradient(120% 100% at 50% 0%,#2b3040,#1a1e29);border:none;color:#fff;padding:20px 16px 22px;text-align:center;min-height:250px;display:flex;flex-direction:column;justify-content:center}
+.stagecard{background:radial-gradient(120% 100% at 50% 0%,#242747,#141531);border:none;color:#fff;padding:20px 16px 22px;text-align:center;min-height:250px;display:flex;flex-direction:column;justify-content:center}
 .stagecard h3{font-size:16px;font-weight:900}
 .stagecard .sub{font-size:11px;opacity:.72;margin-top:3px;margin-bottom:2px}
-.act-btn{margin:16px auto 0;width:220px;border:none;font-family:inherit;font-weight:900;font-size:16px;color:#fff;background:linear-gradient(135deg,var(--accent),var(--mid));padding:14px;border-radius:var(--r-pill);cursor:pointer;box-shadow:0 10px 24px rgba(255,106,43,.42);transition:transform .12s}
+.act-btn{margin:16px auto 0;width:220px;border:none;font-family:inherit;font-weight:900;font-size:16px;color:#fff;background:linear-gradient(135deg,var(--accent),var(--mid));padding:14px;border-radius:var(--r-pill);cursor:pointer;box-shadow:0 10px 24px rgba(52,56,240,.42);transition:transform .12s}
 .act-btn:active{transform:scale(.96)}
 .act-btn:disabled{opacity:.5;background:var(--gray);color:#fff;box-shadow:none;cursor:default}
 .hint{font-size:11px;opacity:.7;margin-top:10px}
@@ -79,7 +79,7 @@ body{font-family:var(--font);background:#EFEDEA;color:var(--fg1);letter-spacing:
 /* login stamp */
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 14px 4px}
 .cell{aspect-ratio:1;border-radius:50%;border:2px dashed rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:rgba(255,255,255,.5);position:relative}
-.cell.done{border:2px solid var(--accent);background:linear-gradient(135deg,var(--accent),var(--mid));color:#fff;box-shadow:0 4px 12px rgba(255,106,43,.4)}
+.cell.done{border:2px solid var(--accent);background:linear-gradient(135deg,var(--accent),var(--mid));color:#fff;box-shadow:0 4px 12px rgba(52,56,240,.4)}
 .cell.done span{display:none}
 .cell.done::after{content:"✓";color:#fff;font-size:16px}
 .cell.mile{border-color:var(--gold)}
@@ -88,7 +88,7 @@ body{font-family:var(--font);background:#EFEDEA;color:var(--fg1);letter-spacing:
 
 /* gacha */
 .capsule{width:140px;height:140px;margin:6px auto 0;position:relative}
-.cap-top,.cap-bot{position:absolute;left:0;width:140px;height:70px;background:linear-gradient(135deg,#ff8a4d,#ff6a2b);border:5px solid #fff;box-sizing:border-box}
+.cap-top,.cap-bot{position:absolute;left:0;width:140px;height:70px;background:linear-gradient(135deg,#6E82FF,#3438F0);border:5px solid #fff;box-sizing:border-box}
 .cap-top{top:0;border-radius:70px 70px 0 0;border-bottom:none;transition:transform .5s ease}
 .cap-bot{bottom:0;background:linear-gradient(135deg,#fff,#f2f2f2);border-radius:0 0 70px 70px;border-top:none;transition:transform .5s ease}
 .capsule.wob{animation:wob .45s ease-in-out infinite}
@@ -104,10 +104,10 @@ body{font-family:var(--font);background:#EFEDEA;color:var(--fg1);letter-spacing:
 .wheel .num{position:absolute;top:50%;left:50%;font-size:13px;font-weight:900;color:#fff;transform-origin:0 0}
 
 /* omikuji */
-.omi-box{width:110px;height:150px;margin:6px auto 0;background:linear-gradient(180deg,#c1361f,#8f2114);border-radius:10px 10px 14px 14px;position:relative;box-shadow:0 12px 30px rgba(0,0,0,.4)}
-.omi-box::before{content:"";position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:34px;height:20px;background:#e8c14b;border-radius:8px 8px 0 0}
+.omi-box{width:110px;height:150px;margin:6px auto 0;background:linear-gradient(180deg,#201DB6,#141531);border-radius:10px 10px 14px 14px;position:relative;box-shadow:0 12px 30px rgba(0,0,0,.4)}
+.omi-box::before{content:"";position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:34px;height:20px;background:#DBE1FF;border-radius:8px 8px 0 0}
 .omi-box .lbl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ffe;font-weight:900;font-size:20px;writing-mode:vertical-rl;letter-spacing:4px}
-.omi-stick{position:absolute;top:-26px;left:50%;transform:translateX(-50%);width:8px;height:0;background:#e8d9b0;border-radius:4px;transition:height .5s ease}
+.omi-stick{position:absolute;top:-26px;left:50%;transform:translateX(-50%);width:8px;height:0;background:#DBE1FF;border-radius:4px;transition:height .5s ease}
 .omi-box.shake{animation:wob .4s ease-in-out infinite}
 .omi-box.drawn .omi-stick{height:60px}
 
@@ -121,7 +121,7 @@ body{font-family:var(--font);background:#EFEDEA;color:var(--fg1);letter-spacing:
 .scard .st .cur{font-size:12px;color:var(--accent);font-weight:900}
 .lgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0 4px}
 .lcell{aspect-ratio:1;border-radius:50%;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--gray);position:relative}
-.lcell.done{border:2px solid var(--accent);background:linear-gradient(135deg,var(--accent),var(--mid));color:#fff;box-shadow:0 3px 9px rgba(255,106,43,.35)}
+.lcell.done{border:2px solid var(--accent);background:linear-gradient(135deg,var(--accent),var(--mid));color:#fff;box-shadow:0 3px 9px rgba(52,56,240,.35)}
 .lcell.done span{display:none}
 .lcell.done::after{content:"✓";color:#fff;font-size:14px}
 .lcell.mile{border-color:var(--gold)}
@@ -134,6 +134,15 @@ body{font-family:var(--font);background:#EFEDEA;color:var(--fg1);letter-spacing:
 .gain{font-size:22px;font-weight:900;color:#fff;margin-top:6px;min-height:26px}
 .demo-next2{margin-top:14px;background:none;border:1px dashed rgba(255,255,255,.35);color:rgba(255,255,255,.85);font-family:inherit;font-size:11px;font-weight:700;padding:8px 14px;border-radius:var(--r-pill);cursor:pointer;display:none}
 .demo-next2.show{display:inline-block}
+/* soldout fallback */
+.soldout{position:absolute;inset:0;background:rgba(20,20,40,.9);display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px;z-index:42;backdrop-filter:blur(3px)}
+.soldout.show{display:flex;animation:fade .3s}
+.soldout .sbox{width:262px;background:#fff;border-radius:var(--r-lg);padding:24px 20px;text-align:center;animation:zoom .4s cubic-bezier(.2,1.4,.4,1)}
+.soldout .sic{width:60px;height:60px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto}
+.soldout h3{font-size:18px;font-weight:900;color:var(--navy);margin-top:10px}
+.soldout p{font-size:12px;color:var(--fg2);line-height:1.6;margin-top:10px}
+.soldout .alert{margin-top:12px;background:var(--accent-light);border-radius:var(--r-md);padding:9px 10px;font-size:10px;color:var(--deep);font-weight:700}
+.soldout .sbtn{margin-top:16px;width:100%;border:none;background:var(--accent);color:#fff;font-family:inherit;font-weight:900;font-size:14px;padding:12px;border-radius:var(--r-pill);cursor:pointer}
 
 /* reward overlay */
 .result{position:absolute;inset:0;background:rgba(20,17,14,.93);display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;z-index:40;backdrop-filter:blur(3px)}
@@ -146,7 +155,7 @@ body{font-family:var(--font);background:#EFEDEA;color:var(--fg1);letter-spacing:
 .prize .kind.goods{background:#e8f5ff;color:#0b6ba8}
 .prize .rank{font-size:13px;font-weight:900;color:var(--deep);margin-top:8px}
 .prize h3{font-size:19px;font-weight:900;color:var(--navy);margin-top:2px}
-.prize .rtm{margin-top:10px;background:#e9f8ee;border:1px solid #b9e7c8;border-radius:var(--r-md);padding:8px 10px;font-size:10px;color:#1c7a3f;font-weight:700;display:none;align-items:center;gap:6px;text-align:left;line-height:1.4}
+.prize .rtm{margin-top:10px;background:#EEF0FF;border:1px solid #C7CEFF;border-radius:var(--r-md);padding:8px 10px;font-size:10px;color:#201DB6;font-weight:700;display:none;align-items:center;gap:6px;text-align:left;line-height:1.4}
 .prize .rtm.show{display:flex}
 .prize .step-lbl{font-size:11px;color:var(--fg2);margin-top:12px;text-align:left;font-weight:700}
 .pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
@@ -269,7 +278,7 @@ body{font-family:var(--font);background:#EFEDEA;color:var(--fg1);letter-spacing:
 <body>
 <div class="stage">
   <div class="headline">
-    <div class="eyebrow">Mico ミニアプリ ｜ Micoクーポン（プロダクトデモ v0.2）</div>
+    <div class="eyebrow">Mico ｜ Micoクーポン（プロダクトデモ v0.4・Mico Blue）</div>
     <h1>毎日ひらく理由をつくり、ブロックを防ぐ</h1>
     <p>4つのキャンペーンはどれも「スタンプがもらえる」。共通カードに貯めて節目で特典。右で設定を切替。</p>
     <span class="tag">スマホ画面と管理画面がセット。設定を切り替えると両方が連動します</span>
@@ -371,6 +380,17 @@ body{font-family:var(--font);background:#EFEDEA;color:var(--fg1);letter-spacing:
           <button class="rbtn" onclick="closeResult()">閉じる</button>
         </div>
 
+        <!-- soldout fallback overlay -->
+        <div class="soldout" id="soldout">
+          <div class="sbox">
+            <div class="sic"><i data-lucide="gift" width="28"></i></div>
+            <h3>現在、特典を準備中です</h3>
+            <p>アクセスが集中し、特典が一時的になくなりました。準備が整い次第、「クーポン」タブからお受け取りいただけます。ためたスタンプはそのまま保持されます。</p>
+            <div class="alert">⚠ 在庫切れを管理者へ自動通知しました</div>
+            <button class="sbtn" onclick="closeSoldout()">閉じる</button>
+          </div>
+        </div>
+
         <!-- form overlay -->
         <div class="formov" id="formov">
           <div class="formsheet">
@@ -440,6 +460,12 @@ body{font-family:var(--font);background:#EFEDEA;color:var(--fg1);letter-spacing:
         <button class="chip on" data-form="on" onclick="setForm('on')"><i data-lucide="clipboard-list" class="ci" width="16"></i>あり</button>
         <button class="chip" data-form="off" onclick="setForm('off')"><i data-lucide="zap" class="ci" width="16"></i>なし</button>
       </div>
+      <div class="div"></div>
+      <div class="k">④ 特典在庫（デモ切替）</div><div class="sub2">在庫0のときのフォールバック画面を確認</div>
+      <div class="chips" id="stockChips">
+        <button class="chip on" data-stock="ok" onclick="setStock('ok')"><i data-lucide="package" class="ci" width="16"></i>在庫あり</button>
+        <button class="chip" data-stock="empty" onclick="setStock('empty')"><i data-lucide="package-x" class="ci" width="16"></i>在庫0</button>
+      </div>
     </div>
 
     <!-- admin preview -->
@@ -478,7 +504,7 @@ body{font-family:var(--font);background:#EFEDEA;color:var(--fg1);letter-spacing:
 function drawIcons(){try{if(window.lucide&&window.lucide.createIcons)window.lucide.createIcons();}catch(e){}}
 const CARD=10;
 const MILES={10:{amt:'500',form:false}};
-const state={mech:'login',coupon:'digital',formOn:true,count:8,claimed:{},gifts:[],pending:null,doneToday:false,streak:6};
+const state={mech:'login',coupon:'digital',formOn:true,count:8,claimed:{},gifts:[],pending:null,doneToday:false,streak:6,stockEmpty:false};
 const MECH_NAME={login:'毎日ログインボーナス',gacha:'デイリーガチャ',omikuji:'デイリーおみくじ',roulette:'デイリールーレット'};
 const COUPON_LABEL={digital:'デジタルギフト',goods:'商品交換（コンビニ引換）'};
 function setMech(m){state.mech=m;
@@ -497,6 +523,9 @@ function setForm(fv){state.formOn=(fv==='on');
 const BTN={login:['loginBtn','今日のスタンプを押す'],gacha:['gachaBtn','ガチャを回す'],omikuji:['omiBtn','おみくじを引く'],roulette:['roulBtn','まわす！']};
 function refreshAction(){Object.keys(BTN).forEach(k=>{const b=document.getElementById(BTN[k][0]);if(!b)return;b.disabled=state.doneToday;b.textContent=state.doneToday?'本日は実施済み（また明日）':BTN[k][1];});const dn=document.getElementById('demoNext');if(dn)dn.classList.toggle('show',state.doneToday);}
 function nextDay(){state.doneToday=false;state.streak++;document.getElementById('streakN').innerHTML=state.streak+'<small>日</small>';['g-login','g-gacha','g-omikuji','g-roulette'].forEach(id=>{const e=document.getElementById(id);if(e&&id!=='g-login')e.textContent='';});refreshAction();toast('翌日になりました（デモ）');}
+function setStock(v){state.stockEmpty=(v==='empty');document.querySelectorAll('#stockChips .chip').forEach(x=>x.classList.toggle('on',x.dataset.stock===v));document.getElementById('ad_inv').textContent=state.stockEmpty?'残 0 / 総数 500 ⚠ 在庫切れ':'残 372 / 総数 500';drawIcons();}
+function showSoldout(){document.getElementById('soldout').classList.add('show');drawIcons();}
+function closeSoldout(){document.getElementById('soldout').classList.remove('show');toast('在庫が入り次第お受け取りいただけます');}
 function buildStampCard(){const g=document.getElementById('stampCard');g.innerHTML='';
   for(let i=1;i<=CARD;i++){const c=document.createElement('div');
     c.className='lcell'+(state.count>=i?' done':'')+(MILES[i]?' mile':'');c.id='sc'+i;
@@ -516,7 +545,7 @@ function addStamps(n,label){
   };step();}
 function checkMilestone(){
   for(const m of [10]){ if(state.count>=m&&!state.claimed[m]){state.claimed[m]=true;state.pending={m};
-    setTimeout(()=>{ if(state.formOn) openForm(); else showReward(false); },350);return;} }}
+    setTimeout(()=>{ if(state.stockEmpty){ showSoldout(); } else if(state.formOn){ openForm(); } else { showReward(false); } },350);return;} }}
 function openForm(){document.getElementById('formov').classList.add('show');}
 function submitForm(){const ids=['f_name','f_kana','f_zip','f_pref','f_city','f_addr','f_tel','f_mail'];
   if(ids.some(id=>!document.getElementById(id).value.trim())){toast('未入力の項目があります');return;}
@@ -555,7 +584,7 @@ function doOmikuji(){ if(busy||state.doneToday) return; state.doneToday=true; re
     setTimeout(()=>{g.textContent=p[0]+' → '+(p[1]>0?'＋'+p[1]+'個':'0個');addStamps(p[1],'おみくじ');box.classList.remove('drawn');box.querySelector('.lbl').textContent='おみくじ';refreshAction();},600);},1000);}
 const SEG=[1,2,0,1,2,0,1,1];const N=SEG.length,SLICE=360/N;let rot=0;
 function buildWheel(){const w=document.getElementById('wheel');const stops=[];
-  for(let i=0;i<N;i++)stops.push((SEG[i]===0?'#9aa0ad':(SEG[i]===2?'#FF6A2B':'#FF9552'))+' '+(i*SLICE)+'deg '+((i+1)*SLICE)+'deg');
+  for(let i=0;i<N;i++)stops.push((SEG[i]===0?'#B3B3B3':(SEG[i]===2?'#3438F0':'#6E82FF'))+' '+(i*SLICE)+'deg '+((i+1)*SLICE)+'deg');
   w.style.background='conic-gradient('+stops.join(',')+')';
   for(let i=0;i<N;i++){const ang=i*SLICE+SLICE/2;const sp=document.createElement('span');sp.className='num';sp.textContent=SEG[i];sp.style.transform='rotate('+ang+'deg) translateY(-74px) rotate('+(-ang)+'deg)';w.appendChild(sp);}}
 function doRoulette(){ if(busy||state.doneToday) return; state.doneToday=true; refreshAction(); const g=document.getElementById('g-roulette');
@@ -573,9 +602,9 @@ function go(v){document.querySelectorAll('.view').forEach(e=>e.classList.remove(
 function openOverview(){document.getElementById('overview').classList.add('show');}
 function closeOverview(){document.getElementById('overview').classList.remove('show');}
 let toastT;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1900);}
-function confetti(){const colors=['#E7B94B','#FF6A2B','#FF9552','#FFE6D6','#fff'];const wrap=document.getElementById('result');
+function confetti(){const colors=['#3438F0','#6E82FF','#DBE1FF','#1B1D3B','#fff'];const wrap=document.getElementById('result');
   for(let i=0;i<28;i++){const c=document.createElement('span');c.className='confetti';c.style.left=Math.random()*100+'%';c.style.background=colors[i%colors.length];c.style.animationDuration=(1.2+Math.random()*1.2)+'s';c.style.animationDelay=(Math.random()*.3)+'s';wrap.appendChild(c);setTimeout(()=>c.remove(),2600);}}
-buildStampCard();updateCard();buildWheel();setMech('login');setCoupon('digital');setForm('on');refreshAction();
+buildStampCard();updateCard();buildWheel();setMech('login');setCoupon('digital');setForm('on');setStock('ok');refreshAction();
 drawIcons();setTimeout(openOverview,350);window.addEventListener('load',drawIcons);setTimeout(drawIcons,800);
 </script>
 </body>
