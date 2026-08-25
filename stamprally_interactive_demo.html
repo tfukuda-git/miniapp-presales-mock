@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>住まいスタンプラリー 触れるモック v1.0（発行前=施策案内のみ/発行後=エリア画像・フォームプルダウン）</title>
+<title>住まいスタンプラリー 触れるモック v1.1（入口2系統・ジョーカー自由記入・景品表示制御）</title>
 <meta name="catalog:group" content="触れるデモ（最新・インタラクティブ）">
 <meta name="catalog:order" content="1">
 <meta name="catalog:icon" content="🎫">
 <meta name="catalog:iconColor" content="var(--brand)">
-<meta name="catalog:title" content="住まいスタンプラリー｜触れるモック（最新 v1.0）">
-<meta name="catalog:badge" content="最新v1.0">
+<meta name="catalog:title" content="住まいスタンプラリー｜触れるモック（最新 v1.1）">
+<meta name="catalog:badge" content="最新v1.1">
 <meta name="catalog:badgeColor" content="var(--brand)">
-<meta name="catalog:desc" content="実際に触れる通しプロトタイプ。入口は2系統（①現地QR／②配信・リッチメニュー）。発行前は共通1画面＝施策案内画像＋対象会場(全体)、発行後にエリア別トップ（エリア画像＋対象会場エリア別リンク）。エリア確定は2ロジック（QRのエリア／郵便番号→拠点・未ヒット東京）。QRは2軸（フォームON・Limit無し／フォームOFF・Limit1回）、分譲はプルダウン＋ジョーカーは自由記入、拠点別＋全国のCSV出力に対応。右側にME属性＋拠点向けCSVをリアルタイム表示（社名は架空）。">
+<meta name="catalog:desc" content="実際に触れる通しプロトタイプ。入口は2系統（①現地QR／②配信・リッチメニュー）。発行前は共通1画面＝施策案内画像＋対象会場(全体)、発行後にエリア別トップ（エリア画像＋対象会場エリア別リンク）。エリア確定は2ロジック（QRのエリア／郵便番号→拠点・未ヒット東京）。QRは2軸（フォームON・Limit無し／フォームOFF・Limit1回）、分譲はプルダウン＋ジョーカーは自由記入、拠点別＋全国のCSV出力に対応。景品一覧はエリア別に表示制御（段階非表示・注釈／挙動は不変）。右側にME属性＋拠点向けCSVをリアルタイム表示（社名は架空）。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -164,7 +164,7 @@
 <div class="stage">
   <!-- PHONE -->
   <div class="app">
-    <div class="banner">プロトタイプ｜入口は<b>①現地QR/②配信・リッチメニュー</b>。<b>初回アンケート＝施策案内画像のみ＋対象会場ページ(全体)</b> → 発行後TOPで<b>エリア画像＋対象会場(エリア別アンカー)</b>。QRは<b>総合展示場のみ即スタンプ</b>、他は<b>フォームあり(プルダウン・複数回)</b>｜右上⟳で最初から</div>
+    <div class="banner">プロトタイプ｜入口は<b>①現地QR/②配信・リッチメニュー</b>。<b>初回アンケート＝施策案内画像のみ＋対象会場ページ(全体)</b> → 発行後TOPで<b>エリア画像＋対象会場(エリア別アンカー)</b>。QRは<b>総合展示場のみ即スタンプ</b>／他は<b>フォームあり(プルダウン)</b>／<b>ジョーカーは自由記入</b>。景品は<b>エリア別に表示制御</b>（南東北で5個目非表示＋注釈のデモ）｜右上⟳で最初から</div>
     <div class="hd">
       <span class="t">🏠 住まいスタンプラリー <span class="pill">ミニアプリ</span></span>
       <span class="actions"><span id="reset" title="リセット">⟳</span></span>
@@ -312,6 +312,15 @@ const TIERS=[
   {n:1,name:"ご来場ノベルティ"},{n:2,name:"クオカード500円"},{n:3,name:"カタログギフト"},
   {n:4,name:"QUOカード2,000円"},{n:5,name:"コンプリート賞"}
 ];
+/* ---- ④ 景品表示制御（エリア別）：挙動は不変、景品一覧の"表示"と"注釈"のみ制御 ----
+   hiddenTiers=一覧に出さない段階（例：5個目非表示＝実質4個で終了）／note=段階景品の近くに出す注釈 */
+const REWARD_RULE={
+  "南東北":{hiddenTiers:[5], note:"表示は1個目から出ますが、南東北エリアの贈呈は2個目からです（現場運用）。"},
+  "近畿":  {hiddenTiers:[],  note:""}
+};
+function rewardRuleOf(area){return REWARD_RULE[area]||{hiddenTiers:[],note:""};}
+function isTierVisible(area,n){return !(rewardRuleOf(area).hiddenTiers||[]).includes(n);}
+function visibleTiers(area){return TIERS.filter(t=>isTierVisible(area,t.n));}
 const GOAL=5;
 const KEY="stamprally_proto_v17";
 const PREF_PRESET="首都圏"; // （旧・属性ありRM用の名残／現行フローでは未使用）
@@ -381,7 +390,8 @@ function renderTop(){const area=S.area||AREAS[0];
 /* ---- ためる（TOPのボタンからカメラ起動） ---- */
 $("top-cta").addEventListener("click",()=>{openPicker();});
 // フォームありQR読取後に選ぶ「参加会場・イベント」プルダウン（分譲はプルダウン化）
-const FORM_VENUES=["分譲展示場①","分譲展示場②","分譲展示場③","工場見学（ファクトリー）","オーナー宅見学会","資金相談","事前審査申込","土地相談","プラン相談","その他①","その他②","エリア別ジョーカー"];
+// ジョーカーはプルダウンに含めない（選択肢が多く固定できないため）＝自由記入の例外フローで扱う
+const FORM_VENUES=["分譲展示場①","分譲展示場②","分譲展示場③","工場見学（ファクトリー）","オーナー宅見学会","資金相談","事前審査申込","土地相談","プラン相談","その他①","その他②"];
 function openPicker(){
   const s=$("scan"),pick=$("pick");
   const area=S.area||S.viewArea||AREAS[0];
@@ -394,8 +404,22 @@ function openPicker(){
       `<span>📷 総合展示場（フォームなし・1回きり）<br><span style="font-size:11px;color:#9aa4b2">即スタンプ｜同一QRは1回のみ</span></span>`+
       `<span class="tag">${sotenDone?'取得済':'読取'}</span></div>`+
     `<div class="pk" data-act="form">`+
-      `<span>📷 その他のQR（フォームあり・複数回OK）<br><span style="font-size:11px;color:#9aa4b2">分譲/工場見学/オーナー宅/相談系/その他/ジョーカー｜読取後にプルダウンで会場選択</span></span>`+
+      `<span>📷 その他のQR（フォームあり・複数回OK）<br><span style="font-size:11px;color:#9aa4b2">分譲/工場見学/オーナー宅/相談系/その他｜読取後にプルダウンで会場選択</span></span>`+
+      `<span class="tag">読取</span></div>`+
+    `<div class="pk" data-act="joker">`+
+      `<span>🃏 エリア別ジョーカーQR（スタッフ提示）<br><span style="font-size:11px;color:#9aa4b2">例外＝プルダウン不可・来場場所を自由記入｜無条件でこのエリアに+1</span></span>`+
       `<span class="tag">読取</span></div>`;
+}
+function showJokerInput(){
+  const pick=$("pick");
+  const area=S.area||S.viewArea||AREAS[0];
+  pick.innerHTML=`<div class="ph">🃏 ジョーカーQR：来場場所を入力（必須）</div>`+
+    `<div style="padding:12px 14px">`+
+      `<input id="joker-text" class="area-sel" style="margin-bottom:10px;width:100%" placeholder="例：${area}外の◯◯展示場／◯◯相談会 など自由記入">`+
+      `<button class="db-btn" id="joker-go" style="background:var(--brand);margin-bottom:8px">この場所で${area}エリアに+1</button>`+
+      `<button class="db-btn" id="joker-back" style="background:#9aa4b2">← 戻る</button>`+
+      `<div style="font-size:10.5px;color:#9aa4b2;margin-top:8px">※ エリアまたぎ来場は選択肢が多く固定できないため自由記入。スタッフ提示・無条件で+1（同一QR複数回OK）。</div>`+
+    `</div>`;
 }
 function showVenuePulldown(){
   const pick=$("pick");
@@ -409,7 +433,7 @@ function showVenuePulldown(){
       `<div style="font-size:10.5px;color:#9aa4b2;margin-top:8px">※ 分譲はプルダウン（実装可・5〜10個推奨）。同一QRから複数回取得OK。</div>`+
     `</div>`;
 }
-function doScanCommit(form,venue){
+function doScanCommit(form,venue,kind){
   const area=S.area||S.viewArea||AREAS[0];
   $("pick").style.display="none";$("scan").classList.remove("picking");$("scan-t").textContent="QRコードを読み取り中…";
   setTimeout(()=>{
@@ -418,7 +442,8 @@ function doScanCommit(form,venue){
     const sotenKey="soten-"+area;
     if(!form&&hasStamp(sotenKey)){toast("✅","取得済みです","総合展示場（フォームなし）は取得済みです（同一QRは1回のみ）。");return;}
     if(areaCount(area)>=GOAL){toast("🏁","このエリアは上限です",area+"エリアのスタンプは最大"+GOAL+"個です。別エリアで集められます。");return;}
-    if(form){commit("form-"+area+"#"+Date.now(),"フォーム："+venue,area);}
+    if(kind==="joker"){commit("joker-"+area+"#"+Date.now(),"ジョーカー："+venue,area);}
+    else if(form){commit("form-"+area+"#"+Date.now(),"フォーム："+venue,area);}
     else{commit(sotenKey,"総合展示場（"+area+"）",area);}
   },900);
 }
@@ -428,8 +453,13 @@ $("pick").addEventListener("click",e=>{
   if(e.target.closest("#venue-go")){const sel=$("venue-select"); const v=sel?sel.value:"";
     if(!v){toast("⚠","会場の選択が必要です","フォームありQRは、参加会場・イベントの選択が必須です。");return;}
     doScanCommit(true,v);return;}
+  if(e.target.closest("#joker-back")){openPicker();return;}
+  if(e.target.closest("#joker-go")){const inp=$("joker-text"); const v=inp?inp.value.trim():"";
+    if(!v){toast("⚠","来場場所の入力が必要です","ジョーカーQRは、来場場所の自由記入が必須です（プルダウンではありません）。");return;}
+    doScanCommit(true,v,"joker");return;}
   const row=e.target.closest(".pk"); if(!row||row.classList.contains("disabled"))return;
   if(row.dataset.act==="form"){showVenuePulldown();return;}
+  if(row.dataset.act==="joker"){showJokerInput();return;}
   if(row.dataset.act==="noform"){doScanCommit(false,null);return;}
 });
 
@@ -441,8 +471,9 @@ function commit(key,label,area){
   save();
   const ac=areaCount(a);
   renderStamp();renderTop();renderME("エリア(表示)");show("v-stamp"); // 読み取ったらスタンプ確認へ
+  // ④表示制御：非表示段階は景品として案内しない（挙動＝スタンプ獲得自体は不変）
   const tier=TIERS.find(t=>t.n===ac),tk=a+":"+ac;
-  if(tier&&!S.shownTier[tk]){S.shownTier[tk]=true;save();toast("🎉",a+"で"+ac+"個達成！景品GET",tier.name+" を獲得しました。プレゼントタブで交換できます（別日でもOK・受け取りは現地）。");}
+  if(tier&&isTierVisible(a,ac)&&!S.shownTier[tk]){S.shownTier[tk]=true;save();toast("🎉",a+"で"+ac+"個達成！景品GET",tier.name+" を獲得しました。プレゼントタブで交換できます（別日でもOK・受け取りは現地）。");}
   else toast("🎫","スタンプGET！",label+"（"+a+"）／"+a+"エリア "+ac+" / "+GOAL+" 個");
 }
 
@@ -458,10 +489,12 @@ function renderStamp(){
   for(let i=0;i<GOAL;i++){const s=areaStamps[i];
     cells+=`<div class="st ${s?'got':''}"><span class="e">${s?'🏠':'？'}</span>${s?s.label.replace(/（.*/,'').slice(0,5):(i+1)+'個目'}</div>`;}
   $("st-grid").innerHTML=cells;
-  $("st-tiers").innerHTML=TIERS.map(t=>`<div class="tier ${ac>=t.n?'done':''}"><div class="n">${t.n}</div><div class="txt"><b>${t.name}</b><div>${ac>=t.n?'獲得済み':'スタンプ'+t.n+'個で解放'}</div></div><div style="font-size:18px">${ac>=t.n?'✅':'🔒'}</div></div>`).join("");
+  const rule=rewardRuleOf(area);
+  $("st-tiers").innerHTML=visibleTiers(area).map(t=>`<div class="tier ${ac>=t.n?'done':''}"><div class="n">${t.n}</div><div class="txt"><b>${t.name}</b><div>${ac>=t.n?'獲得済み':'スタンプ'+t.n+'個で解放'}</div></div><div style="font-size:18px">${ac>=t.n?'✅':'🔒'}</div></div>`).join("")
+    +(rule.note?`<div class="note" style="margin-top:8px">📌 ${rule.note}</div>`:"");
   $("area-spots").innerHTML=`<div class="note"><b>${area}</b>エリア：スタンプ ${ac} / ${GOAL} 個</div>`+
     spots.map(s=>{const cat=catOf(s.cat);const multi=s.common||s.joker;const done=!multi&&hasStamp(s.key);
-      const note=(s.cat==="soten")?'フォーム無/リミット1回（即スタンプ）':'フォーム有/リミット無（プルダウン・複数回）';
+      const note=(s.cat==="soten")?'フォーム無/リミット1回（即スタンプ）':(s.joker?'自由記入/リミット無（スタッフ提示・+1）':'フォーム有/リミット無（プルダウン・複数回）');
       const badge=multi?'<span class="vbtn" style="pointer-events:none;background:#eef2f3;color:#6b7c84">'+(s.joker?'ジョーカー':'共通')+'</span>':'<span class="vbtn '+(done?'done':'')+'" style="pointer-events:none">'+(done?'取得済':'未取得')+'</span>';
       return `<div class="cat"><div class="ci">${cat.emoji}</div><div class="cx"><b>${cat.name}</b><span>${s.venue}（${note}）</span></div>${badge}</div>`;}).join("");
 }
@@ -514,9 +547,11 @@ function renderReward(){
   $("rw-sel").innerHTML=AREAS.map(a=>`<option value="${a}" ${S.rwSel===a?'selected':''}>${a}（${areaCount(a)}個）</option>`).join("");
   const area=S.rwSel, ac=areaCount(area); S.redeem=S.redeem||{}; const rd=S.redeem[area]||{};
   if(ac===0){$("rw-body").innerHTML=`<div class="progwrap" style="text-align:center;padding:24px"><div style="font-size:34px">🎁</div><p style="font-size:13px;margin:8px 0 12px"><b>${area}</b>エリアはまだスタンプがありません。<br>TOPの「ためる」からこのエリアのQRを読み取りましょう。</p><button class="btn" onclick="document.querySelector('#nav a[data-tab=v-top]').click()">TOPへ</button></div>`;return;}
-  const open=TIERS.filter(t=>t.n<=ac).map(t=>{const done=!!rd[t.n];return `<div class="cat"><div class="ci">🎁</div><div class="cx"><b>${t.n}個：${t.name}</b><span>${done?'交換済み':'交換できます（別日でもOK）'}</span></div><button class="vbtn ${done?'done':''}" data-r="${t.n}" ${done?'disabled':''}>${done?'交換済':'交換する'}</button></div>`;}).join("");
-  const locked=TIERS.filter(t=>t.n>ac).map(t=>`<div class="cat" style="opacity:.55"><div class="ci">🎁</div><div class="cx"><b>${t.n}個：${t.name}</b><span>スタンプ${t.n}個で解放</span></div><span class="vbtn" style="pointer-events:none;background:#c8ced7">未解放</span></div>`).join("");
-  $("rw-body").innerHTML=`<div class="note"><b>${area}</b>エリア：スタンプ ${ac} / ${GOAL} 個。景品は各会場のスタッフに提示して受け取り（<b>スタンプ獲得と別日でもOK</b>）。</div>`+open+locked;
+  const vis=visibleTiers(area), rule=rewardRuleOf(area);
+  const open=vis.filter(t=>t.n<=ac).map(t=>{const done=!!rd[t.n];return `<div class="cat"><div class="ci">🎁</div><div class="cx"><b>${t.n}個：${t.name}</b><span>${done?'交換済み':'交換できます（別日でもOK）'}</span></div><button class="vbtn ${done?'done':''}" data-r="${t.n}" ${done?'disabled':''}>${done?'交換済':'交換する'}</button></div>`;}).join("");
+  const locked=vis.filter(t=>t.n>ac).map(t=>`<div class="cat" style="opacity:.55"><div class="ci">🎁</div><div class="cx"><b>${t.n}個：${t.name}</b><span>スタンプ${t.n}個で解放</span></div><span class="vbtn" style="pointer-events:none;background:#c8ced7">未解放</span></div>`).join("");
+  const noteHtml=rule.note?`<div class="note" style="margin-top:8px">📌 ${rule.note}</div>`:"";
+  $("rw-body").innerHTML=`<div class="note"><b>${area}</b>エリア：スタンプ ${ac} / ${GOAL} 個。景品は各会場のスタッフに提示して受け取り（<b>スタンプ獲得と別日でもOK</b>）。</div>`+open+locked+noteHtml;
 }
 document.getElementById("rw-sel").addEventListener("change",e=>{S.rwSel=e.target.value;save();renderReward();});
 $("rw-body").addEventListener("click",e=>{const b=e.target.closest("button[data-r]");if(!b||b.disabled)return;const n=+b.dataset.r,t=TIERS.find(x=>x.n===n);const area=S.rwSel;
