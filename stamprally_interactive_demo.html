@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>住まいスタンプラリー 触れるモック v1.1（入口2系統・ジョーカー自由記入・景品表示制御）</title>
+<title>住まいスタンプラリー 触れるモック v1.2（エリア差分=文字+色/TOP固定/流入経路属性なし）</title>
 <meta name="catalog:group" content="触れるデモ（最新・インタラクティブ）">
 <meta name="catalog:order" content="1">
 <meta name="catalog:icon" content="🎫">
 <meta name="catalog:iconColor" content="var(--brand)">
-<meta name="catalog:title" content="住まいスタンプラリー｜触れるモック（最新 v1.1）">
-<meta name="catalog:badge" content="最新v1.1">
+<meta name="catalog:title" content="住まいスタンプラリー｜触れるモック（最新 v1.2）">
+<meta name="catalog:badge" content="最新v1.2">
 <meta name="catalog:badgeColor" content="var(--brand)">
-<meta name="catalog:desc" content="実際に触れる通しプロトタイプ。入口は2系統（①現地QR／②配信・リッチメニュー）。発行前は共通1画面＝施策案内画像＋対象会場(全体)、発行後にエリア別トップ（エリア画像＋対象会場エリア別リンク）。エリア確定は2ロジック（QRのエリア／郵便番号→拠点・未ヒット東京）。QRは2軸（フォームON・Limit無し／フォームOFF・Limit1回）、分譲はプルダウン＋ジョーカーは自由記入、拠点別＋全国のCSV出力に対応。景品一覧はエリア別に表示制御（段階非表示・注釈／挙動は不変）。右側にME属性＋拠点向けCSVをリアルタイム表示（社名は架空）。">
+<meta name="catalog:desc" content="実際に触れる通しプロトタイプ。入口は2系統（①現地QR／②配信・リッチメニュー）。発行前は共通1画面＝施策案内のみ、発行後TOPはエリアごとの文言＋バナー色で出し分け（画像ではない）。TOPは登録エリア（郵便番号）で固定、別エリアのQRを読むとスタンプ面だけそのエリアに切替。エリア確定は2ロジック（QRのエリア／郵便番号→拠点・未ヒット東京）。QRは2軸（フォームON・Limit無し／フォームOFF・Limit1回）、分譲はプルダウン＋ジョーカーは自由記入、拠点別＋全国のCSV出力に対応。景品一覧はエリア別に表示制御（段階非表示・注釈／挙動は不変）。流入経路属性は廃止。右側にME属性＋拠点向けCSVをリアルタイム表示（社名は架空）。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -164,7 +164,7 @@
 <div class="stage">
   <!-- PHONE -->
   <div class="app">
-    <div class="banner">プロトタイプ｜入口は<b>①現地QR/②配信・リッチメニュー</b>。<b>初回アンケート＝施策案内画像のみ＋対象会場ページ(全体)</b> → 発行後TOPで<b>エリア画像＋対象会場(エリア別アンカー)</b>。QRは<b>総合展示場のみ即スタンプ</b>／他は<b>フォームあり(プルダウン)</b>／<b>ジョーカーは自由記入</b>。景品は<b>エリア別に表示制御</b>（南東北で5個目非表示＋注釈のデモ）｜右上⟳で最初から</div>
+    <div class="banner">プロトタイプ｜入口は<b>①現地QR/②配信・リッチメニュー</b>（流入は実質RM＝流入経路属性なし）。<b>初回アンケート＝施策案内のみ</b> → 発行後TOPは<b>エリアごとの文言＋バナー色</b>（画像ではない）。<b>TOPは登録エリアで固定</b>・<b>スタンプ面のみ読取QRのエリアに切替</b>。QRは<b>総合展示場のみ即スタンプ</b>／他は<b>フォームあり(プルダウン)</b>／<b>ジョーカーは自由記入</b>。景品は<b>エリア別に表示制御</b>（南東北で5個目非表示＋注釈）｜右上⟳で最初から</div>
     <div class="hd">
       <span class="t">🏠 住まいスタンプラリー <span class="pill">ミニアプリ</span></span>
       <span class="actions"><span id="reset" title="リセット">⟳</span></span>
@@ -183,7 +183,7 @@
           <div class="note">アンケートは<b>施策案内画像＋対象会場ページ(全体)</b>。送信後、<b>郵便番号→拠点</b>判定エリア（未ヒットは東京）の<b>エリア別トップ</b>。</div>
           <button class="btn" id="entry-url-noattr" style="background:#6b7c84">配信・リッチメニュー → 施策案内＋アンケート</button>
         </div>
-        <div class="note" style="margin-top:12px">※ カード発行前はエリアを特定しないため<b>施策案内のみ</b>。発行後TOPで<b>対象会場・エリア画像</b>＋<b>対象会場ページ(エリア別アンカー)</b>を表示。郵便番号入力時に判定エリアを新規カスタム属性<b>「拠点」</b>へ自動格納。</div>
+        <div class="note" style="margin-top:12px">※ カード発行前はエリアを特定しないため<b>施策案内のみ</b>。発行後TOPは<b>エリアごとの文言＋バナー色</b>で出し分け（画像ではない）。<b>TOPは登録エリアで固定</b>、別エリアのQRを読んでも<b>スタンプ面だけ</b>そのエリアに切り替わる。郵便番号入力時に判定エリアを新規カスタム属性<b>「拠点」</b>へ自動格納。</div>
       </section>
 
       <!-- GATE（タブなし・初回アンケート／画像は入口で出し分け） -->
@@ -199,10 +199,9 @@
         <div class="note" style="margin-top:14px">来場アンケートは、スタンプ獲得当日の<b>固定時刻（例：毎日17時）</b>に配信されます（後追い配信）。</div>
       </section>
 
-      <!-- TOP（発行後：エリア画像＋対象会場ページ エリア別アンカー） -->
+      <!-- TOP（発行後：エリアごとの文言＋バナー色。画像なし／TOPは登録エリアで固定） -->
       <section class="view" id="v-top">
         <div class="top-hero" id="top-hero"></div>
-        <div id="top-venue-link"></div>
         <div class="sec"><h2><span class="bar"></span>このエリアのスポット</h2><div id="top-spots"></div></div>
         <button class="btn scanbtn" id="top-cta" style="margin-top:12px">📷 スタンプをためる</button>
       </section>
@@ -219,6 +218,8 @@
         </div>
         <div class="sec"><h2><span class="bar"></span>段階的景品（このエリア）</h2><div id="st-tiers"></div></div>
         <div class="sec"><h2><span class="bar"></span>このエリアで押せる場所</h2><div id="area-spots"></div></div>
+        <button class="btn scanbtn" id="st-cta" style="margin-top:6px">📷 このエリアのQRを読み取る</button>
+        <div class="note" style="margin-top:8px">※ TOP（登録エリア）は変わりません。別エリアのQRを読むと、このスタンプ面だけそのエリアに切り替わります。</div>
       </section>
 
       <!-- プレゼント -->
@@ -327,7 +328,7 @@ const PREF_PRESET="首都圏"; // （旧・属性ありRM用の名残／現行�
 
 /* ---- state ---- */
 let S=load();
-function blank(){return {area:null,viewArea:null,rwSel:null,zip:"",member:{name:"",phone:"",email:""},registered:false,
+function blank(){return {area:null,homeArea:null,viewArea:null,rwSel:null,zip:"",member:{name:"",phone:"",email:""},registered:false,
   inflow:"",pref:null,basho:null,entryArea:null,imgMode:null,
   stamps:[],redeem:{},shownTier:{},last_at:""};}
 function load(){try{const r=localStorage.getItem(KEY);return r?Object.assign(blank(),JSON.parse(r)):blank();}catch(e){return blank();}}
@@ -351,7 +352,7 @@ function renderME(flashKey){
   const nm=S.member.name||'未登録ユーザー';
   const sub=[S.member.phone,S.member.email].filter(Boolean).join('　/　')||'LINE連携済み';
   const attrs=[
-    ["流入経路",S.inflow],["都道府県",S.pref],["拠点(カスタム属性)",S.basho],
+    ["拠点(カスタム属性)",S.basho],
     ["エリア(表示)",S.area],
     ["お名前",S.member.name],["郵便番号",S.zip],["電話番号",S.member.phone],["メールアドレス",S.member.email],
     ["最終アクセス日時",S.last_at||null],
@@ -376,25 +377,25 @@ function renderDB(){
   const ba=$("csvbtn-all"); if(ba) ba.onclick=()=>toast("⬇","全国分CSV（デモ）","全エリア横断の集計CSVを1URLで出力（本部向け・本部要望）。項目は同じ＋エリア列を付与。");
 }
 
-/* ---- TOP（エリア画像） ---- */
-function renderTop(){const area=S.area||AREAS[0];
+/* ---- TOP（エリア差分＝文言＋バナー色。画像ではない／TOPは登録エリアで固定） ---- */
+function renderTop(){const area=S.homeArea||S.area||AREAS[0];
   const idx=Math.max(0,AREAS.indexOf(area));
   const hue=(idx*37)%360;
   $("top-hero").style.background=`linear-gradient(135deg,hsl(${hue} 60% 46%),hsl(${(hue+30)%360} 62% 56%))`;
-  $("top-hero").innerHTML=`<div class="em">🏠</div><div class="ar">${area}エリア</div><div class="sub">カード発行後｜住まいスタンプラリー 開催中（10/1〜12/31）</div><div class="imgnote">※ 発行後は対象会場・エリア画像を表示（流入：${S.inflow||'—'}）</div>`;
-  const vl=$("top-venue-link"); if(vl){ vl.innerHTML=`<a class="cat" href="#" onclick="return false" style="text-decoration:none;color:inherit"><div class="ci">📍</div><div class="cx"><b>対象会場はこちら（${area}）</b><span>対象会場ページへ（エリア別アンカーリンク）</span></div><span class="vbtn" style="pointer-events:none">開く</span></a>`; }
+  $("top-hero").innerHTML=`<div class="ar">${area}エリア</div><div class="sub">住まいスタンプラリー 開催中（10/1〜12/31）</div><div class="imgnote">※ エリア差分は「文言＋バナー色」で出し分け（画像ではなくテキスト＋背景色）。TOPは登録時のエリア（郵便番号）で固定。</div>`;
   const spots=spotsOf(area).slice(0,4);
   $("top-spots").innerHTML=spots.map(s=>{const c=catOf(s.cat);return `<div class="cat"><div class="ci">${c.emoji}</div><div class="cx"><b>${c.name}</b><span>${s.venue}</span></div></div>`;}).join("");
 }
 
 /* ---- ためる（TOPのボタンからカメラ起動） ---- */
-$("top-cta").addEventListener("click",()=>{openPicker();});
+$("top-cta").addEventListener("click",()=>{ if(S.homeArea){S.viewArea=S.homeArea;} openPicker();});
+$("st-cta").addEventListener("click",()=>{openPicker();});
 // フォームありQR読取後に選ぶ「参加会場・イベント」プルダウン（分譲はプルダウン化）
 // ジョーカーはプルダウンに含めない（選択肢が多く固定できないため）＝自由記入の例外フローで扱う
 const FORM_VENUES=["分譲展示場①","分譲展示場②","分譲展示場③","工場見学（ファクトリー）","オーナー宅見学会","資金相談","事前審査申込","土地相談","プラン相談","その他①","その他②"];
 function openPicker(){
   const s=$("scan"),pick=$("pick");
-  const area=S.area||S.viewArea||AREAS[0];
+  const area=S.viewArea||S.area||AREAS[0];
   s.classList.add("show","picking");$("scan-t").textContent="読み取るQRを選んでください（デモ）";
   pick.style.display="block";
   const sotenDone=hasStamp("soten-"+area);
@@ -412,7 +413,7 @@ function openPicker(){
 }
 function showJokerInput(){
   const pick=$("pick");
-  const area=S.area||S.viewArea||AREAS[0];
+  const area=S.viewArea||S.area||AREAS[0];
   pick.innerHTML=`<div class="ph">🃏 ジョーカーQR：来場場所を入力（必須）</div>`+
     `<div style="padding:12px 14px">`+
       `<input id="joker-text" class="area-sel" style="margin-bottom:10px;width:100%" placeholder="例：${area}外の◯◯展示場／◯◯相談会 など自由記入">`+
@@ -434,7 +435,7 @@ function showVenuePulldown(){
     `</div>`;
 }
 function doScanCommit(form,venue,kind){
-  const area=S.area||S.viewArea||AREAS[0];
+  const area=S.viewArea||S.area||AREAS[0];
   $("pick").style.display="none";$("scan").classList.remove("picking");$("scan-t").textContent="QRコードを読み取り中…";
   setTimeout(()=>{
     $("scan").classList.remove("show");
@@ -507,10 +508,10 @@ function renderEntry(){
 $("entry-qr").addEventListener("click",()=>{startInflow("現地QR",$("entry-area").value,"qr");});
 $("entry-url-noattr").addEventListener("click",()=>{startInflow("配信・RM",null,"generic");});
 
-// 入口は①現地QR/②配信・リッチメニューの2つ。どちらもアンケートは「施策案内画像のみ」。送信＝カード発行後にエリア別トップでエリア画像を表示。
+// 入口は①現地QR/②配信・リッチメニューの2つ（どちらも流入は実質RM。流入経路の属性は持たない）。どちらもアンケートは「施策案内画像のみ」。
 function startInflow(inflow,area,mode){
   S.inflow=inflow;S.entryArea=(mode==="qr")?area:null;S.pref=null;
-  S.basho=null;S.area=area;S.viewArea=area;save();renderME("流入経路");renderGateHero();show("v-gate");
+  S.basho=null;S.area=area;S.homeArea=null;S.viewArea=area;save();renderME("エリア(表示)");renderGateHero();show("v-gate");
   toast("📝","初回アンケート","カード発行前は施策案内画像のみ表示。会員情報を入力するとカード発行＝エリア別トップに進みます。");}
 
 /* ---- アンケートのヒーロー画像（発行前：施策案内画像のみ＋対象会場ページ全体URL） ---- */
@@ -518,7 +519,7 @@ function renderGateHero(){
   const el=$("gate-hero"); if(!el)return;
   el.innerHTML=`<div class="fl-inner"><div class="fl-org">対象エリアのみなさまへ</div><div class="fl-title">住まい</div><div class="fl-en">STAMP RALLY</div><p class="fl-sub">展示場・相談・イベントをめぐってスタンプを集めよう!<br>エリアごとに5つ集めて景品をGET🎁</p><div class="fl-term"><span class="lb">開催期間</span><b>10月1日(水)〜12月31日(水)</b></div><div class="fl-photos"><div class="ph">🏠</div><div class="ph">🛋️</div><div class="ph">🪟</div><div class="ph">🚪</div></div></div>`+
     `<a class="cat" href="#" onclick="return false" style="text-decoration:none;color:inherit;margin-bottom:8px"><div class="ci">📍</div><div class="cx"><b>対象会場はこちら（全体）</b><span>対象会場ページ 全体へのURL（発行前）</span></div><span class="vbtn" style="pointer-events:none">開く</span></a>`;
-  $("gate-lead").textContent="はじめに会員情報をご登録ください（施策案内のみ・エリア画像は発行後）。郵便番号から判定したエリアのカードに進みます。";
+  $("gate-lead").textContent="はじめに会員情報をご登録ください（発行前は施策案内のみ）。郵便番号から判定したエリアのカードに進みます（エリア差分は発行後に文言＋バナー色で表示）。";
 }
 
 /* ---- member form (gate) ---- */
@@ -535,11 +536,11 @@ $("member-save").addEventListener("click",()=>{if(!validate())return;
     // ②配信・RM：郵便番号から判定したエリアを採用（未ヒットは東京）
     S.area = postalToArea(S.zip);
   }
-  S.basho = S.area; if(!S.inflow) S.inflow="会員登録";
+  S.basho = S.area; S.homeArea = S.area; // TOPは登録時のエリアで固定（以降のQR読取では変えない）
   S.viewArea=S.area; S.rwSel=S.area; S.last_at=nowStr(); save();
   $("nav").classList.add("on"); renderME("拠点(カスタム属性)"); renderTop(); renderStamp(); renderReward();
   show("v-top");
-  toast("✅","カード発行完了","「"+S.area+"エリア」のエリア別トップ（エリア画像＋対象会場エリア別リンク）を表示します。判定エリアを拠点カスタム属性に格納しました。");});
+  toast("✅","カード発行完了","「"+S.area+"エリア」のエリア別トップ（エリアごとの文言＋バナー色）を表示します。判定エリアを拠点カスタム属性に格納しました。");});
 
 /* ---- reward（交換する＋交換済み記録／受け取りは現地・別日OK） ---- */
 function renderReward(){
