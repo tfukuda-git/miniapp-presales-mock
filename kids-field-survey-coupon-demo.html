@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>キッズフィールド アンケート＋クーポン ミニアプリ デモ</title>
+<meta name="catalog:group" content="触れるデモ（最新・インタラクティブ）">
+<meta name="catalog:title" content="アンケート＋クーポン ミニアプリ（あそび場・小売）">
+<meta name="catalog:badge" content="Interactive">
+<meta name="catalog:desc" content="アンケート回答→お礼クーポン発行→バースデークーポンの店頭消し込みまで一連が動くデモ。お子様の動的追加・複数子クーポンも体験できます。">
+<meta name="catalog:icon" content="🎟️">
+<meta name="catalog:order" content="10">
+<meta name="catalog:iconColor" content="#E5371F">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:"Yu Gothic","ヒラギノ角ゴ ProN",sans-serif;background:#eef0f4;color:#111;padding:24px 12px;display:flex;flex-direction:column;align-items:center;}
+  .demo-head{max-width:700px;text-align:center;margin-bottom:6px;}
+  .demo-head h1{font-size:20px;color:#1F3864;}
+  .demo-head p{font-size:12px;color:#666;margin-top:4px;}
+  .demo-note{font-size:11px;color:#B23A1F;margin-top:6px;}
+  .stage{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;justify-content:center;margin-top:16px;}
+  /* phone */
+  .phone{width:340px;height:700px;border:12px solid #1b1b1b;border-radius:36px;background:#fff;overflow:hidden;position:relative;box-shadow:0 10px 30px rgba(0,0,0,.18);}
+  .notch{height:24px;background:#1b1b1b;width:130px;margin:0 auto;border-radius:0 0 14px 14px;}
+  .lhead{background:#06C755;color:#fff;padding:11px 14px;font-size:14px;font-weight:600;display:flex;justify-content:space-between;align-items:center;}
+  .lhead .av{width:26px;height:26px;background:#fff;color:#E5371F;border-radius:50%;text-align:center;line-height:26px;font-weight:800;margin-right:8px;display:inline-block;vertical-align:middle;}
+  .body{height:calc(100% - 24px - 44px);overflow-y:auto;background:#f4f5f7;position:relative;}
+  .pad{padding:16px;}
+  .screen{display:none;}
+  .screen.active{display:block;}
+  h2.title{font-size:17px;color:#1F3864;margin-bottom:6px;}
+  p.lead{font-size:12px;color:#555;line-height:1.6;margin-bottom:14px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:5px;}
+  .field label .req{color:#E53935;font-size:11px;}
+  .field label .tag{background:#E5371F;color:#fff;font-size:9px;border-radius:8px;padding:1px 6px;margin-left:6px;}
+  .field input,.field select{width:100%;padding:9px 10px;font-size:13px;border:1px solid #ccc;border-radius:8px;background:#fff;}
+  .field .hint{font-size:10px;color:#888;margin-top:3px;}
+  .field .ok{font-size:11px;color:#06870f;margin-top:3px;}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;}
+  .chip{border:1px solid #ccc;border-radius:16px;padding:7px 13px;font-size:12px;cursor:pointer;user-select:none;background:#fff;}
+  .chip.sel{background:#E8F0FE;border-color:#2E5BAB;color:#1F3864;font-weight:600;}
+  .btn{display:block;width:100%;padding:13px;background:#06C755;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:14px;}
+  .btn:active{transform:scale(.99);}
+  .btn.o{background:#fff;color:#1F3864;border:1px solid #1F3864;}
+  .btn.r{background:#E5371F;}
+  .btn.g{background:#bbb;}
+  .btn.add{background:#fff;color:#06870f;border:1px dashed #06C755;}
+  .btn.sm{padding:9px;font-size:13px;}
+  .card{border:1px solid #e2e2e2;border-radius:12px;padding:12px;margin-bottom:12px;background:#fafbff;}
+  .card .ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .card .ct{font-size:13px;font-weight:700;color:#1F3864;}
+  .card .del{font-size:11px;color:#E53935;border:1px solid #E53935;border-radius:6px;padding:3px 9px;cursor:pointer;}
+  .menu{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:#ddd;}
+  .tile{background:#2E5BAB;color:#fff;min-height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:600;cursor:pointer;text-align:center;padding:6px;}
+  .tile .i{font-size:24px;margin-bottom:4px;}
+  .tile:nth-child(1){background:#E5371F;} .tile:nth-child(2){background:#F4901E;} .tile:nth-child(3){background:#06C755;}
+  .tile:nth-child(4){background:#2E5BAB;} .tile:nth-child(5){background:#7B61FF;} .tile:nth-child(6){background:#3A7BCC;}
+  .bubble{background:#fff;border:1px solid #e6e6e6;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.6;margin:12px;}
+  .review{font-size:13px;line-height:2;color:#333;background:#fff;border-radius:10px;padding:14px;border:1px solid #eee;}
+  .review b{color:#1F3864;}
+  .cp{border-radius:12px;overflow:hidden;margin-bottom:14px;border:1px solid #eaeaea;box-shadow:0 1px 4px rgba(0,0,0,.05);cursor:pointer;}
+  .cp .top{padding:12px 14px;color:#fff;display:flex;justify-content:space-between;align-items:center;}
+  .cp.bday .top{background:#E5371F;} .cp.ec .top{background:#06870f;}
+  .cp .who{font-size:11px;opacity:.92;}
+  .cp .amt{font-size:20px;font-weight:800;}
+  .cp .bd{padding:11px 14px;background:#fff;}
+  .cp .meta{font-size:11px;color:#777;line-height:1.7;}
+  .cp .code{font-family:monospace;font-size:13px;background:#f4f5f7;border-radius:6px;padding:5px 8px;margin-top:5px;display:inline-block;}
+  .badge{display:inline-block;font-size:10px;border-radius:10px;padding:2px 8px;color:#fff;}
+  .badge.un{background:#06C755;} .badge.used{background:#999;}
+  .stamp{display:inline-block;transform:rotate(-11deg);border:2px solid #999;color:#999;font-weight:800;font-size:15px;border-radius:6px;padding:2px 12px;}
+  .thanks{border:2px dashed #E5371F;border-radius:12px;padding:16px;text-align:center;background:#FFF6F4;}
+  .thanks .big{font-size:22px;font-weight:800;color:#E5371F;}
+  .thanks .s{font-size:11px;color:#888;margin-top:4px;}
+  .overlay{position:absolute;inset:0;background:rgba(20,25,40,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:5;}
+  .overlay.show{display:flex;}
+  .modal{background:#fff;border-radius:14px;padding:18px;width:100%;}
+  .modal h3{font-size:15px;color:#1F3864;margin-bottom:8px;}
+  .modal p{font-size:12px;color:#555;line-height:1.6;margin-bottom:14px;}
+  .prog{display:flex;gap:6px;margin-bottom:14px;}
+  .prog span{flex:1;height:4px;border-radius:2px;background:#dcdfe6;}
+  .prog span.on{background:#06C755;}
+  .side{max-width:300px;font-size:12px;color:#444;background:#fff;border-radius:12px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,.06);}
+  .side h3{font-size:13px;color:#1F3864;margin-bottom:8px;}
+  .side ul{list-style:none;} .side li{padding:6px 0;border-bottom:1px dashed #eee;line-height:1.5;}
+  .side li b{color:#E5371F;}
+  .reset{margin-top:12px;font-size:11px;color:#2E5BAB;cursor:pointer;text-decoration:underline;background:none;border:none;}
+  .toolbar{background:#fff;border-bottom:1px solid #eee;padding:6px 10px;font-size:11px;color:#888;display:flex;justify-content:space-between;align-items:center;}
+  .toolbar .back{color:#2E5BAB;cursor:pointer;font-weight:600;}
+</style>
+</head>
+<body>
+
+<div class="demo-head">
+  <h1>キッズフィールド LINEミニアプリ デモ</h1>
+  <p>アンケート＋クーポン ミニアプリ｜ 実際にタップして動きます</p>
+  <p class="demo-note">※ プリセール用の匿名デモ。実データは連携しません。配色・文言はブランドに合わせて調整します。</p>
+</div>
+
+<div class="stage">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="lhead"><span><span class="av">K</span>キッズフィールド公式</span><span id="hdrRight">⋮</span></div>
+    <div class="body" id="body">
+
+      <!-- HOME -->
+      <div class="screen active" id="s-home">
+        <div class="bubble">ようこそ！アンケートにご回答いただくとお礼クーポンをお渡しします。お子様のお誕生日にはバースデー特典も届きます。</div>
+        <div class="menu">
+          <div class="tile" onclick="go('survey1')"><div class="i">📋</div>アンケート</div>
+          <div class="tile" onclick="go('coupons')"><div class="i">🎟️</div>マイクーポン</div>
+          <div class="tile"><div class="i">📝</div>免責同意</div>
+          <div class="tile"><div class="i">🎂</div>バースデー</div>
+          <div class="tile"><div class="i">📰</div>店舗ブログ</div>
+          <div class="tile"><div class="i">❓</div>お問い合わせ</div>
+        </div>
+        <div class="pad" style="padding-top:12px;"><p class="lead">上の「アンケート」または「マイクーポン」をタップしてください。</p></div>
+      </div>
+
+      <!-- SURVEY 1 -->
+      <div class="screen" id="s-survey1">
+        <div class="toolbar"><span class="back" onclick="go('home')">‹ メニュー</span><span>アンケート 1/2</span></div>
+        <div class="pad">
+          <div class="prog"><span class="on"></span><span></span></div>
+          <h2 class="title">ご利用について</h2>
+          <div class="field"><label>① 店舗の利用状況 <span class="req">必須</span></label>
+            <div class="chips" data-single><span class="chip sel">よく利用</span><span class="chip">時々</span><span class="chip">初めて</span></div></div>
+          <div class="field"><label>② ご利用店舗 <span class="req">必須</span><span class="tag">店舗マスター連携</span></label>
+            <select id="store"><option>キッズフィール 〇〇店</option><option>キッズフィール △△店</option><option>キッズフィール □□店</option><option>キッズフィールSHOP 中央店</option></select>
+            <div class="hint">★ 店舗マスタから自動生成（店舗の増減に自動追従）</div></div>
+          <div class="field"><label>③ お住まいの地域（郵便番号 上3桁）<span class="req">必須</span></label>
+            <input id="zip" maxlength="3" value="514" style="width:100px;"><div class="ok">✓ 3桁でOK</div></div>
+          <button class="btn" onclick="go('survey2')">次へ（お子様情報）</button>
+        </div>
+      </div>
+
+      <!-- SURVEY 2 -->
+      <div class="screen" id="s-survey2">
+        <div class="toolbar"><span class="back" onclick="go('survey1')">‹ 戻る</span><span>アンケート 2/2</span></div>
+        <div class="pad">
+          <div class="prog"><span class="on"></span><span class="on"></span></div>
+          <h2 class="title">お子様について</h2>
+          <div class="field"><label>④ お子様との続柄 <span class="req">必須</span></label>
+            <div class="chips" data-single><span class="chip sel">父</span><span class="chip">母</span><span class="chip">祖父母</span><span class="chip">その他</span></div></div>
+          <label style="font-size:12px;font-weight:600;color:#333;">⑤ お子様について <span class="tag">動的に追加できます</span></label>
+          <div id="children" style="margin-top:6px;"></div>
+          <button class="btn add" id="addChild" onclick="addChild()">＋ お子様を追加</button>
+          <button class="btn" onclick="toConfirm()">入力内容を確認する</button>
+        </div>
+      </div>
+
+      <!-- CONFIRM -->
+      <div class="screen" id="s-confirm">
+        <div class="toolbar"><span class="back" onclick="go('survey2')">‹ 戻る</span><span>確認</span></div>
+        <div class="pad">
+          <h2 class="title">入力内容のご確認</h2>
+          <div class="review" id="reviewBox"></div>
+          <button class="btn" onclick="submitSurvey()">この内容で送信する</button>
+          <button class="btn o" onclick="go('survey2')">修正する</button>
+        </div>
+      </div>
+
+      <!-- DONE -->
+      <div class="screen" id="s-done">
+        <div class="pad" style="text-align:center;">
+          <div style="font-size:44px;margin:18px 0 6px;">🎉</div>
+          <h2 class="title" style="text-align:center;">ご回答ありがとうございました</h2>
+          <p class="lead" style="text-align:center;">お礼クーポンをプレゼント！</p>
+          <div class="thanks"><div class="s">オンラインショップ限定</div><div class="big">500円OFF</div><div class="s">コード：KF-8QLD-3RB2</div><div class="s">有効期限：2026/09/14</div></div>
+          <button class="btn o" style="margin-top:16px;" onclick="go('coupons')">マイクーポンを見る</button>
+        </div>
+      </div>
+
+      <!-- COUPONS LIST -->
+      <div class="screen" id="s-coupons">
+        <div class="toolbar"><span class="back" onclick="go('home')">‹ メニュー</span><span>マイクーポン</span></div>
+        <div class="pad" id="couponList"></div>
+      </div>
+
+      <!-- COUPON DETAIL -->
+      <div class="screen" id="s-detail">
+        <div class="toolbar"><span class="back" onclick="go('coupons')">‹ 一覧へ</span><span>クーポン詳細</span></div>
+        <div class="pad" id="detailBox"></div>
+      </div>
+
+      <!-- overlay modal -->
+      <div class="overlay" id="overlay">
+        <div class="modal">
+          <h3 id="mTitle">このクーポンを使用しますか？</h3>
+          <p id="mBody">使用済みにします。一度使用すると元に戻せません。店頭スタッフの確認のもとで使用してください。</p>
+          <button class="btn r sm" onclick="confirmUse()">使用する</button>
+          <button class="btn o sm" onclick="closeModal()">キャンセル</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="side">
+    <h3>デモの見どころ</h3>
+    <ul>
+      <li>② <b>店舗マスター連携</b>：店舗の増減に自動追従する選択肢（フォームでは不可）</li>
+      <li>⑤ <b>お子様の動的追加/削除</b>：「追加」で最大4人まで増減</li>
+      <li>回答送信 → <b>お礼クーポン</b>を自動割当</li>
+      <li>マイクーポン：子ごとに<b>バースデークーポン</b>を表示</li>
+      <li>クーポン<b>使用 → 使用済み</b>（消し込み。状態はCRM側で管理）</li>
+    </ul>
+    <button class="reset" onclick="resetDemo()">最初からやり直す</button>
+  </div>
+</div>
+</div>
+
+<script>
+var children = [
+  {name:'はな', bday:'2021-07-10'},
+  {name:'そら#, bday:'2023-04-02'}
+];
+var coupons = [];
+var pendingUse = null;
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('s-'+id).classList.add('active');
+  document.getElementById('body').scrollTop = 0;
+  if(id==='survey2') renderChildren();
+  if(id==='coupons') renderCoupons();
+}
+
+/* single-select chips */
+document.addEventListener('click', function(e){
+  var chip = e.target.closest('.chips[data-single] .chip');
+  if(chip){
+    chip.parentElement.querySelectorAll('.chip').forEach(function(c){c.classList.remove('sel');});
+    chip.classList.add('sel');
+  }
+});
+
+function renderChildren(){
+  var wrap = document.getElementById('children');
+  wrap.innerHTML = '';
+  children.forEach(function(c,i){
+    var d = document.createElement('div');
+    d.className = 'card';
+    d.innerHTML =
+      '<div class="ch"><span class="ct">お子様 '+(i+1)+'</span>'+
+      (children.length>1?'<span class="del" onclick="removeChild('+i+')">削除</span>':'<span></span>')+'</div>'+
+      '<div class="field"><label>ニックネーム</label><input value="'+c.name+'" oninput="children['+i+'].name=this.value"></div>'+
+      '<div class="field"><label>生年月日</label><input type="date" value="'+c.bday+'" oninput="children['+i+'].bday=this.value"></div>';
+    wrap.appendChild(d);
+  });
+  document.getElementById('addChild').style.display = children.length>=4 ? 'none' : 'block';
+}
+function addChild(){
+  if(children.length>=4) return;
+  children.push({name:'', bday:''});
+  renderChildren();
+}
+function removeChild(i){
+  children.splice(i,1);
+  renderChildren();
+}
+
+function toConfirm(){
+  var store = document.getElementById('store').value;
+  var zip = document.getElementById('zip').value;
+  var rel = document.querySelector('#s-survey2 .chips .chip.sel').textContent;
+  var use = document.querySelector('#s-survey1 .chips .chip.sel').textContent;
+  var kids = children.map(function(c,i){return '<b>お子様'+(i+1)+'：</b>'+(c.name||'(未入力)')+'（'+(c.bday||'-')+'）';}).join('<br>');
+  document.getElementById('reviewBox').innerHTML =
+    '<b>① 利用状況：</b>'+use+'<br><b>② ご利用店舗：</b>'+store+'<br><b>③ お住まい(上3桁)：</b>'+zip+'<br><b>④ 続柄：</b>'+rel+'<br>'+kids;
+  go('confirm');
+}
+
+function monthName(bday){ if(!bday) return ''; return parseInt(bday.split('-')[1],10)+'月'; }
+
+function submitSurvey(){
+  coupons = [];
+  coupons.push({id:'ec', type:'ec', who:'アンケート回答お礼', title:'オンラインショップ', amt:'500円OFF', code:'KF-8QLD-3RB2', exp:'2026/09/14', used:false, ecSide:true});
+  children.forEach(function(c,i){
+    coupons.push({id:'b'+i, type:'bday', who:(c.name||'お子様'+(i+1))+'（'+monthName(c.bday)+'生まれ）', title:'バースデー特典', amt:'200円OFF', place:'あそび場割引', exp:'誥生月内', used:false, usedAt:''});
+  });
+  go('done');
+}
+
+function renderCoupons(){
+  var box = document.getElementById('couponList');
+  if(coupons.length===0){
+    box.innerHTML = '<p class="lead">まだクーポンがありません。先に「アンケート」にご回答ください。</p><button class="btn" onclick="go(\'survey1\')">アンケートに回答する</button>';
+    return;
+  }
+  box.innerHTML = '<p class="lead">お子様ごとにクーポンが表示されます。タップして詳細・使用へ。</p>' +
+    coupons.map(function(cp){
+      var status = cp.ecSide ? '<span class="meta">（使用済み判定はＥｃＥサイト側）</span>'
+        : (cp.used ? '<span class="badge used">使用済み</span> <span class="meta">'+cp.usedAt+'</span>' : '<span class="badge un">未使用</span>');
+      var codeHtml = cp.code ? '<div class="code">'+cp.code+'</div>' : '';
+      return '<div class="cp '+cp.type+'" onclick="openDetail(\''+cp.id+'\')">'+
+        '<div class="top"><div><div class="who">'+cp.who+'</div><div>'+cp.title+'</div></div><div class="amt">'+cp.amt+'</div></div>'+
+        '<div class="bd">'+status+'<div class="meta">'+(cp.place?cp.place+' ／ ':'')+'有効期限 '+cp.exp+'</div>'+codeHtml+'</div></div>';
+    }).join('');
+}
+
+function openDetail(id){
+  var cp = coupons.find(function(c){return c.id===id;});
+  var box = document.getElementById('detailBox');
+  if(cp.type==='ec'){
+    box.innerHTML = '<h2 class="title">'+cp.title+' クーポン</h2>'+
+      '<div class="cp ec" style="cursor:default;"><div class="top"><div><div class="who">'+cp.who+'</div><div>'+cp.title+'</div></div><div class="amt">'+cp.amt+'</div></div>'+
+      '<div class="bd"><div class="code">'+cp.code+'</div><div class="meta">有効期限 '+cp.exp+'</div></div></div>'+
+      '<p class="lead">オンラインショップのカート画面でコードをご入力ください。（使用済み判定はECサイト側で行います）</p>'+
+      '<button class="btn o" onclick="go(\'coupons\')">一覧に戻る</button>';
+  } else {
+    var body;
+    if(cp.used){
+      body = '<div class="thanks" style="border-color:#999;background:#f7f7f7;"><div class="s" style="color:#999;">'+cp.who+'</div><div style="margin:8px 0;"><span class="stamp">使用済み</span></div><div class="s">使用日時 '+cp.usedAt+'</div></div>'+
+        '<p class="lead">このクーポンは使用済みです。再利用はできません。</p>';
+    } else {
+      body = '<div class="cp bday" style="cursor:default;"><div class="top"><div><div class="who">'+cp.who+'</div><div>'+cp.title+'</div></div><div class="amt">'+cp.amt+'</div></div>'+
+        '<div class="bd"><span class="badge un">未使用</span><div class="meta">'+cp.place+' ／ 有効期限 '+cp.exp+'<br>※入場受付でこの画面をご提示ください</div></div></div>'+
+        '<button class="btn r" onclick="askUse(\''+cp.id+'\')">このクーポンを使用する</button>';
+    }
+    box.innerHTML = '<h2 class="title">🎂 '+cp.who+'</h2>'+body+'<button class="btn o" onclick="go(\'coupons\')">一覧に戻る</button>';
+  }
+  go('detail');
+}
+
+function askUse(id){ pendingUse=id; document.getElementById('overlay').classList.add('show'); }
+function closeModal(){ document.getElementById('overlay').classList.remove('show'); pendingUse=null; }
+function confirmUse(){
+  var cp = coupons.find(function(c){return c.id===pendingUse;});
+  if(cp){cp.used = true;
+    var d = new Date();
+    cp.usedAt = d.getFullYear()+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+('0'+d.getDate()).slice(-2)+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+  }
+  closeModal();
+  openDetail(cp.id);
+}
+
+function resetDemo(){
+  children = [{name:'はな', bday:'2021-07-10'},{name:'そら', bday:'2023-04-02'}];
+  coupons = [];
+  go('home');
+}
+</script>
+</body>
+</html>
