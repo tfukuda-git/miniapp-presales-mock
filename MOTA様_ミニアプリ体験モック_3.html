@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MOTA様｜LINEミニアプリ 体験モック</title>
+<style>
+:root{
+  --navy:#12243D;
+  --red:#E23A2E;
+  --red-d:#C22A20;
+  --ink:#1B2733;
+  --sub:#6B7A8C;
+  --line:#E3E8EE;
+  --bg:#F5F7FA;
+  --green:#06C755;
+  --carcolor:#F2F3F5;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#EEF1F5;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",-apple-system,sans-serif;color:var(--ink)}
+
+/* ---------- 外枠 ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+.hd h1{font-size:21px;margin:0 0 5px;letter-spacing:.02em}
+.hd p{margin:0;color:var(--sub);font-size:13px;line-height:1.7}
+.tabs{display:flex;gap:8px;margin:22px 0 18px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:#fff;padding:11px 18px;border-radius:999px;font-size:13.5px;font-weight:700;color:var(--sub);cursor:pointer}
+.tab.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.stage{display:none}
+.stage.on{display:block}
+.cols{display:flex;gap:36px;align-items:flex-start;flex-wrap:wrap}
+.panel{flex:1 1 380px;min-width:320px}
+.panel h2{font-size:16px;margin:0 0 6px}
+.panel .lead{font-size:13px;color:var(--sub);line-height:1.85;margin:0 0 18px}
+.kicker{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;padding:4px 10px;border-radius:4px;margin-bottom:10px}
+.kicker.a{background:#FFF0EE;color:var(--red)}
+.kicker.b{background:#E8F0FB;color:#1D4E9B}
+.steps{background:#fff;border:1px solid var(--line);border-radius:12px;padding:6px 4px}
+.steps div{padding:11px 14px;font-size:13px;border-bottom:1px solid #F1F4F8;cursor:pointer;display:flex;gap:10px;align-items:flex-start;line-height:1.55}
+.steps div:last-child{border-bottom:0}
+.steps div:hover{background:#F7F9FC}
+.steps b{color:var(--navy);font-size:11px;min-width:52px;padding-top:1px}
+.steps span{flex:1}
+.steps em{display:block;font-style:normal;color:var(--sub);font-size:11.5px;margin-top:2px}
+.modes{display:flex;gap:6px;margin:0 0 12px}
+.mbtn{flex:1;border:1.5px solid var(--line);background:#fff;padding:9px 6px;border-radius:9px;font-size:12px;font-weight:700;color:var(--sub);cursor:pointer;font-family:inherit}
+.mbtn.on{border-color:#1D4E9B;background:#EDF3FD;color:#1D4E9B}
+.note{margin-top:16px;font-size:11.5px;color:var(--sub);line-height:1.8;background:#fff;border:1px dashed var(--line);border-radius:10px;padding:12px 14px}
+
+/* ---------- スマホ ---------- */
+.phone{flex:0 0 auto;width:378px;height:770px;background:#000;border-radius:48px;padding:11px;box-shadow:0 26px 60px rgba(18,36,61,.28);position:relative}
+.island{position:absolute;top:22px;left:50%;transform:translateX(-50%);width:104px;height:28px;background:#000;border-radius:20px;z-index:300}
+.app{position:absolute;inset:11px;border-radius:38px;overflow:hidden;background:var(--bg)}
+.line-header{position:absolute;top:0;left:0;right:0;z-index:100;background:#fff;padding:42px 14px 11px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #EDF0F4}
+.lh-back{width:22px;color:#333;font-size:17px}
+.lh-title{flex:1;text-align:center;font-size:14px;font-weight:700;letter-spacing:.01em}
+.lh-badge{display:inline-block;width:13px;height:13px;background:var(--green);border-radius:50%;color:#fff;font-size:9px;line-height:13px;text-align:center;margin-left:4px;vertical-align:1px}
+.lh-menu{width:22px;text-align:right;color:#333;font-size:17px}
+.line-loading-bar{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green) 0%,var(--green) 62%,#E8ECF1 62%);z-index:100}
+.screens{position:absolute;left:0;right:0;overflow:hidden}
+.screen{position:absolute;inset:0;overflow-y:auto;display:none;background:var(--bg)}
+.screen.active{display:block;animation:sl .26s ease}
+@keyframes sl{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;z-index:100;background:#fff;border-top:1px solid #EDF0F4;display:flex;padding:8px 0 18px}
+.bottom-nav button{flex:1;background:none;border:0;font-size:10px;color:#9AA7B4;font-family:inherit;cursor:pointer;line-height:1.5}
+.bottom-nav button i{display:block;font-size:17px;font-style:normal;margin-bottom:1px}
+.bottom-nav button.on{color:var(--red);font-weight:700}
+.nav-spacer{height:14px}
+
+/* ---------- 共通パーツ ---------- */
+.pad{padding:16px 16px 26px}
+.h1{font-size:19px;font-weight:800;line-height:1.45;margin:0 0 8px;letter-spacing:.01em}
+.h2{font-size:14px;font-weight:800;margin:0 0 8px}
+.p{font-size:12.5px;color:var(--sub);line-height:1.8;margin:0 0 14px}
+.btn{display:block;width:100%;border:0;background:var(--red);color:#fff;font-weight:800;font-size:15px;padding:15px;border-radius:12px;font-family:inherit;cursor:pointer;box-shadow:0 6px 14px rgba(226,58,46,.28)}
+.btn:active{background:var(--red-d)}
+.btn.ghost{background:#fff;color:var(--navy);border:1.5px solid #D8DFE7;box-shadow:none}
+.btn.sm{font-size:13px;padding:11px}
+.card{background:#fff;border-radius:14px;padding:15px;margin-bottom:12px;box-shadow:0 1px 3px rgba(18,36,61,.07)}
+.tag{display:inline-block;background:#FFF0EE;color:var(--red);font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:5px}
+.tag.g{background:#E9F8EF;color:#12874A}
+.tag.b{background:#EDF3FD;color:#1D4E9B}
+.rowb{display:flex;justify-content:space-between;align-items:center}
+.hr{height:1px;background:#EEF1F5;margin:12px 0}
+.mini{font-size:10.5px;color:#9AA7B4;line-height:1.7}
+
+/* 車 */
+.carbox{background:linear-gradient(180deg,#fff 0%,#EFF3F8 100%);border-radius:14px;padding:10px 8px 4px;margin-bottom:12px}
+.carbox svg{display:block;width:100%;height:auto}
+.carname{text-align:center;font-size:12px;font-weight:700;padding:2px 0 8px;color:var(--navy)}
+.carname small{display:block;font-weight:400;color:var(--sub);font-size:10.5px;margin-top:2px}
+
+/* レンジバー */
+.range{background:var(--navy);border-radius:14px;padding:13px 15px 15px;margin-bottom:14px;color:#fff}
+.range .lbl{font-size:10.5px;opacity:.72;margin-bottom:3px}
+.range .val{font-size:20px;font-weight:800;letter-spacing:.01em}
+.range .val small{font-size:12px;font-weight:600;opacity:.8}
+.track{position:relative;height:7px;background:rgba(255,255,255,.18);border-radius:4px;margin-top:11px}
+.fill{position:absolute;top:0;bottom:0;background:linear-gradient(90deg,#FF7A5C,var(--red));border-radius:4px;transition:left .5s cubic-bezier(.4,0,.2,1),right .5s cubic-bezier(.4,0,.2,1)}
+.scale{display:flex;justify-content:space-between;font-size:9.5px;opacity:.6;margin-top:5px}
+
+/* 選択肢 */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.grid.c3{grid-template-columns:1fr 1fr 1fr}
+.opt{background:#fff;border:1.5px solid #E3E8EE;border-radius:11px;padding:13px 8px;text-align:center;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--ink)}
+.opt:active,.opt.sel{border-color:var(--red);background:#FFF6F5;color:var(--red)}
+.opt small{display:block;font-weight:400;color:var(--sub);font-size:10.5px;margin-top:3px}
+.opt.sel small{color:var(--red)}
+.dots{display:flex;gap:9px;justify-content:center;padding:4px 0 14px}
+.dot{width:24px;height:24px;border-radius:50%;border:1.5px solid #D8DFE7;cursor:pointer}
+.dot.sel{box-shadow:0 0 0 3px rgba(226,58,46,.3);border-color:var(--red)}
+.prog{height:4px;background:#E3E8EE;border-radius:3px;margin:0 0 16px}
+.prog i{display:block;height:100%;background:var(--red);border-radius:3px;transition:width .35s}
+.qno{font-size:11px;color:var(--sub);font-weight:700;margin-bottom:6px}
+.skip{display:block;width:100%;background:none;border:0;color:var(--sub);font-size:12px;text-decoration:underline;margin-top:14px;font-family:inherit;cursor:pointer}
+
+/* LINE側（アプリ外）の画面 */
+.lside{position:absolute;inset:0;overflow-y:auto;background:#fff}
+.lhd{padding:42px 16px 10px;font-size:16px;font-weight:800;border-bottom:1px solid #EDF0F4;position:sticky;top:0;background:#fff;z-index:5}
+.lsearch{margin:12px 14px;background:#F0F2F5;border-radius:10px;padding:9px 12px;font-size:12.5px;color:#9AA7B4;display:flex;align-items:center;gap:7px}
+.lsearch b{color:var(--ink);font-weight:600}
+.lsec{font-size:11px;font-weight:700;color:var(--sub);padding:12px 16px 6px}
+.srow{display:flex;align-items:center;gap:11px;padding:11px 16px;border-bottom:1px solid #F4F6F9;cursor:pointer}
+.srow:active{background:#F7F9FC}
+.sicon{width:40px;height:40px;border-radius:11px;background:#E8EDF3;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#A9B5C2}
+.sicon.mota{background:var(--red);color:#fff;font-size:10px;letter-spacing:-.02em}
+.srow .st{flex:1;min-width:0}
+.srow .nm{font-size:13.5px;font-weight:700}
+.srow .sb{font-size:10.5px;color:var(--sub);margin-top:1px}
+.srow .go{font-size:15px;color:#C3CBD4}
+.hint{margin:14px;background:#EAF3FF;border:1px solid #C3DAF6;border-radius:11px;padding:11px 13px;font-size:11px;line-height:1.65;color:#1D4E9B}
+.hint b{color:#123B7A}
+.springboard{position:absolute;inset:0;background:linear-gradient(160deg,#2A3A55,#516B8F 60%,#8FA6BE);padding:56px 22px 0}
+.sbgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px 16px}
+.sbapp{text-align:center}
+.sbapp i{display:block;width:54px;height:54px;border-radius:14px;background:rgba(255,255,255,.28);margin:0 auto 5px}
+.sbapp.mota i{background:var(--red);box-shadow:0 4px 12px rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800;font-style:normal;letter-spacing:-.02em}
+.sbapp span{font-size:9.5px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.sbnote{position:absolute;left:14px;right:14px;bottom:22px;background:rgba(255,255,255,.95);border-radius:12px;padding:12px 14px;font-size:11px;line-height:1.65;color:#1D4E9B}
+.sbnote b{color:#123B7A}
+
+/* トーク画面（共通の追加パーツ） */
+.talk-topbar{background:#EDF1F6;padding:8px 14px;font-size:10px;color:#5C6875;line-height:1.5;text-align:center}
+.talk-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:4px}
+.avatar{width:34px;height:34px;border-radius:50%;flex:0 0 auto;background:var(--red);color:#fff;font-size:8.5px;font-weight:800;display:flex;align-items:center;justify-content:center;letter-spacing:-.02em}
+.talk-name{font-size:10px;color:rgba(255,255,255,.9);margin-bottom:3px}
+.flexcard{background:#fff;border-radius:14px;overflow:hidden;max-width:230px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.flexcard .hero{height:88px;background:linear-gradient(180deg,#fff,#E8EEF6);display:flex;align-items:center;justify-content:center;padding:6px}
+.flexcard .hero svg{width:88%;height:auto}
+.flexcard .fb{padding:12px 13px}
+.flexcard .ft{font-size:13.5px;font-weight:800;margin-bottom:5px}
+.flexcard .fp{font-size:11.5px;color:var(--sub);line-height:1.6;margin-bottom:9px}
+.flexcard .frange{background:#F3F6FA;border-radius:8px;padding:8px 10px;margin-bottom:10px}
+.flexcard .frange b{font-size:14px;color:var(--navy)}
+.flexcard .frange span{font-size:10px;color:var(--sub);display:block}
+.flexbtn{display:block;text-align:center;background:var(--red);color:#fff;border-radius:9px;padding:10px;font-size:12.5px;font-weight:700;cursor:pointer}
+.talk-input{position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #E3E8EE;padding:9px 12px 22px;display:flex;align-items:center;gap:9px}
+.talk-input .box{flex:1;background:#F0F2F5;border-radius:16px;padding:8px 13px;font-size:11.5px;color:#A9B5C2}
+.talk-input .ic{font-size:15px;color:#A9B5C2}
+
+/* サービスメッセージ（テンプレート形式） */
+.svcmsg{background:#fff;border-radius:14px;overflow:hidden;max-width:88%;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.svcmsg .ttl{padding:13px 14px 0;font-size:13.5px;font-weight:800;line-height:1.35}
+.svcmsg .dtl{padding:7px 14px 0;font-size:11.5px;color:var(--sub);line-height:1.65}
+.svcmsg .kv{margin:10px 14px 0;background:#F5F7FA;border-radius:8px;padding:9px 11px}
+.svcmsg .kv div{display:flex;justify-content:space-between;font-size:11px;padding:2px 0}
+.svcmsg .kv span{color:var(--sub)}
+.svcmsg .kv b{color:var(--ink)}
+.svcmsg .btns{padding:11px 14px 0}
+.svcmsg .sbtn{display:block;text-align:center;border:1.5px solid #D8DFE7;border-radius:9px;padding:9px;font-size:12px;font-weight:700;color:var(--navy);cursor:pointer;margin-bottom:7px}
+.svcmsg .foot{margin-top:11px;border-top:1px solid #EEF1F5;padding:9px 14px;display:flex;align-items:center;gap:7px}
+.svcmsg .foot i{width:17px;height:17px;border-radius:4px;background:var(--red);color:#fff;font-size:6.5px;font-weight:800;display:flex;align-items:center;justify-content:center;font-style:normal}
+.svcmsg .foot span{font-size:10px;color:var(--sub)}
+.svcmsg.other{opacity:.62}
+.svcmsg.other .foot i{background:#A9B5C2}
+
+/* トーク画面 */
+.talk{position:absolute;inset:0;background:#8CABD9;overflow-y:auto}
+.talk-hd{background:#fff;padding:42px 14px 11px;font-size:14px;font-weight:700;text-align:center;border-bottom:1px solid #EDF0F4}
+.talk-body{padding:16px 14px}
+.talk-day{text-align:center;margin-bottom:14px}
+.talk-day span{background:rgba(0,0,0,.22);color:#fff;font-size:10.5px;padding:3px 12px;border-radius:12px}
+.msg{background:#fff;border-radius:14px;overflow:hidden;max-width:82%;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.msg-hd{background:#F4F6F9;padding:7px 12px;font-size:10.5px;color:var(--sub);display:flex;align-items:center;gap:5px;border-bottom:1px solid #EAEEF3}
+.msg-bd{padding:13px}
+.msg-bd b{font-size:13.5px;display:block;margin-bottom:5px}
+.msg-bd p{font-size:12px;color:var(--sub);line-height:1.7;margin:0 0 11px}
+.msg-btn{display:block;text-align:center;border:1.5px solid #D8DFE7;border-radius:9px;padding:10px;font-size:12.5px;font-weight:700;color:var(--navy);cursor:pointer}
+.msg-time{font-size:9.5px;color:rgba(255,255,255,.85);margin-top:5px}
+
+/* 業者カード */
+.biz{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;border-left:4px solid var(--red)}
+.biz.r2{border-left-color:#F0A030}
+.biz.r3{border-left-color:#8CA0B8}
+.rank{display:inline-block;background:var(--red);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:4px;margin-right:6px}
+.rank.r2{background:#F0A030}.rank.r3{background:#8CA0B8}
+.amt{font-size:21px;font-weight:800;color:var(--navy);letter-spacing:-.01em}
+.amt small{font-size:12px}
+
+/* カルテの愛車ビジュアル */
+.carK{transition:transform .6s cubic-bezier(.34,1.2,.64,1)}
+.carK.roll{transform:translateX(10px)}
+.pulse{animation:pl .7s ease}
+@keyframes pl{0%{r:4}45%{r:8}100%{r:4}}
+
+/* 編集シート */
+.sheet{position:absolute;inset:0;z-index:200;display:none}
+.sheet.on{display:block}
+.sheet .scrim{position:absolute;inset:0;background:rgba(18,36,61,.45)}
+.sheet .body{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;padding:18px 16px 22px;animation:up .24s ease}
+@keyframes up{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+.sheet .grip{width:38px;height:4px;border-radius:3px;background:#DDE3EA;margin:0 auto 14px}
+.kmrow{display:flex;align-items:center;gap:10px;background:#F7F9FC;border:1.5px solid #E3E8EE;border-radius:11px;padding:12px 14px;margin-bottom:11px}
+.kmrow .val{flex:1;font-size:26px;font-weight:800;text-align:center;letter-spacing:-.01em}
+.kmrow .unit{font-size:12px;color:var(--sub);font-weight:700}
+.step{width:38px;height:38px;border-radius:10px;border:1.5px solid #D8DFE7;background:#fff;font-size:19px;font-weight:700;color:var(--navy);font-family:inherit;cursor:pointer}
+.step:active{background:#F1F4F8}
+.locked{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#EEF1F5;border-radius:10px;overflow:hidden;margin-bottom:12px}
+.locked div{background:#FAFBFC;padding:9px 11px}
+.locked dt{font-size:9.5px;color:#9AA7B4;margin-bottom:2px}
+.locked dd{margin:0;font-size:12px;font-weight:700;color:#8A97A6}
+.toast{position:absolute;left:14px;right:14px;bottom:74px;z-index:150;background:#12874A;color:#fff;border-radius:11px;padding:11px 14px;font-size:11.5px;line-height:1.5;box-shadow:0 8px 20px rgba(0,0,0,.2);display:none}
+.toast.on{display:block;animation:up .24s ease}
+
+/* カルテ */
+.karte-hd{background:linear-gradient(135deg,var(--navy),#1E3E68);border-radius:16px;padding:16px;color:#fff;margin-bottom:14px}
+.karte-hd .nm{font-size:16px;font-weight:800}
+.karte-hd .sb{font-size:10.5px;opacity:.72;margin-top:2px;line-height:1.45}
+.spec{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#EEF1F5;border-radius:12px;overflow:hidden;margin-bottom:12px}
+.spec div{background:#fff;padding:11px 12px}
+.spec dt{font-size:10px;color:#9AA7B4;margin-bottom:3px}
+.spec dd{margin:0;font-size:13px;font-weight:700}
+.chart{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px}
+.alert{background:#FFF8E8;border:1px solid #F3E0B0;border-radius:12px;padding:12px 13px;margin-bottom:12px;font-size:12px;line-height:1.7;color:#7A5A12}
+.alert b{color:#5A4208}
+.done{text-align:center;padding:34px 16px}
+.done .ic{width:66px;height:66px;border-radius:50%;background:#E9F8EF;color:#12874A;font-size:31px;line-height:66px;margin:0 auto 16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hd">
+    <h1>株式会社MOTA 様｜LINEミニアプリ 体験モック</h1>
+    <p>RFP 第4章「今後実現したいこと」に対する体験イメージです。ユーザーの状態を切り替えて、初回訪問と2回目以降の両方をご覧いただけます。<br>
+    ※ 金額・買取店名・車両画像はすべてイメージです。ブランドカラーは仮置きです。</p>
+  </div>
+
+  <div class="stage on" id="stageB">
+    <div class="cols">
+      <div class="panel">
+        <span class="kicker b">体験モック</span>
+        <h2>初回はシミュレーター、2回目からはカルテ</h2>
+        <p class="lead">
+          概算査定から申込・結果確認・日程調整、そして愛車カルテの生成までを1つのミニアプリで完結させる想定です。
+          <b>友だち追加直後の初回起動</b>と<b>リピート申込</b>の両方を取りにいきます。下のタブでユーザーの状態を切り替えられます。
+        </p>
+        <div class="modes">
+          <button class="mbtn on" id="mFirst" onclick="setMode('first',this)">初回訪問（カルテなし）</button>
+          <button class="mbtn" id="mRepeat" onclick="setMode('repeat',this)">2回目以降（カルテあり）</button>
+          <button class="mbtn" id="mReturn" onclick="setMode('return',this)">再訪の入口（アプリ外）</button>
+        </div>
+        <div class="steps" id="stepsFirst">
+          <div onclick="go('B','b0')"><b>初回1</b><span>ホーム＝概算シミュレーター<em>カルテが空なので、概算査定がそのままホームになる</em></span></div>
+          <div onclick="jumpWizB()"><b>初回2</b><span>4問ウィザード<em>選ぶたびにレンジが縮む。友だち追加後CVRに直接効く範囲</em></span></div>
+          <div onclick="go('B','b0r')"><b>初回3</b><span>概算レンジ確定<em>「結果もやり取りもLINEで完結」を約束して申込へ送る</em></span></div>
+          <div onclick="go('B','b2')"><b>初回4</b><span>申込<em>連絡先はLINEから自動入力。車両情報はいま選んだ内容を引き継ぐ</em></span></div>
+          <div onclick="go('B','b3')"><b>初回5</b><span>申込完了 ＋ 愛車カルテの生成<em>結果が出る時刻を約束し、同時にカルテが作られる。ここで「2回目以降」の状態になる</em></span></div>
+          <div onclick="go('B','b4')"><b>初回6</b><span>サービスメッセージ<em>「査定額が出ました」をLINEトークへ（ミニアプリ限定機能）</em></span></div>
+          <div onclick="go('B','b5')"><b>初回7</b><span>査定結果<em>20社の入札結果と、上位3社</em></span></div>
+          <div onclick="go('B','b6')"><b>初回8</b><span>実車査定の日程調整<em>電話ではなくタップで完結</em></span></div>
+          <div onclick="go('B','b6d')"><b>初回9</b><span>日程の確定<em>前日リマインドの案内。カルテは初回5で作成済み</em></span></div>
+        </div>
+        <div class="steps" id="stepsReturn" style="display:none">
+          <div onclick="go('B','r1')"><b>入口1</b><span>LINEのホームタブ「サービス」<em>最近利用したミニアプリが最大8件。トーク履歴に埋もれても自力で戻れる</em></span></div>
+          <div onclick="go('B','r2')"><b>入口2</b><span>LINEの検索<em>「車 査定」で検索したときに出てくる。広告を経由しない再訪</em></span></div>
+          <div onclick="go('B','r3')"><b>入口3</b><span>端末のホーム画面ショートカット<em>LINEを開かず1タップで到達。ただしバッジ・通知は付かない</em></span></div>
+          <div onclick="go('B','r4')"><b>入口4</b><span>公式アカウントからのお声がけ<em>公式アカウントのトークに届く。自由なレイアウトが組めるが通数課金の対象</em></span></div>
+          <div onclick="go('B','b4')"><b>入口5</b><span>サービスメッセージ<em>ミニアプリ共通の「LINEミニアプリ お知らせ」に届く。テンプレート形式・通数課金の対象外</em></span></div>
+        </div>
+        <div class="steps" id="stepsRepeat" style="display:none">
+          <div onclick="go('B','b1')"><b>再訪1</b><span>ホーム<em>相場・前月差・車検までの残月が常に見えている</em></span></div>
+          <div onclick="go('B','b2')"><b>再訪2</b><span>申込（入力ゼロ）<em>カルテから自動入力。リピート申込に効く</em></span></div>
+          <div onclick="go('B','b5')"><b>再訪3</b><span>査定結果<em>同上</em></span></div>
+          <div onclick="go('B','b7')"><b>再訪4</b><span>愛車カルテ<em>相場推移・車検アラート・再査定ワンタップ</em></span></div>
+          <div onclick="go('B','b7');setTimeout(openEdit,320)"><b>再訪5</b><span>車両情報の更新<em>走行距離を変えると、相場レンジとグラフがその場で再計算される（RFP 4.2）</em></span></div>
+        </div>
+        <div class="note">
+          <b>ご覧いただくうえでの補足</b><br>
+          ・友だち追加後CVRに<b>直接</b>効くのは「初回1〜4」です。「初回6〜9」は、①リピート申込の母数を増やす ②「結果もやり取りもLINEで完結する」という約束が申込前の背中を押す、という2経路で<b>間接的に</b>効きます。後者は現時点では仮説です。<br>
+          ・「再訪の入口」タブでは、アプリ外の画面（LINEホームタブ・検索・端末ホーム画面・OA配信）をご覧いただけます。入口1〜3は認証済みミニアプリ限定で、LIFFにはありません。<br>
+          ・入口1〜3は認証済みミニアプリ限定。入口4はLIFFでも可能。入口5はMEからの配信でも代替できますが、通数課金の対象になります。<br>
+          ・<b>愛車カルテは「申込完了」の時点で生成されます。</b>上位3社を見て今回は見送った方にもカルテが残るため、次の検討期に戻っていただけます。<br>
+          ・MOTA APIが返すのが相場推定値なのか入札結果なのかで、実装範囲が変わります。<br>
+        </div>
+      </div>
+
+      <div class="phone">
+        <div class="island"></div>
+        <div class="app" id="appB">
+          <div class="line-header" id="lhB">
+            <div class="lh-back">‹</div>
+            <div class="lh-title">MOTA車買取<span class="lh-badge">✓</span></div>
+            <div class="lh-menu">⋯</div>
+          </div>
+          <div class="line-loading-bar"></div>
+          <div class="screens" id="screensB">
+
+            <!-- R1 LINEホームタブ「サービス」 -->
+            <div class="screen" id="B-r1">
+              <div class="lside">
+                <div class="lhd">ホーム</div>
+                <div class="lsearch"><span>🔍</span>サービス・友だちを検索</div>
+                <div class="lsec">サービス ／ 最近利用したミニアプリ</div>
+                <div class="srow" onclick="openApp()">
+                  <div class="sicon mota">MOTA</div>
+                  <div class="st"><div class="nm">MOTA車買取</div><div class="sb">3日前に利用 ・ 愛車カルテあり</div></div>
+                  <div class="go">›</div>
+                </div>
+                <div class="srow"><div class="sicon">─</div><div class="st"><div class="nm">飲食店予約サービス</div><div class="sb">先週利用</div></div><div class="go">›</div></div>
+                <div class="srow"><div class="sicon">─</div><div class="st"><div class="nm">駐車場検索サービス</div><div class="sb">先週利用</div></div><div class="go">›</div></div>
+                <div class="srow"><div class="sicon">─</div><div class="st"><div class="nm">保険見積サービス</div><div class="sb">2週間前に利用</div></div><div class="go">›</div></div>
+                <div class="hint">
+                  <b>認証済みミニアプリだけが持てる導線です。</b><br>
+                  LINEのホームタブに、最近利用したミニアプリが履歴の新しい順で最大8件並びます。トーク履歴に埋もれても、ユーザー自身がここから戻ってこられます。<br>
+                  <span style="opacity:.8">※ LIFFにはこの導線がありません。</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- R2 LINE検索 -->
+            <div class="screen" id="B-r2">
+              <div class="lside">
+                <div class="lhd">検索</div>
+                <div class="lsearch"><span>🔍</span><b>車 査定</b></div>
+                <div class="lsec">ミニアプリ</div>
+                <div class="srow" onclick="openApp()">
+                  <div class="sicon mota">MOTA</div>
+                  <div class="st"><div class="nm">MOTA車買取</div><div class="sb">最大20社の一括査定 ・ 電話は上位3社のみ</div></div>
+                  <div class="go">›</div>
+                </div>
+                <div class="lsec">関連するトーク・公式アカウント</div>
+                <div class="srow"><div class="sicon">─</div><div class="st"><div class="nm">MOTA車買取（公式アカウント）</div><div class="sb">友だち追加済み</div></div><div class="go">›</div></div>
+                <div class="hint">
+                  <b>売却を思い立ったとき、検索から辿り着けます。</b><br>
+                  認証済みミニアプリは、LINEの検索結果にも表示されます。数年後に「そろそろ売ろうか」と考えたユーザーが、広告を経由せず自力で戻ってこられる入口です。
+                </div>
+              </div>
+            </div>
+
+            <!-- R3 端末のホーム画面ショートカット -->
+            <div class="screen" id="B-r3">
+              <div class="springboard">
+                <div class="sbgrid">
+                  <div class="sbapp"><i></i><span>カメラ</span></div>
+                  <div class="sbapp"><i></i><span>マップ</span></div>
+                  <div class="sbapp"><i></i><span>天気</span></div>
+                  <div class="sbapp"><i></i><span>LINE</span></div>
+                  <div class="sbapp mota" onclick="openApp()"><i>MOTA</i><span>MOTA車買取</span></div>
+                  <div class="sbapp"><i></i><span>音楽</span></div>
+                  <div class="sbapp"><i></i><span>メモ</span></div>
+                  <div class="sbapp"><i></i><span>設定</span></div>
+                </div>
+                <div class="sbnote">
+                  <b>端末のホーム画面にも置けます。</b><br>
+                  認証済みミニアプリは、ユーザーがホーム画面にショートカットを追加できます。LINEを開く手間なく、1タップで愛車カルテに到達できます。<br>
+                  <span style="opacity:.85">※ ショートカットに未読バッジや通知は付きません。お知らせはLINEのトークに届きます。</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- R4 公式アカウントからのお声がけ -->
+            <div class="screen" id="B-r4">
+              <div class="talk">
+                <div class="talk-hd">MOTA車買取</div>
+                <div class="talk-body" style="padding-bottom:76px">
+                  <div class="talk-day"><span>2026年5月12日</span></div>
+                  <div class="talk-row">
+                    <div class="avatar">MOTA</div>
+                    <div>
+                      <div class="talk-name">MOTA車買取</div>
+                      <div class="msg" style="max-width:200px">
+                        <div class="msg-bd" style="padding:11px 13px">
+                          <p style="font-size:12px;color:var(--ink);line-height:1.65;margin:0">前回の概算査定、ありがとうございました。<br>またいつでもご相談ください。</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="talk-day" style="margin-top:18px"><span>今日</span></div>
+                  <div class="talk-row">
+                    <div class="avatar">MOTA</div>
+                    <div>
+                      <div class="talk-name">MOTA車買取</div>
+                      <div class="flexcard">
+                        <div class="hero"><svg viewBox="0 0 320 132" id="carOA"><use href="#carShape"/></svg></div>
+                        <div class="fb">
+                          <div class="ft">車検まで、あと3か月です</div>
+                          <div class="fp">車検を通す前に売却すると、費用を抑えられる場合があります。</div>
+                          <div class="frange">
+                            <span>アルファードの推定相場（今月）</span>
+                            <b>352 〜 411万円</b>
+                            <span style="margin-top:2px">先月より ▼ 8万円</span>
+                          </div>
+                          <div class="flexbtn" onclick="openApp()">いまの査定額を見る</div>
+                        </div>
+                      </div>
+                      <div class="msg-time">10:30</div>
+                    </div>
+                  </div>
+
+                  <div style="margin-top:18px;background:rgba(255,255,255,.94);border-radius:10px;padding:12px 13px">
+                    <p class="mini" style="margin:0"><b style="color:var(--ink)">こちらはLINE公式アカウントからの配信です。</b><br>
+                    「売り時のお知らせ」は販促にあたるため、サービスメッセージでは送れません。愛車カルテに貯まった車両情報をもとに、Mico Engage AIから配信します。<br>
+                    自由なレイアウト（画像・相場の推移・複数ボタン）を組めて、過去のやり取りも同じトークに残ります。一方で<b style="color:var(--ink)">通数課金の対象</b>で、ブロックされると届きません。<br><br>
+                    <b style="color:var(--ink)">※ この入口は、LIFFでも同様に実現できます。</b>ユーザー自身が思い立って戻ってくる入口1〜3は、認証済みミニアプリ限定です。</p>
+                  </div>
+                </div>
+                <div class="talk-input">
+                  <span class="ic">＋</span>
+                  <div class="box">メッセージを入力</div>
+                  <span class="ic">☺</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- B0 初回ホーム＝シミュレーター -->
+            <div class="screen active" id="B-b0">
+              <div class="pad">
+                <div class="carbox">
+                  <svg viewBox="0 0 320 132" id="carB0"><use href="#carShape"/></svg>
+                  <div class="carname">あなたの愛車は、いくら？</div>
+                </div>
+                <h1 class="h1">4つ選ぶだけで、<br>いまの相場がわかります。</h1>
+                <p class="p">入力は不要です。選択肢をタップしていくだけ。<br>結果も、そのあとのやり取りも、LINEの中で完結します。</p>
+                <button class="btn" onclick="jumpWizB()">はじめる</button>
+                <div class="hr"></div>
+                <div class="card" style="background:#F7F9FC;box-shadow:none">
+                  <div class="rowb" style="margin-bottom:6px"><b style="font-size:12.5px">愛車カルテ</b><span class="tag" style="background:#EEF1F5;color:#9AA7B4">まだありません</span></div>
+                  <p class="mini" style="margin:0">一度査定すると、車両情報が保存されます。次回からは入力ゼロで相場を確認できます。</p>
+                </div>
+                <p class="mini" style="margin-top:10px">※ 表示される金額は市場相場からの推定値です。実際の買取額は、最大20社の入札によって決まります。</p>
+              </div>
+            </div>
+
+            <!-- B0w ウィザード -->
+            <div class="screen" id="B-b0w">
+              <div class="pad">
+                <div class="range">
+                  <div class="lbl" id="rLblB">まだ計算できていません</div>
+                  <div class="val" id="rValB">— <small>万円</small></div>
+                  <div class="track"><i class="fill" id="rFillB" style="left:0;right:0;opacity:.25"></i></div>
+                  <div class="scale"><span>0</span><span>200</span><span>400</span><span>600万円</span></div>
+                </div>
+                <div class="carbox">
+                  <svg viewBox="0 0 320 132" id="carB"><use href="#carShape"/></svg>
+                  <div class="carname" id="carNameB">車種を選んでください<small id="carSubB">選ぶと、ここに愛車が表示されます</small></div>
+                </div>
+                <div class="prog"><i id="progB" style="width:20%"></i></div>
+                <div class="qno" id="qnoB">質問 1 / 5</div>
+                <h2 class="h2" id="qTitleB">メーカーを選んでください</h2>
+                <div id="qBodyB"></div>
+                <button class="skip" id="skipB" onclick="wizSkip('B')" style="display:none">わからない・あとで入力する</button>
+              </div>
+            </div>
+
+            <!-- B0r 結果 -->
+            <div class="screen" id="B-b0r">
+              <div class="pad">
+                <div class="range">
+                  <div class="lbl">あなたの愛車の推定相場</div>
+                  <div class="val">352 〜 411 <small>万円</small></div>
+                  <div class="track"><i class="fill" style="left:58%;right:31%"></i></div>
+                  <div class="scale"><span>0</span><span>200</span><span>400</span><span>600万円</span></div>
+                </div>
+                <div class="carbox">
+                  <svg viewBox="0 0 320 132" id="carB2"><use href="#carShape"/></svg>
+                  <div class="carname" id="resNameB">トヨタ アルファード<small id="resSubB">2021年式 / パールホワイト / 1〜3万km</small></div>
+                </div>
+                <div class="card">
+                  <b style="font-size:13.5px;display:block;margin-bottom:8px">申し込むと、どうなるか</b>
+                  <p class="p" style="margin:0 0 10px">最大20社が入札し、<b style="color:var(--ink)">結果は本日18:00にLINEに届きます</b>。やり取りするのは査定額が高かった上位3社のみ。日程調整もこの画面で完結します。</p>
+                  <div class="rowb"><span class="tag g">電話ラッシュなし</span><span class="tag b">結果はLINEに通知</span></div>
+                </div>
+                <button class="btn" onclick="go('B','b2')">最大20社に査定してもらう</button>
+                <button class="btn ghost sm" style="margin-top:9px" onclick="jumpWizB()">条件を変えて計算しなおす</button>
+              </div>
+            </div>
+
+            <!-- B1 ホーム -->
+            <div class="screen" id="B-b1">
+              <div class="pad">
+                <div class="karte-hd">
+                  <div class="rowb">
+                    <div>
+                      <div class="nm">トヨタ アルファード</div>
+                      <div class="sb" id="homeSpec">2021年式 / パールホワイト / 3.2万km</div>
+                    </div>
+                    <span class="tag b" style="background:rgba(255,255,255,.16);color:#fff">愛車カルテ</span>
+                  </div>
+                  <div class="carbox" style="margin:10px 0 0;padding:4px 4px 0">
+                    <svg viewBox="0 0 320 132" id="carHome" class="carK"><use href="#carShape"/></svg>
+                  </div>
+                  <div style="height:1px;background:rgba(255,255,255,.16);margin:12px 0"></div>
+                  <div style="font-size:10.5px;opacity:.72;margin-bottom:2px">今月の推定相場</div>
+                  <div style="font-size:22px;font-weight:800"><span id="homeRange">352 〜 411</span> <span style="font-size:12px">万円</span></div>
+                  <div style="font-size:11px;opacity:.8;margin-top:3px" id="homeDelta">先月より <b style="color:#FF9B8A">▼ 8万円</b></div>
+                </div>
+
+                <div class="alert">
+                  <b>車検まであと 3か月</b>（2026年11月）<br>
+                  車検を通す前に売却すると、費用を抑えられる場合があります。
+                </div>
+
+                <button class="btn" onclick="go('B','b2')">いまの査定額を調べる（入力ゼロ）</button>
+                <button class="btn ghost sm" style="margin-top:9px" onclick="go('B','b7')">愛車カルテを見る</button>
+
+                <div class="hr"></div>
+                <div class="h2">これまでの履歴</div>
+                <div class="card">
+                  <div class="rowb"><b style="font-size:12.5px">概算査定を実施</b><span class="mini">2026/05/12</span></div>
+                  <p class="mini" style="margin-top:4px">上位3社の最高額 388万円 / 売却は見送り</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- B2 申込 -->
+            <div class="screen" id="B-b2">
+              <div class="pad">
+                <h1 class="h1">この内容で、<br>20社に査定してもらいます。</h1>
+                <p class="p" id="applyLead">カルテとLINEの情報から入力済みです。<br>変更がある項目だけタップしてください。</p>
+
+                <div class="card">
+                  <div class="rowb" style="margin-bottom:10px"><b style="font-size:13px">車両情報</b><span class="tag g" id="badgeCar">カルテから自動入力</span></div>
+                  <div class="spec">
+                    <div style="grid-column:1/3"><dt>メーカー・車種</dt><dd id="applyCar">トヨタ アルファード</dd></div>
+                    <div style="grid-column:1/3"><dt>年式 / カラー / 走行距離</dt><dd id="applySpec" style="font-size:12.5px">2021年式 / パールホワイト / 1〜3万km</dd></div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="rowb" style="margin-bottom:10px"><b style="font-size:13px">ご連絡先</b><span class="tag g">LINEから自動入力</span></div>
+                  <div class="spec">
+                    <div><dt>お名前</dt><dd>山田 健一</dd></div>
+                    <div><dt>お住まい</dt><dd>神奈川県横浜市</dd></div>
+                  </div>
+                  <p class="mini" style="margin-top:9px">※ 電話がかかってくるのは、査定額が高かった上位3社のみです。</p>
+                </div>
+
+                <div class="card">
+                  <div class="rowb" style="margin-bottom:9px"><b style="font-size:13px">愛車の写真</b><span class="tag">任意・査定額に影響</span></div>
+                  <p class="mini" style="margin-bottom:10px">写真があるほど、買取店は正確な金額を出せます（最大6枚）</p>
+                  <div class="grid c3">
+                    <div class="opt" style="padding:18px 4px;font-size:19px;color:#B8C2CD">＋</div>
+                    <div class="opt" style="padding:18px 4px;font-size:19px;color:#B8C2CD">＋</div>
+                    <div class="opt" style="padding:18px 4px;font-size:19px;color:#B8C2CD">＋</div>
+                  </div>
+                </div>
+
+                <button class="btn" onclick="go('B','b3')">この内容で査定を依頼する</button>
+                <p class="mini" style="margin-top:11px" id="applyNote">入力にかかる時間：約10秒（通常の申込は約45秒）</p>
+              </div>
+            </div>
+
+            <!-- B3 完了 -->
+            <div class="screen" id="B-b3">
+              <div class="done">
+                <div class="ic">✓</div>
+                <h1 class="h1" style="font-size:17px">査定を依頼しました</h1>
+                <p class="p"><b style="color:var(--ink)">本日 18:00</b> に、最大20社の査定額が<br>出そろいます。</p>
+                <div class="card" style="text-align:left">
+                  <b style="font-size:13px">結果はLINEでお知らせします</b>
+                  <p class="mini" style="margin-top:6px">メールを探す必要はありません。このトークに通知が届き、そのまま結果を確認できます。</p>
+                </div>
+                <div class="card" style="text-align:left">
+                  <div class="rowb" style="margin-bottom:8px"><b style="font-size:13px">愛車カルテを作成しました</b><span class="tag g">NEW</span></div>
+                  <p class="mini" style="margin:0">お申し込みの車両情報を保存しました。次回の査定は入力ゼロで依頼できます。相場が動いたときや車検が近づいたときにも、こちらからお知らせします。</p>
+                </div>
+                <button class="btn" onclick="go('B','b4')">▶ 18:00になりました（デモ）</button>
+                <button class="btn ghost sm" style="margin-top:9px" onclick="go('B','b7')">愛車カルテを見る</button>
+              </div>
+            </div>
+
+            <!-- B4 サービスメッセージ -->
+            <div class="screen" id="B-b4">
+              <div class="talk">
+                <div class="talk-hd">LINEミニアプリ お知らせ</div>
+                <div class="talk-topbar">ご利用中のLINEミニアプリからのお知らせが、このトークルームに届きます</div>
+                <div class="talk-body">
+                  <div class="talk-day"><span>先週</span></div>
+                  <div class="svcmsg other">
+                    <div class="ttl">ご利用ありがとうございました</div>
+                    <div class="dtl">駐車場のご利用が完了しました。</div>
+                    <div class="foot"><i>P</i><span>駐車場検索サービス</span></div>
+                  </div>
+
+                  <div class="talk-day" style="margin-top:16px"><span>今日</span></div>
+                  <div class="svcmsg">
+                    <div class="ttl">査定額が出そろいました</div>
+                    <div class="dtl">お申し込みいただいたお車に、18社から査定額の提示がありました。上位3社の金額をご確認ください。</div>
+                    <div class="kv">
+                      <div><span>車両</span><b>トヨタ アルファード</b></div>
+                      <div><span>受付番号</span><b>MT-20260826-0193</b></div>
+                      <div><span>提示社数</span><b>18社</b></div>
+                    </div>
+                    <div class="btns">
+                      <div class="sbtn" onclick="go('B','b5')">査定結果を見る</div>
+                      <div class="sbtn" onclick="openApp()">愛車カルテを見る</div>
+                    </div>
+                    <div class="foot"><i>MOTA</i><span>MOTA車買取</span></div>
+                  </div>
+                  <div class="msg-time">18:00</div>
+
+                  <div style="margin-top:18px;background:rgba(255,255,255,.94);border-radius:10px;padding:12px 13px">
+                    <p class="mini" style="margin:0"><b style="color:var(--ink)">これはサービスメッセージです。</b><br>
+                    ミニアプリ上の操作への確認・応答としてのみ送信できる、認証済みミニアプリ限定の機能です。ミニアプリ共通の「LINEミニアプリ お知らせ」に届き、公式アカウントをブロック中でも到達します。<br>
+                    タイトル・詳細・ボタン（最大2つ）・フッターからなる<b style="color:var(--ink)">テンプレート形式</b>で、自由な文面は作れません。1つの操作につき最大5回まで、通数課金の対象外です。<br><br>
+                    <b style="color:var(--ink)">※ 同じ内容はMico Engage AIからの配信でも実現できます。</b>ただしその場合は通数課金の対象となり、申込件数が増えるほど差が開きます。</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- B5 査定結果 -->
+            <div class="screen" id="B-b5">
+              <div class="pad">
+                <div class="rowb" style="margin-bottom:4px">
+                  <h1 class="h1" style="margin:0;font-size:17px">18社が入札しました</h1>
+                </div>
+                <p class="p">やり取りするのは、査定額が高かった上位3社のみです。</p>
+
+                <div class="biz">
+                  <div class="rowb" style="margin-bottom:6px">
+                    <div><span class="rank">1位</span><b style="font-size:13px">カーセレクト東日本</b></div>
+                  </div>
+                  <div class="amt">402<small> 万円</small></div>
+                  <p class="mini" style="margin-top:5px">出張査定 最短：明日 10:00〜 / 横浜市内対応</p>
+                </div>
+                <div class="biz r2">
+                  <div class="rowb" style="margin-bottom:6px">
+                    <div><span class="rank r2">2位</span><b style="font-size:13px">オートバンク神奈川</b></div>
+                  </div>
+                  <div class="amt">395<small> 万円</small></div>
+                  <p class="mini" style="margin-top:5px">出張査定 最短：明日 14:00〜 / 横浜市内対応</p>
+                </div>
+                <div class="biz r3">
+                  <div class="rowb" style="margin-bottom:6px">
+                    <div><span class="rank r3">3位</span><b style="font-size:13px">ネクスト・オート</b></div>
+                  </div>
+                  <div class="amt">388<small> 万円</small></div>
+                  <p class="mini" style="margin-top:5px">出張査定 最短：明後日 11:00〜 / 横浜市内対応</p>
+                </div>
+
+                <div class="card" style="background:#F7F9FC;box-shadow:none">
+                  <p class="mini" style="margin:0">上記は書類上の概算金額です。最終的な買取額は、実車を確認したうえで決まります。</p>
+                </div>
+
+                <button class="btn" onclick="go('B','b6')">3社の出張査定を予約する</button>
+                <button class="btn ghost sm" style="margin-top:9px" onclick="go('B','b7')">今回は見送る（愛車カルテに残す）</button>
+                <p class="mini" style="margin-top:11px">※ 買取店名・金額はイメージです。</p>
+              </div>
+            </div>
+
+            <!-- B6 日程調整 -->
+            <div class="screen" id="B-b6">
+              <div class="pad">
+                <h1 class="h1">出張査定の日程を<br>選んでください</h1>
+                <p class="p">電話でのやり取りは不要です。<br>選んだ日時が、3社にそのまま伝わります。</p>
+                <div class="h2">カーセレクト東日本（1位・402万円）</div>
+                <div class="grid c3" style="margin-bottom:16px">
+                  <button class="opt" onclick="pick(this)">8/27<small>10:00</small></button>
+                  <button class="opt sel" onclick="pick(this)">8/27<small>14:00</small></button>
+                  <button class="opt" onclick="pick(this)">8/28<small>10:00</small></button>
+                </div>
+                <div class="h2">オートバンク神奈川（2位・395万円）</div>
+                <div class="grid c3" style="margin-bottom:16px">
+                  <button class="opt" onclick="pick(this)">8/28<small>14:00</small></button>
+                  <button class="opt sel" onclick="pick(this)">8/29<small>10:00</small></button>
+                  <button class="opt" onclick="pick(this)">8/29<small>15:00</small></button>
+                </div>
+                <div class="h2">ネクスト・オート（3位・388万円）</div>
+                <div class="grid c3" style="margin-bottom:18px">
+                  <button class="opt sel" onclick="pick(this)">8/29<small>13:00</small></button>
+                  <button class="opt" onclick="pick(this)">8/30<small>11:00</small></button>
+                  <button class="opt" onclick="pick(this)">8/30<small>16:00</small></button>
+                </div>
+                <button class="btn" onclick="go('B','b6d')">この日程で確定する</button>
+                <p class="mini" style="margin-top:11px">確定後、前日にLINEでリマインドが届きます（サービスメッセージ）。</p>
+              </div>
+            </div>
+
+            <!-- B6d カルテ生成 -->
+            <div class="screen" id="B-b6d">
+              <div class="done">
+                <div class="ic">✓</div>
+                <h1 class="h1" style="font-size:17px">日程が確定しました</h1>
+                <p class="p">3社それぞれに、選んだ日時が伝わりました。<br>前日にLINEでリマインドが届きます。</p>
+                <div class="card" style="text-align:left">
+                  <b style="font-size:13px">前日にリマインドをお送りします</b>
+                  <p class="mini" style="margin-top:6px">査定当日の朝に、訪問時間と担当店舗をLINEでお知らせします。日程の変更もこの画面から行えます。</p>
+                </div>
+                <button class="btn" onclick="go('B','b7')">愛車カルテを見る</button>
+              </div>
+            </div>
+
+            <!-- B7e カルテ空 -->
+            <div class="screen" id="B-b7e">
+              <div class="done">
+                <div class="ic" style="background:#EEF1F5;color:#9AA7B4">▤</div>
+                <h1 class="h1" style="font-size:17px">まだ愛車カルテが<br>ありません</h1>
+                <p class="p">一度査定すると、車両情報が保存されます。<br>次回からは入力ゼロで相場を確認できます。</p>
+                <button class="btn" onclick="go('B','b0')">概算査定をはじめる</button>
+              </div>
+            </div>
+
+            <!-- B7 愛車カルテ -->
+            <div class="screen" id="B-b7">
+              <div class="pad">
+                <div class="karte-hd" style="padding-bottom:10px">
+                  <div class="rowb">
+                    <div>
+                      <div class="nm">トヨタ アルファード</div>
+                      <div class="sb" id="kSub" style="margin-top:3px">2021年式 S Aパッケージ / パールホワイト</div>
+                    </div>
+                    <span class="tag" style="background:rgba(255,255,255,.16);color:#fff;white-space:nowrap;flex:0 0 auto;margin-left:8px">保有 1年3か月</span>
+                  </div>
+                  <div class="carbox" style="margin:12px 0 0;padding:4px 4px 0">
+                    <svg viewBox="0 0 320 132" id="carK" class="carK"><use href="#carShape"/></svg>
+                  </div>
+                </div>
+
+                <div class="range" style="margin-top:12px">
+                  <div class="lbl">いまの推定相場</div>
+                  <div class="val"><span id="kRangeVal">352 〜 411</span> <small>万円</small></div>
+                  <div class="track"><i class="fill" id="kRangeFill" style="left:58.7%;right:31.5%"></i></div>
+                  <div class="scale"><span>0</span><span>200</span><span>400</span><span>600万円</span></div>
+                  <div id="kRangeSub" style="font-size:10.5px;opacity:.72;margin-top:9px">走行距離を更新すると、レンジがその場で動きます。</div>
+                </div>
+
+                <div class="h2">車両情報</div>
+                <div class="spec">
+                  <div><dt>年式</dt><dd>2021年</dd></div>
+                  <div><dt>グレード</dt><dd>S Aパッケージ</dd></div>
+                  <div><dt>走行距離</dt><dd id="kKm">3.2万km</dd></div>
+                  <div><dt>カラー</dt><dd id="kColor">パールホワイト</dd></div>
+                  <div><dt>車検満了</dt><dd>2026年11月</dd></div>
+                  <div><dt>修復歴</dt><dd>なし</dd></div>
+                </div>
+                <button class="btn ghost sm" style="margin-bottom:8px" onclick="openEdit()">車両情報を更新する</button>
+                <p class="mini" style="margin-bottom:16px">※ 走行距離は自己申告です。更新すると推定相場が再計算されます。</p>
+
+                <div class="h2">推定相場の推移</div>
+                <div class="chart">
+                  <svg viewBox="0 0 280 110" style="width:100%;height:auto">
+                    <line x1="24" y1="12" x2="272" y2="12" stroke="#EEF1F5"/>
+                    <line x1="24" y1="46" x2="272" y2="46" stroke="#EEF1F5"/>
+                    <line x1="24" y1="80" x2="272" y2="80" stroke="#EEF1F5"/>
+                    <polygon id="kArea" points="34,30 94,36 154,44 214,52 262,58 262,80 34,80" fill="rgba(226,58,46,.09)"/>
+                    <polyline id="kLine" points="34,30 94,36 154,44 214,52 262,58" fill="none" stroke="#E23A2E" stroke-width="2.4" stroke-linejoin="round"/>
+                    <circle id="kDot" cx="262" cy="58" r="4" fill="#E23A2E"/>
+                    <text x="6" y="16" font-size="8" fill="#9AA7B4">440</text>
+                    <text x="6" y="50" font-size="8" fill="#9AA7B4">400</text>
+                    <text x="6" y="84" font-size="8" fill="#9AA7B4">360</text>
+                    <text x="26" y="99" font-size="8" fill="#9AA7B4">4月</text>
+                    <text x="86" y="99" font-size="8" fill="#9AA7B4">5月</text>
+                    <text x="146" y="99" font-size="8" fill="#9AA7B4">6月</text>
+                    <text x="206" y="99" font-size="8" fill="#9AA7B4">7月</text>
+                    <text x="248" y="99" font-size="8" fill="#9AA7B4">今月</text>
+                  </svg>
+                  <p class="mini" style="margin-top:6px" id="kChartNote">走行距離の増加と新型発表の影響で、4か月で約28万円下落しています。</p>
+                </div>
+
+                <div class="alert">
+                  <b>そろそろ売り時かもしれません</b><br>
+                  車検まで3か月、走行距離は次の区切り（4万km）が近づいています。
+                  <p class="mini" style="margin:8px 0 0;color:#8A6A22">※ この種の販促にあたる通知は、サービスメッセージでは送れません。LINE公式アカウントからの配信で行います。</p>
+                </div>
+
+                <button class="btn" onclick="go('B','b2')">この内容で、もう一度査定する</button>
+                <p class="mini" style="margin-top:11px">前回の入力内容が残っているため、次回の申込は入力ゼロです。</p>
+              </div>
+            </div>
+
+          </div>
+          <div class="toast" id="kToast"></div>
+
+          <div class="sheet" id="kSheet">
+            <div class="scrim" onclick="closeEdit()"></div>
+            <div class="body">
+              <div class="grip"></div>
+              <div class="h2" style="margin-bottom:3px">車両情報の更新</div>
+              <p class="mini" style="margin-bottom:14px">走行距離を更新すると、推定相場を再計算します。</p>
+
+              <div class="kmrow">
+                <button class="step" onclick="stepKm(-0.1)">−</button>
+                <div class="val"><span id="kmVal">3.2</span></div>
+                <div class="unit">万km</div>
+                <button class="step" onclick="stepKm(0.1)">＋</button>
+              </div>
+              <div class="grid c3" style="margin-bottom:14px">
+                <button class="opt" onclick="setKm(3.5,this)">3.5万km</button>
+                <button class="opt" onclick="setKm(4.0,this)">4.0万km</button>
+                <button class="opt" onclick="setKm(4.5,this)">4.5万km</button>
+              </div>
+
+              <div class="locked">
+                <div><dt>年式</dt><dd>2021年</dd></div>
+                <div><dt>グレード</dt><dd>S Aパッケージ</dd></div>
+                <div><dt>カラー</dt><dd id="sheetColor">パールホワイト</dd></div>
+                <div><dt>車検満了</dt><dd>2026年11月</dd></div>
+              </div>
+              <p class="mini" style="margin-bottom:14px">※ 本モックでは走行距離のみ操作できます。年式・グレード等も同様に編集可能な想定です。</p>
+
+              <button class="btn" onclick="saveKm()">この内容で更新する</button>
+              <button class="btn ghost sm" style="margin-top:9px" onclick="closeEdit()">キャンセル</button>
+            </div>
+          </div>
+
+          <div class="bottom-nav" id="navB">
+            <button class="on" data-nav="home" onclick="navB('home')"><i>⌂</i>ホーム</button>
+            <button data-nav="apply" onclick="navB('apply')"><i>◎</i>査定する</button>
+            <button data-nav="karte" onclick="navB('karte')"><i>▤</i>愛車カルテ</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 車のシルエット定義 -->
+<svg style="display:none">
+  <symbol id="carShape" viewBox="0 0 320 132">
+    <ellipse cx="160" cy="120" rx="128" ry="8" fill="rgba(18,36,61,.08)"/>
+    <path class="carbody" d="M22 104 L28 72 Q31 60 44 57 L108 46 Q124 31 152 29 L206 29 Q234 31 252 50 L288 62 Q302 68 302 84 L302 104 Q302 110 296 110 L28 110 Q22 110 22 104 Z" fill="var(--carcolor)" stroke="rgba(18,36,61,.18)" stroke-width="1.5"/>
+    <path d="M116 51 L128 40 Q134 36 152 35 L172 35 L172 51 Z" fill="#C9D6E4" opacity=".85"/>
+    <path d="M182 35 L204 35 Q226 37 240 52 L182 52 Z" fill="#C9D6E4" opacity=".85"/>
+    <rect x="20" y="80" width="14" height="9" rx="4" fill="#FFE08A"/>
+    <rect x="290" y="80" width="14" height="9" rx="4" fill="#FF8A7A"/>
+    <circle cx="82" cy="106" r="21" fill="#28323D"/><circle cx="82" cy="106" r="9" fill="#C4CCD5"/>
+    <circle cx="248" cy="106" r="21" fill="#28323D"/><circle cx="248" cy="106" r="9" fill="#C4CCD5"/>
+  </symbol>
+</svg>
+
+<script>
+/* ---------- タブ・画面遷移 ---------- */
+function go(c,id){
+  document.querySelectorAll('#screens'+c+' .screen').forEach(s=>s.classList.remove('active'));
+  var t=document.getElementById(c+'-'+id);
+  if(t){t.classList.add('active');t.scrollTop=0;}
+  if(c==='B'){
+    if(id==='b2')syncApply();
+    var sh=document.getElementById('kSheet'); if(sh)sh.classList.remove('on');
+    if(id==='b3'&&mode==='first'){mode='repeat';paintMode();}
+    var talk = (id==='b4'||id==='r1'||id==='r2'||id==='r3'||id==='r4');
+    document.getElementById('lhB').style.display = talk ? 'none' : 'flex';
+    document.getElementById('navB').style.display = talk ? 'none' : 'flex';
+    document.querySelector('#appB .line-loading-bar').style.display = talk ? 'none' : 'block';
+    var sc=document.getElementById('screensB');
+    if(talk){sc.style.top='0px';sc.style.bottom='0px';} else {fixLayout();}
+    var g=(id==='b0'||id==='b1')?'home':((id==='b7'||id==='b7e')?'karte':'apply');
+    if(id.charAt(0)==='r')g='';
+    document.querySelectorAll('#navB button').forEach(b=>b.classList.toggle('on',b.dataset.nav===g));
+  }
+}
+function navB(el,id){go('B',id);}
+function pick(el){
+  el.parentNode.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+/* ---------- 概算査定ウィザード ---------- */
+var COLORS=[['パールホワイト','#F2F3F5'],['ブラック','#2B3038'],['シルバー','#C3C8CE'],['ダークブルー','#28405E'],['レッド','#B8332B'],['ベージュ','#D6C7AE']];
+var STEPS=[
+  {q:'メーカーを選んでください',type:'grid2',opts:['トヨタ','ホンダ','日産','スズキ','マツダ','スバル','ダイハツ','その他']},
+  {q:'車種を選んでください',type:'grid2',opts:['アルファード','ヴォクシー','ハリアー','ヤリス']},
+  {q:'ボディカラーを選んでください',type:'color'},
+  {q:'初度登録の年式は？',type:'grid3',opts:['2023年','2022年','2021年','2020年','2019年','2018年以前'],skip:true},
+  {q:'走行距離はどのくらい？',type:'grid2',opts:['〜1万km','1〜3万km','3〜5万km','5〜10万km'],skip:true}
+];
+var RANGES=[null,null,[300,470],[320,450],[338,428],[352,411]];
+var W={B:{i:0,p:{}}};
+var RESULT={B:'b0r'};
+
+function setCarColor(k,hex){
+  ['car'+k,'car'+k+'0','car'+k+'2'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.style.setProperty('--carcolor',hex);
+  });
+}
+function resetWiz(k){
+  W[k]={i:0,p:{}};
+  setCarColor(k,'#F2F3F5');
+  var f=document.getElementById('rFill'+k);
+  if(f){
+    f.style.opacity='.25';f.style.left='0';f.style.right='0';
+    document.getElementById('rLbl'+k).textContent='まだ計算できていません';
+    document.getElementById('rVal'+k).innerHTML='— <small>万円</small>';
+    document.getElementById('carName'+k).childNodes[0].nodeValue='車種を選んでください';
+    document.getElementById('carSub'+k).textContent='選ぶと、ここに愛車が表示されます';
+  }
+  renderWiz(k);
+}
+function renderWiz(k){
+  if(!document.getElementById('qBody'+k))return;
+  var st=W[k], sp=STEPS[st.i], h='';
+  document.getElementById('qno'+k).textContent='質問 '+(st.i+1)+' / 5';
+  document.getElementById('qTitle'+k).textContent=sp.q;
+  document.getElementById('prog'+k).style.width=((st.i+1)/5*100)+'%';
+  document.getElementById('skip'+k).style.display=sp.skip?'block':'none';
+  if(sp.type==='color'){
+    h='<div class="dots">';
+    COLORS.forEach(function(c,i){h+='<div class="dot" style="background:'+c[1]+'" onclick="wizColor(&quot;'+k+'&quot;,'+i+',this)"></div>';});
+    h+='</div><p class="mini" style="text-align:center">色を選ぶと、上の愛車の色が変わります</p>';
+  }else{
+    h='<div class="grid'+(sp.type==='grid3'?' c3':'')+'">';
+    sp.opts.forEach(function(o){h+='<button class="opt" onclick="wizNext(&quot;'+k+'&quot;,&quot;'+o+'&quot;)">'+o+'</button>';});
+    h+='</div>';
+  }
+  document.getElementById('qBody'+k).innerHTML=h;
+}
+function wizColor(k,i,el){
+  el.parentNode.querySelectorAll('.dot').forEach(function(d){d.classList.remove('sel');});
+  el.classList.add('sel');
+  W[k].p.color=COLORS[i][0];
+  setCarColor(k,COLORS[i][1]);
+  setTimeout(function(){wizNext(k,COLORS[i][0]);},420);
+}
+function wizNext(k,v){
+  var st=W[k];
+  if(st.i===0)st.p.maker=v;
+  if(st.i===1)st.p.model=v;
+  if(st.i===3)st.p.year=v;
+  if(st.i===4)st.p.km=v;
+  updateCar(k); updateRange(k,st.i+1);
+  if(st.i>=4){fillResult(k);setTimeout(function(){go(k,RESULT[k]);},520);return;}
+  st.i++; renderWiz(k);
+}
+function wizSkip(k){wizNext(k,'わからない');}
+function updateCar(k){
+  var p=W[k].p, n=document.getElementById('carName'+k), sb=document.getElementById('carSub'+k);
+  if(!n||!p.maker||!p.model)return;
+  n.childNodes[0].nodeValue=p.maker+' '+p.model;
+  var parts=[];
+  if(p.year&&p.year!=='わからない')parts.push(p.year+'式');
+  if(p.color)parts.push(p.color);
+  if(p.km&&p.km!=='わからない')parts.push(p.km);
+  sb.textContent=parts.length?parts.join(' / '):'色や年式を選ぶと、精度が上がります';
+}
+function updateRange(k,step){
+  var r=RANGES[Math.min(step,5)], f=document.getElementById('rFill'+k);
+  if(!r||!f)return;
+  document.getElementById('rLbl'+k).textContent = step>=5 ? 'あなたの愛車の推定相場' : '選ぶほど、金額の幅が狭まります';
+  document.getElementById('rVal'+k).innerHTML = r[0]+' 〜 '+r[1]+' <small>万円</small>';
+  f.style.opacity='1';
+  f.style.left=(r[0]/600*100)+'%';
+  f.style.right=(100-r[1]/600*100)+'%';
+}
+function fillResult(k){
+  var p=W[k].p, nm=(p.maker||'トヨタ')+' '+(p.model||'アルファード'), sub=[];
+  if(p.year&&p.year!=='わからない')sub.push(p.year+'式');
+  if(p.color)sub.push(p.color);
+  if(p.km&&p.km!=='わからない')sub.push(p.km);
+  var t=sub.join(' / ')||'条件は未入力';
+  var rn=document.getElementById('resNameB'), rs=document.getElementById('resSubB');
+  if(rn){rn.childNodes[0].nodeValue=nm;rs.textContent=t;}
+  if(k==='B'){
+    document.getElementById('applyCar').textContent=nm;
+    document.getElementById('applySpec').textContent=t;
+    if(p.color){
+      KARTE_COLOR_NAME=p.color;
+      for(var i=0;i<COLORS.length;i++){if(COLORS[i][0]===p.color)KARTE_COLOR=COLORS[i][1];}
+      paintKarteCar();
+    }
+  }
+}
+
+/* ---------- B案：ユーザー状態モード ---------- */
+var mode='first';
+function paintMode(){
+  document.getElementById('mFirst').classList.toggle('on',mode==='first');
+  document.getElementById('mRepeat').classList.toggle('on',mode==='repeat');
+  document.getElementById('mReturn').classList.toggle('on',mode==='return');
+  document.getElementById('stepsFirst').style.display=(mode==='first')?'block':'none';
+  document.getElementById('stepsRepeat').style.display=(mode==='repeat')?'block':'none';
+  document.getElementById('stepsReturn').style.display=(mode==='return')?'block':'none';
+}
+function setMode(m){
+  mode=m; paintMode();
+  if(m==='first'){resetWiz('B');go('B','b0');}
+  else if(m==='return'){go('B','r1');}
+  else {go('B','b1');}
+}
+function openApp(){
+  mode='repeat'; paintMode(); go('B','b1');
+}
+function jumpWizB(){resetWiz('B');go('B','b0w');}
+function navB(t){
+  if(t==='home') go('B', mode==='first'?'b0':'b1');
+  if(t==='apply') { if(mode==='first'){jumpWizB();} else {go('B','b2');} }
+  if(t==='karte') go('B', mode==='first'?'b7e':'b7');
+}
+function syncApply(){
+  var bc=document.getElementById('badgeCar'), nt=document.getElementById('applyNote');
+  if(!bc)return;
+  bc.textContent = (mode==='first') ? 'いま選んだ内容' : 'カルテから自動入力';
+  if(mode==='repeat'){
+    document.getElementById('applyCar').textContent='トヨタ アルファード';
+    document.getElementById('applySpec').textContent='2021年式 / パールホワイト / '+KM_SAVED.toFixed(1)+'万km';
+  }
+  nt.textContent  = (mode==='first') ? '入力にかかる時間：約15秒（通常の申込は約45秒）'
+                                     : '入力にかかる時間：約10秒（通常の申込は約45秒）';
+  document.getElementById('applyLead').innerHTML = (mode==='first')
+    ? 'いま選んだ内容とLINEの情報から入力済みです。<br>変更がある項目だけタップしてください。'
+    : 'カルテとLINEの情報から入力済みです。<br>変更がある項目だけタップしてください。';
+}
+
+/* ---------- 愛車カルテの更新 ---------- */
+var KM_SAVED=3.2, kmDraft=3.2;
+var KARTE_COLOR='#F2F3F5', KARTE_COLOR_NAME='パールホワイト';
+
+function paintKarteCar(){
+  ['carK','carHome','carOA'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.style.setProperty('--carcolor',KARTE_COLOR);
+  });
+  var sub=document.getElementById('kSub');
+  if(sub)sub.textContent='2021年式 S Aパッケージ / '+KARTE_COLOR_NAME;
+  var hs=document.getElementById('homeSpec');
+  if(hs)hs.textContent='2021年式 / '+KARTE_COLOR_NAME+' / '+KM_SAVED.toFixed(1)+'万km';
+  var kc=document.getElementById('kColor');
+  if(kc)kc.textContent=KARTE_COLOR_NAME;
+  var sc2=document.getElementById('sheetColor');
+  if(sc2)sc2.textContent=KARTE_COLOR_NAME;
+}
+function paintKarteRange(animate){
+  var r=rangeFor(KM_SAVED);
+  document.getElementById('kRangeVal').textContent=r[0]+' 〜 '+r[1];
+  var f=document.getElementById('kRangeFill');
+  f.style.left=(r[0]/600*100)+'%';
+  f.style.right=(100-r[1]/600*100)+'%';
+  if(animate){
+    var car=document.getElementById('carK');
+    if(car){car.classList.add('roll');setTimeout(function(){car.classList.remove('roll');},640);}
+    var dot=document.getElementById('kDot');
+    if(dot){dot.classList.remove('pulse');void dot.offsetWidth;dot.classList.add('pulse');}
+  }
+}
+
+function rangeFor(km){
+  var lo=Math.round(352-(km-3.2)*17), hi=Math.round(411-(km-3.2)*19);
+  return [lo,hi];
+}
+function openEdit(){
+  kmDraft=KM_SAVED;
+  document.getElementById('kmVal').textContent=kmDraft.toFixed(1);
+  document.querySelectorAll('#kSheet .opt').forEach(function(o){o.classList.remove('sel');});
+  document.getElementById('kSheet').classList.add('on');
+}
+function closeEdit(){document.getElementById('kSheet').classList.remove('on');}
+function stepKm(d){
+  kmDraft=Math.max(0.1,Math.round((kmDraft+d)*10)/10);
+  document.getElementById('kmVal').textContent=kmDraft.toFixed(1);
+  document.querySelectorAll('#kSheet .opt').forEach(function(o){o.classList.remove('sel');});
+}
+function setKm(v,el){
+  kmDraft=v;
+  document.getElementById('kmVal').textContent=kmDraft.toFixed(1);
+  el.parentNode.querySelectorAll('.opt').forEach(function(o){o.classList.remove('sel');});
+  el.classList.add('sel');
+}
+function saveKm(){
+  var prev=rangeFor(KM_SAVED), prevMid=(prev[0]+prev[1])/2;
+  KM_SAVED=kmDraft;
+  var r=rangeFor(KM_SAVED), mid=(r[0]+r[1])/2;
+  var kmTxt=KM_SAVED.toFixed(1)+'万km';
+
+  document.getElementById('kKm').textContent=kmTxt;
+  document.getElementById('homeSpec').textContent='2021年式 / パールホワイト / '+kmTxt;
+  document.getElementById('homeRange').textContent=r[0]+' 〜 '+r[1];
+  document.getElementById('applySpec').textContent='2021年式 / パールホワイト / '+kmTxt;
+
+  var diff=Math.round(prevMid-mid);
+  document.getElementById('homeDelta').innerHTML = diff>0
+    ? '更新前より <b style="color:#FF9B8A">▼ '+diff+'万円</b>'
+    : (diff<0 ? '更新前より <b style="color:#9BE8B8">▲ '+(-diff)+'万円</b>'
+              : '先月より <b style="color:#FF9B8A">▼ 8万円</b>');
+
+  // グラフの最新点を再計算（440→y12, 360→y80）
+  var y=Math.max(10,Math.min(84, 12+(440-mid)*0.85));
+  document.getElementById('kLine').setAttribute('points','34,30 94,36 154,44 214,52 262,'+y.toFixed(1));
+  document.getElementById('kArea').setAttribute('points','34,30 94,36 154,44 214,52 262,'+y.toFixed(1)+' 262,80 34,80');
+  document.getElementById('kDot').setAttribute('cy',y.toFixed(1));
+  document.getElementById('kChartNote').textContent =
+    '走行距離を '+kmTxt+' に更新しました。最新の推定相場は '+r[0]+'〜'+r[1]+'万円です。';
+
+  document.getElementById('kRangeSub').textContent =
+    '更新前は '+prev[0]+'〜'+prev[1]+'万円（'+(KM_SAVED>3.2?'走行距離の増加分を反映':'再計算済み')+'）';
+  paintKarteCar();
+  var sc=document.getElementById('B-b7'); if(sc)sc.scrollTop=0;
+  setTimeout(function(){paintKarteRange(true);},120);
+
+  closeEdit();
+  showToast('走行距離を更新しました。推定相場を '+r[0]+'〜'+r[1]+'万円 に再計算しています。');
+}
+function showToast(msg){
+  var t=document.getElementById('kToast');
+  t.textContent=msg; t.classList.add('on');
+  clearTimeout(window._tt);
+  window._tt=setTimeout(function(){t.classList.remove('on');},3200);
+}
+
+/* ---------- レイアウト実測 ---------- */
+function fixLayout(){
+  ['B'].forEach(function(c){
+    var app=document.getElementById('app'+c);
+    if(!app)return;
+    var headerEl=app.querySelector('.line-header');
+    var barEl=app.querySelector('.line-loading-bar');
+    var navEl=app.querySelector('.bottom-nav');
+    var screensEl=document.getElementById('screens'+c);
+    if(!headerEl||!navEl||!screensEl)return;
+    var headerH=headerEl.getBoundingClientRect().height||78;
+    barEl.style.top=headerH+'px';
+    screensEl.style.top=(headerH+2)+'px';
+    screensEl.style.bottom=(navEl.getBoundingClientRect().height||56)+'px';
+  });
+}
+resetWiz('B');
+paintMode();
+paintKarteCar();
+paintKarteRange(false);
+fixLayout();
+window.addEventListener('load',fixLayout);
+window.addEventListener('resize',fixLayout);
+</script>
+</body>
+</html>
