@@ -11,7 +11,7 @@
 <meta name="catalog:title" content="旅行博 回遊スタンプラリー｜触れるモック（v0.1）">
 <meta name="catalog:badge" content="新規v0.1">
 <meta name="catalog:badgeColor" content="var(--brand)">
-<meta name="catalog:desc" content="汎用スタンプラリーの「回遊イベント型（single）」構成。1会期・1エリア、出展ブースをQRで巡ってコンプリートすると主催ブースで景品を現地受け取り。入口はブースQR→友だち追加→トーク案内（talk_bubble）。初回は事前アンケート3問（お住まいエリア／都道府県／旅行形態）のみで、氏名・連絡先は取得しない。同一ブースQRは1回のみ（per_checkpoint_once）。右側にMEカスタム属性をリアルタイム表示（データの持ち先はME属性のみ＝専用管理画面・CSV配布画面は作らない）。社名は架空。">
+<meta name="catalog:desc" content="汎用スタンプラリーの「回遊イベント型（single）」構成。1会期・1エリア、出展ブースをQRで巡ってコンプリートすると主催ブースで景品を現地受け取り。入口はブースQR→友だち追加→トーク案内（talk_bubble）。スタンプはミニアプリ内カメラでの読み取りでのみ付与（掲出QRの読み取りだけでは加算しない）＝友だち追加→アンケート→カード発行→カメラ起動→読み取り→スタンプGETの6ステップを画面上部のステッパーで表示。初回は事前アンケート3問（お住まいエリア／都道府県／旅行形態）のみで、氏名・連絡先は取得しない。同一ブースQRは1回のみ（per_checkpoint_once）。右側にMEカスタム属性をリアルタイム表示（データの持ち先はME属性のみ＝専用管理画面・CSV配布画面は作らない）。社名は架空。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -120,6 +120,18 @@
   .ticket .where{font-size:12.5px;color:#7c4a29;background:#fff;border-radius:10px;padding:9px 10px;margin-top:10px;line-height:1.6}
   .ticket .code{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8a5a3a;margin-top:8px}
 
+  /* stepper（初回ジャーニーの現在地） */
+  .steps{display:none;background:#fff;border-bottom:1px solid var(--bd);padding:8px 4px 7px;flex:0 0 auto;z-index:7}
+  .steps.on{display:flex}
+  .steps .sp{flex:1;text-align:center;position:relative;min-width:0}
+  .steps .sp .d{width:18px;height:18px;border-radius:50%;margin:0 auto 3px;background:#dfe4ea;color:#8b95a3;font-size:9.5px;font-weight:800;display:flex;align-items:center;justify-content:center;position:relative;z-index:2}
+  .steps .sp .l{font-size:8px;color:#9aa4b2;line-height:1.15;letter-spacing:-.03em}
+  .steps .sp.done .d{background:#bfe6ee;color:var(--brand-d)}
+  .steps .sp.cur .d{background:var(--brand);color:#fff;box-shadow:0 0 0 3px rgba(14,143,166,.18)}
+  .steps .sp.cur .l{color:var(--brand-d);font-weight:700}
+  .steps .sp:not(:last-child):before{content:"";position:absolute;top:8px;left:calc(50% + 11px);right:calc(-50% + 11px);height:2px;background:#e7ebf1;z-index:1}
+  .steps .sp.done:before{background:#bfe6ee}
+
   /* nav */
   .nav{position:absolute;left:0;right:0;bottom:0;display:none;grid-template-columns:repeat(3,1fr);background:#fff;border-top:1px solid var(--bd);z-index:7}
   .nav.on{display:grid}
@@ -134,22 +146,30 @@
   .box button{background:var(--brand);color:#fff;border:none;border-radius:11px;padding:12px;font-size:14px;font-weight:700;width:100%;cursor:pointer}
   .scan{position:absolute;inset:0;background:#0b1016;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:25;color:#fff}
   .scan.show{display:flex}
-  .scan.picking{background:rgba(20,30,46,.55)}
-  .scan.picking .frame,.scan.picking #scan-t{display:none}
-  .frame{width:180px;height:180px;border-radius:20px;position:relative;box-shadow:0 0 0 2000px rgba(0,0,0,.55)}
+  /* カメラのフェーズ：ph-perm=権限確認 / ph-boot=起動中 / ph-live=読み取り待機 / ph-read=読み取り中 */
+  .camgate{display:none;background:#fff;border-radius:16px;width:300px;padding:22px 18px;text-align:center;color:var(--ink);box-shadow:0 16px 40px rgba(0,0,0,.35)}
+  .camgate .ce{font-size:36px;line-height:1}
+  .camgate .ct{font-weight:700;font-size:15px;margin:8px 0 4px}
+  .camgate .cp{font-size:12px;color:var(--sub);margin:0 0 14px;line-height:1.6}
+  .camgate .cbtn{display:block;width:100%;border:none;border-radius:11px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;background:var(--brand);color:#fff;margin-bottom:8px}
+  .camgate .cbtn.sub{background:#e7ebf1;color:#6b7c84}
+  .scan.ph-perm .camgate,.scan.ph-boot .camgate{display:block}
+  .scan.ph-perm .frame,.scan.ph-boot .frame,.scan.ph-perm #scan-t,.scan.ph-boot #scan-t,
+  .scan.ph-perm .scan-close,.scan.ph-boot .scan-close{display:none}
+  .frame{width:150px;height:150px;border-radius:20px;position:relative;box-shadow:0 0 0 2000px rgba(0,0,0,.55)}
   .frame:before,.frame:after{content:"";position:absolute;width:34px;height:34px;border:3px solid var(--brand)}
   .frame:before{top:-2px;left:-2px;border-right:0;border-bottom:0;border-radius:12px 0 0 0}
   .frame:after{bottom:-2px;right:-2px;border-left:0;border-top:0;border-radius:0 0 12px 0}
   .laser{position:absolute;left:6px;right:6px;height:2px;background:var(--brand);top:10px;animation:sc 1.1s ease-in-out infinite;box-shadow:0 0 12px var(--brand)}
-  @keyframes sc{0%{top:10px}50%{top:166px}100%{top:10px}}
-  .scan p{margin-top:18px;font-size:13px;opacity:.9}
-  .scan .pick{background:#fff;border-radius:16px;margin-top:16px;width:300px;max-height:280px;overflow-y:auto;text-align:left;box-shadow:0 16px 40px rgba(0,0,0,.35)}
+  @keyframes sc{0%{top:10px}50%{top:136px}100%{top:10px}}
+  .scan p{margin-top:18px;font-size:13px;opacity:.9;position:relative;z-index:3}
+  .scan .pick{background:#fff;border-radius:16px;margin-top:16px;width:300px;max-height:280px;overflow-y:auto;text-align:left;box-shadow:0 16px 40px rgba(0,0,0,.35);position:relative;z-index:3}
   .scan .pick .ph{padding:12px 14px;font-size:12px;font-weight:700;color:var(--navy);border-bottom:1px solid #eef1f4;background:#f2f9fb;border-radius:16px 16px 0 0}
   .scan .pick .pk{padding:11px 14px;font-size:12.5px;color:#1b2330;border-bottom:1px solid #eef1f4;cursor:pointer;display:flex;justify-content:space-between;gap:8px}
   .scan .pick .pk:active{background:#eef9fb}
   .scan .pick .pk .tag{color:var(--brand);font-weight:700;font-size:11px;white-space:nowrap}
   .scan .pick .pk.disabled{color:#b7bfca;cursor:default}
-  .scan-close{margin-top:14px;background:transparent;border:1.5px solid rgba(255,255,255,.5);color:#fff;border-radius:10px;padding:8px 20px;font-size:12px;font-weight:700;cursor:pointer}
+  .scan-close{position:relative;z-index:3;margin-top:14px;background:transparent;border:1.5px solid rgba(255,255,255,.5);color:#fff;border-radius:10px;padding:8px 20px;font-size:12px;font-weight:700;cursor:pointer}
 
   /* ME panel */
   .mepanel{width:100%;max-width:380px;background:#fff;border:1px solid #E6E6E6;border-radius:14px;overflow:hidden;box-shadow:0 1px 2px rgba(27,29,59,.05);font-family:'Noto Sans JP',sans-serif;color:#282829;align-self:flex-start}
@@ -176,19 +196,22 @@
 <div class="stage">
   <!-- PHONE -->
   <div class="app">
-    <div class="banner">回遊イベント型（<b>area_mode=single</b>）｜入口＝<b>ブースQR→友だち追加→トーク案内</b>。初回は<b>事前アンケート3問のみ</b>（氏名・連絡先なし）。<b>4ブース回遊＝コンプリート</b>で主催ブース現地渡し。同一ブースQRは<b>1回のみ</b>｜右上⟳で最初から</div>
+    <div class="banner">回遊イベント型（<b>area_mode=single</b>）｜<b>スタンプはミニアプリ内のカメラで読み取ったときだけ付与</b>。初回の流れ＝<b>友だち追加→アンケート→カード発行→カメラ起動→読み取り→スタンプGET</b>。掲出QRは入口であって、それだけでは加算されません｜右上⟳で最初から</div>
     <div class="hd">
       <span class="t">🧳 旅行博 回遊スタンプラリー <span class="pill">ミニアプリ</span></span>
       <span class="actions"><span id="reset" title="リセット">⟳</span></span>
     </div>
+    <div class="steps" id="steps"></div>
     <div class="scroll">
       <!-- ENTRY -->
       <section class="view on" id="v-entry">
         <h1>流入パターン（デモ操作）</h1>
         <p class="lead">入口は <b>entry_point = talk_bubble</b>。会場のブースQRを読むと<b>友だち追加</b>→トークに案内バブルが届き、そこからミニアプリを開きます。</p>
 
+        <div class="note warn"><b>重要：スタンプは「ミニアプリ内のカメラ」で読み取ったときだけ付与されます。</b>掲出QRをLINEのカメラで読むのは<b>入口（友だち追加）まで</b>。台紙を発行したあと、アプリ内カメラで<b>もう一度そのブースのQRを読む</b>とスタンプが1個入ります。</div>
+
         <div class="sec"><h2><span class="bar"></span>① 会場のブースQRから入る（本命）</h2>
-          <div class="note">まだ友だちでない来場者：QR → 友だち追加 → トークの案内バブル → ミニアプリ起動 →（初回）事前アンケート → スタンプ台紙。<b>読み取ったブースのスタンプは、アンケート送信後に自動で1個目として付与</b>します。</div>
+          <div class="note">まだ友だちでない来場者：QR → <b>友だち追加</b> → トークの案内バブル → ミニアプリ起動 →（初回）<b>事前アンケート</b> → <b>カード発行</b> → <b>カメラ起動</b> → <b>読み取り</b> → <b>スタンプGET</b>。</div>
           <select id="entry-booth" class="sel" style="margin:8px 0"></select>
           <button class="btn" id="entry-qr">ブースQRを読む → 友だち追加</button>
         </div>
@@ -212,7 +235,8 @@
             <div class="act" id="talk-open">▶ スタンプラリーを始める</div>
           </div></div>
         </div>
-        <div class="note">※ 入口が talk_bubble のため、リッチメニュー枠を使わずトーク内のバブルから起動します。案内バブルの画像・文言は<b>【要確認】</b>（先方提供待ち）。</div><div class="note warn">※ 本件は<b>未認証ミニアプリ</b>（審査なし）で公開します。未認証は友だち追加オプションがデフォルトONにならないため、ブースQRは<b>公式アカウントの友だち追加URL</b>にして「追加 → あいさつメッセージ → ミニアプリ」の順に通す方式（案B）を推奨。<b>【要確認】</b>ブース識別子をミニアプリまで引き継げるか。</div>
+        <div class="note">※ 入口が talk_bubble のため、リッチメニュー枠を使わずトーク内のバブルから起動します。案内バブルの画像・文言は<b>【要確認】</b>（先方提供待ち）。</div><div class="note">※ この時点ではまだスタンプは入っていません。<b>台紙を発行し、アプリ内カメラで読み取って初めて1個目</b>が付きます。</div>
+        <div class="note warn">※ 本件は<b>未認証ミニアプリ</b>（審査なし）で公開します。未認証は友だち追加オプションがデフォルトONにならないため、ブースQRは<b>公式アカウントの友だち追加URL</b>にして「追加 → あいさつメッセージ → ミニアプリ」の順に通す方式（案B）を推奨。<b>【要確認】</b>ブース識別子をミニアプリまで引き継げるか。</div>
       </section>
 
       <!-- GATE（事前アンケート＝pre_survey） -->
@@ -233,7 +257,8 @@
       <!-- TOP -->
       <section class="view" id="v-top">
         <div class="top-hero" id="top-hero"></div>
-        <button class="btn scanbtn" id="top-cta" style="margin-top:2px">📷 ブースQRを読み取る</button>
+        <div id="top-hint"></div>
+        <button class="btn scanbtn" id="top-cta" style="margin-top:2px">📷 カメラを起動してQRを読み取る</button>
         <div class="sec"><h2><span class="bar"></span>対象ブース（全4か所）</h2><div id="top-spots"></div></div>
         <div class="note">※ 会場マップ連動・多言語は<b>今回スコープ外</b>（別メニューとして整理）。</div>
       </section>
@@ -249,7 +274,7 @@
         </div>
         <div class="sec"><h2><span class="bar"></span>景品</h2><div id="st-tiers"></div></div>
         <div class="sec"><h2><span class="bar"></span>まだ押していないブース</h2><div id="area-spots"></div></div>
-        <button class="btn scanbtn" id="st-cta" style="margin-top:6px">📷 ブースQRを読み取る</button>
+        <button class="btn scanbtn" id="st-cta" style="margin-top:6px">📷 カメラを起動してQRを読み取る</button>
       </section>
 
       <!-- プレゼント -->
@@ -266,7 +291,7 @@
       <a data-tab="v-reward"><span class="e">🎁</span>プレゼント</a>
     </div>
     <div class="ov" id="ov"><div class="box"><div class="e" id="ov-e">🎉</div><h3 id="ov-h"></h3><p id="ov-p"></p><button id="ov-btn">OK</button></div></div>
-    <div class="scan" id="scan"><div class="frame"><div class="laser"></div></div><p id="scan-t">QRコードを読み取り中…</p><div class="pick" id="pick" style="display:none"></div><button class="scan-close" id="scan-close">✕ とじる</button></div>
+    <div class="scan" id="scan"><div class="camgate" id="cam-gate"></div><div class="frame"><div class="laser"></div></div><p id="scan-t">QRコードを読み取り中…</p><div class="pick" id="pick" style="display:none"></div><button class="scan-close" id="scan-close">✕ とじる</button></div>
   </div>
 
   <!-- ME CUSTOM ATTRIBUTE PANEL -->
@@ -321,7 +346,7 @@ const KEY="expo_stamprally_proto_v1";
 
 /* ---- state ---- */
 let S=load();
-function blank(){return {survey:{area:"",pref:"",type:""},registered:false,inflow:"",pendingBooth:null,
+function blank(){return {survey:{area:"",pref:"",type:""},registered:false,inflow:"",entryBooth:null,camAllowed:false,step:1,
   stamps:[],redeemedAt:null,completedShown:false,last_at:""};}
 function load(){try{const r=localStorage.getItem(KEY);return r?Object.assign(blank(),JSON.parse(r)):blank();}catch(e){return blank();}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
@@ -332,7 +357,15 @@ function completed(){return count()>=GOAL;}
 function cpOf(id){return CFG.checkpoints.find(c=>c.id===id);}
 function hasStamp(id){return S.stamps.some(s=>s.id===id);}
 
-function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));$(id).classList.add("on");
+const STEPS=["友だち追加","アンケート","カード発行","カメラ起動","読み取り","スタンプGET"];
+function renderSteps(){
+  const el=$("steps"); if(!el)return;
+  if(count()>0){el.classList.remove("on");el.innerHTML="";return;}
+  el.classList.add("on");
+  el.innerHTML=STEPS.map((t,i)=>{const n=i+1;const cls=n<S.step?'done':(n===S.step?'cur':'');
+    return `<div class="sp ${cls}"><div class="d">${n<S.step?'✓':n}</div><div class="l">${t}</div></div>`;}).join("");
+}
+function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));$(id).classList.add("on");renderSteps();
   document.querySelector(".scroll").scrollTo({top:0});
   document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.tab===id));}
 
@@ -363,27 +396,58 @@ function renderTop(){
     const done=hasStamp(c.id);
     return `<div class="cat"><div class="ci">${c.emoji}</div><div class="cx"><b>${c.name}</b><span>${c.note}</span></div><span class="vbtn ${done?'done':''}" style="pointer-events:none">${done?'取得済':'未取得'}</span></div>`;
   }).join("");
+  const eb=S.entryBooth?cpOf(S.entryBooth):null;
+  const hint=$("top-hint");
+  if(hint) hint.innerHTML = (eb && !hasStamp(eb.id))
+    ? `<div class="note warn">📷 入口で読み取ったのは <b>${eb.name}</b> のQRです。スタンプはまだ入っていません。<b>「カメラを起動してQRを読み取る」から、同じQRをもう一度読み取って</b>ください。</div>`
+    : "";
 }
 
-/* ---- QR読み取り（デモ：ブース選択） ---- */
-$("top-cta").addEventListener("click",openPicker);
-$("st-cta").addEventListener("click",openPicker);
-function openPicker(){
-  const s=$("scan"),pick=$("pick");
-  s.classList.add("show","picking");$("scan-t").textContent="読み取るQRを選んでください（デモ）";
-  pick.style.display="block";
-  pick.innerHTML=`<div class="ph">読み取るブースQRを選択</div>`+
+/* ---- カメラ起動 → 読み取り → スタンプ付与 ----
+   スタンプはミニアプリ内カメラでの読み取りでのみ付与する（掲出QRの読み取りだけでは加算しない）。 */
+$("top-cta").addEventListener("click",openCamera);
+$("st-cta").addEventListener("click",openCamera);
+function setPhase(ph){$("scan").className="scan show "+ph;}
+function openCamera(){
+  if(completed()){toast("🏁","コンプリート済みです","スタンプは最大 "+GOAL+" 個です。プレゼントタブから景品を受け取ってください。");return;}
+  if(S.camAllowed){bootCamera();return;}
+  setPhase("ph-perm");
+  $("pick").style.display="none";
+  $("cam-gate").innerHTML=`<div class="ce">📷</div><div class="ct">カメラの使用を許可しますか？</div>`+
+    `<p class="cp">スタンプは<b>ミニアプリ内のカメラ</b>でブースQRを読み取ったときのみ付与されます。</p>`+
+    `<button class="cbtn" id="cam-allow">許可する</button>`+
+    `<button class="cbtn sub" id="cam-deny">許可しない</button>`;
+}
+function bootCamera(){
+  setPhase("ph-boot"); $("pick").style.display="none";
+  $("cam-gate").innerHTML=`<div class="ce">📷</div><div class="ct">カメラを起動しています…</div>`+
+    `<p class="cp" style="margin:0">ミニアプリ内カメラ（LIFF）</p>`;
+  setTimeout(liveCamera,900);
+}
+function liveCamera(){
+  setPhase("ph-live");
+  S.step=5; save(); renderSteps();
+  $("scan-t").textContent="ブースのQRコードにかざしてください";
+  const pick=$("pick"); pick.style.display="block";
+  pick.innerHTML=`<div class="ph">（デモ）いまかざしているQRを選択</div>`+
     CFG.checkpoints.map(c=>{const done=hasStamp(c.id);
       return `<div class="pk ${done?'disabled':''}" data-id="${c.id}">`+
         `<span>${c.emoji} ${c.name}<br><span style="font-size:11px;color:#9aa4b2">${c.required?'必須ブース':'出展社ブース'}｜同一QRは1回のみ</span></span>`+
         `<span class="tag">${done?'取得済':'読取'}</span></div>`;}).join("");
 }
-$("scan-close").addEventListener("click",()=>{$("scan").classList.remove("show","picking");});
+$("cam-gate").addEventListener("click",e=>{
+  if(e.target.closest("#cam-allow")){S.camAllowed=true;save();bootCamera();return;}
+  if(e.target.closest("#cam-deny")){
+    $("scan").className="scan";
+    toast("⚠","カメラが必要です","カメラを許可しないとスタンプを貯められません。会場スタッフの案内で、LINEの設定からカメラを許可してもらう想定です。");
+    return;}
+});
+$("scan-close").addEventListener("click",()=>{$("scan").className="scan";});
 $("pick").addEventListener("click",e=>{
   const row=e.target.closest(".pk"); if(!row||row.classList.contains("disabled"))return;
   const id=row.dataset.id;
-  $("pick").style.display="none";$("scan").classList.remove("picking");$("scan-t").textContent="QRコードを読み取り中…";
-  setTimeout(()=>{$("scan").classList.remove("show");commit(id);},900);
+  $("pick").style.display="none"; setPhase("ph-read"); $("scan-t").textContent="QRコードを読み取り中…";
+  setTimeout(()=>{$("scan").className="scan";commit(id);},900);
 });
 
 function commit(id){
@@ -393,7 +457,7 @@ function commit(id){
   S.stamps.push({id:id,name:c.name,at:nowStr()});
   S.last_at=nowStr(); save();
   renderTop();renderStamp();renderReward();renderME("スタンプ数（stamp_count）");
-  show("v-stamp");
+  renderSteps(); show("v-stamp");
   if(completed()&&!S.completedShown){
     S.completedShown=true;save();
     toast("🎉","コンプリート！",CFG.reward_rule.tiers[0].label+" を獲得しました。"+CFG.reward_rule.pickup_text);
@@ -425,12 +489,12 @@ function renderEntry(){
   $("talk-term").textContent=TERM+" 開催";
 }
 $("entry-qr").addEventListener("click",()=>{
-  S.inflow="現地ブースQR"; S.pendingBooth=$("entry-booth").value; save();
+  S.inflow="現地ブースQR"; S.entryBooth=$("entry-booth").value; S.step=2; save();
   renderME(); show("v-talk");
-  toast("👋","友だち追加されました","公式アカウントのトークに案内バブルが届きました。バブルからミニアプリを開きます。");
+  toast("👋","友だち追加されました","公式アカウントのトークに案内バブルが届きました。この時点ではまだスタンプは入っていません。");
 });
 $("entry-rm").addEventListener("click",()=>{
-  S.inflow="リッチメニュー・配信"; S.pendingBooth=null; save(); renderME();
+  S.inflow="リッチメニュー・配信"; S.entryBooth=null; S.step=2; save(); renderME();
   if(S.registered){$("nav").classList.add("on");renderTop();renderStamp();renderReward();show("v-top");}
   else{renderGateHero();show("v-gate");
     toast("📝","参加前アンケート","初回のみ3問のアンケート。回答するとスタンプ台紙が発行されます。");}
@@ -438,7 +502,7 @@ $("entry-rm").addEventListener("click",()=>{
 $("talk-open").addEventListener("click",()=>{
   if(S.registered){$("nav").classList.add("on");renderTop();renderStamp();renderReward();show("v-top");}
   else{renderGateHero();show("v-gate");
-    toast("📝","参加前アンケート","初回のみ3問のアンケート。回答すると、いま読み取ったブースのスタンプが1個目として付与されます。");}
+    toast("📝","参加前アンケート","初回のみ3問のアンケート。回答するとスタンプ台紙が発行され、そのあとアプリ内カメラでQRを読み取るとスタンプが入ります。");}
 });
 
 /* ---- 事前アンケート ---- */
@@ -455,12 +519,10 @@ function validate(){const ok=$("q-area").value&&$("q-pref").value&&$("q-type").v
 });
 $("survey-save").addEventListener("click",()=>{
   if(!validate())return;
-  S.registered=true; S.last_at=nowStr(); save();
+  S.registered=true; S.step=4; S.last_at=nowStr(); save();
   $("nav").classList.add("on");
-  // 現地QRから入った場合は、読み取ったブースを1個目として自動付与
-  if(S.pendingBooth){const b=S.pendingBooth; S.pendingBooth=null; save(); renderME("コンプリート（completed）"); commit(b); return;}
   renderME("コンプリート（completed）"); renderTop(); renderStamp(); renderReward(); show("v-top");
-  toast("✅","スタンプ台紙を発行しました","対象ブースのQRを読み取ってスタンプを集めましょう（全"+GOAL+"個）。");
+  toast("✅","スタンプ台紙を発行しました","次は「カメラを起動してQRを読み取る」から、ブースのQRを読み取ってください。スタンプはアプリ内カメラでの読み取りでのみ付与されます。");
 });
 
 /* ---- プレゼント（booth_manual：現地渡し） ---- */
@@ -501,7 +563,7 @@ document.querySelectorAll("#nav a").forEach(a=>a.addEventListener("click",()=>{c
   show(t);}));
 $("reset").addEventListener("click",()=>{S=blank();save();
   ["q-area","q-pref","q-type"].forEach(id=>$(id).value="");validate();
-  $("nav").classList.remove("on");renderME();renderEntry();show("v-entry");});
+  $("nav").classList.remove("on");$("scan").className="scan";renderME();renderEntry();show("v-entry");});
 
 /* ---- boot ---- */
 $("q-area").value=S.survey.area;$("q-pref").value=S.survey.pref;$("q-type").value=S.survey.type;validate();
