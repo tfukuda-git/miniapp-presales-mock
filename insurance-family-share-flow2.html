@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>家族あんしん共有 — はなさく生命 ミニアプリ デモ（2端末）</title>
+<title>家族あんしん共有 — 保険会社A ミニアプリ デモ（2端末）</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -159,10 +159,10 @@
     <div class="phone"><div class="island"></div><div class="screen" id="screenB"></div></div>
   </div>
 </div>
-<div class="caption">家族あんしん共有サービス ／ はなさく生命保険 LINEミニアプリ ・ 要件反映デモ（社内用）<br>左：契約者が「共有相手を追加」→ 右：ご家族のLINEに通知 → 友だち追加 → ミニアプリで承認申請、まで体験できます<br><a href="hanasaku-admin-console.html" style="display:inline-block;margin-top:12px;color:#ffb3c8;text-decoration:none;font-weight:700;border:1px solid #6a5a72;border-radius:8px;padding:7px 14px">🖥 運用管理画面（管理者向け）を見る →</a></div>
+<div class="caption">家族あんしん共有サービス ／ 保険会社A保険 LINEミニアプリ ・ 要件反映デモ（社内用）<br>左：契約者が「共有相手を追加」→ 右：ご家族のLINEに通知 → 友だち追加 → ミニアプリで承認申請、まで体験できます<br><a href="hanasaku-admin-console.html" style="display:inline-block;margin-top:12px;color:#ffb3c8;text-decoration:none;font-weight:700;border:1px solid #6a5a72;border-radius:8px;padding:7px 14px">🖥 運用管理画面（管理者向け）を見る →</a></div>
 
 <script>
-var CUST="はなさく生命",COMP="第一生命",OWNER="田中 太郎",FAM="共有先のご家族";
+var CUST="保険会社A",COMP="保険会社B",OWNER="田中 太郎",FAM="共有先のご家族";
 var myInsurances=[];
 var members=[];
 var friends=["田中 花子","田中 一郎","田中 健一","佐藤 美咲"];
@@ -298,16 +298,18 @@ function screenAdd(){
   if(s==0){
     var ni=state.newIns||{};
     body='<div class="center-title"><h2>保険情報を入力する</h2><p>保険会社名・連絡先は必須です。証券を見ながら手入力で登録できます</p></div>'
-      +formFieldId("f_co","保険会社（必須）","例）はなさく生命",ni.co,75)
+      +formFieldId("f_co","保険会社（必須）","例）保険会社A",ni.co,75)
       +formFieldId("f_name","保険の種類","例）はなさく医療（医療保険）",ni.name,75)
       +formFieldId("f_no","証券番号（任意）","例）HN-2024-0831",ni.no,80)
       +formFieldId("f_fee","保険料","例）月額 ¥6,800 / 年払い など",ni.fee,75)
       +formFieldId("f_agent","担当者名（任意）","例）佐藤 美咲",ni.agent,75)
       +formFieldId("f_tel","連絡先（必須）","例）担当者または請求窓口の電話番号",ni.tel,75)
       +formFieldId("f_memo","メモ（任意）","例）更新時期・受取人・自分用のメモ など",ni.memo,200)
-      +'<div style="color:#98a2b3;font-size:12px;margin:-4px 2px 8px;line-height:1.5">※メモはご自身用です。ご家族には共有されません。</div>'
+      +'<div style="color:#98a2b3;font-size:12px;margin:-4px 2px 4px;line-height:1.5">※メモはご自身用です。ご家族には共有されません。</div>'
+      +'<div style="background:#fff4f4;border:1px solid #f5c2c2;border-radius:8px;color:#b42318;font-size:12px;margin:0 2px 10px;padding:8px 10px;line-height:1.6">⚠ 公的保険（健康保険証・マイナ保険証など）の情報は入力しないでください。<br>⚠ 病歴・通院歴などの情報は入力しないでください。</div>'
       +'<button class="btn btn-primary btn-block" style="margin-top:4px" '+A("confirmManual")+'>入力内容を確認する</button>'
       +'<button class="btn btn-ghost btn-block" style="margin-top:10px" '+A("attachPhoto")+'>'+I.camera.replace('width="40" height="40"','width="18" height="18"')+' 証券を撮影する（任意）'+(state.photo?'　✓ 添付済み':'')+'</button>'
+      +'<div style="background:#fff4f4;border:1px solid #f5c2c2;border-radius:8px;color:#b42318;font-size:12px;margin:10px 2px 0;padding:8px 10px;line-height:1.6">⚠ 健康保険証・マイナ保険証など公的保険の写真は撮影・添付しないでください。<br>⚠ 病歴・診断書など健康状態がわかる書類は撮影しないでください。</div>'
       +'<div style="text-align:center;color:#98a2b3;font-size:12px;margin-top:10px;line-height:1.5">撮影した写真からの自動入力（OCR）は今後対応予定です</div>';
   } else if(s==1){
     var ni2=state.newIns||{};
@@ -521,7 +523,7 @@ function famAddPopup(){famB.addPopup=true;renderB();}
 function famAddClose(){famB.addPopup=false;renderB();}
 function famAddDone(){famB.friendAdded=true;famB.addPopup=false;famB.step="app";renderB();}
 function bOfficial(){
-  var menu='<div class="rmbar">はなさく生命 リッチメニュー</div>'
+  var menu='<div class="rmbar">保険会社A リッチメニュー</div>'
     +'<div class="richmenu">'
     +'<div class="rt main" '+A("openMini","family")+'>'+I.shield+'<span>家族あんしん共有</span></div>'
     +'<div class="rt" '+A("openMini","member")+'>'+I.phone+'<span>緊急連絡先</span></div>'
@@ -693,45 +695,8 @@ document.addEventListener("click",function(e){
 render();
 renderB();
 </script>
-<style>
-#pwgate{position:fixed;inset:0;background:radial-gradient(circle at 50% 30%,#26264a 0%,#15152b 55%,#0d0d1c 100%);display:flex;align-items:center;justify-content:center;z-index:99999;font-family:"Noto Sans JP",system-ui,sans-serif;}
-#pwgate.hide{display:none;}
-#pwgate .pwbox{background:#fff;border-radius:18px;padding:30px 26px;width:300px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.45);}
-#pwgate .pwlock{display:flex;justify-content:center;margin-bottom:12px;color:#3438F0;}
-#pwgate .pwttl{font-size:14px;font-weight:700;color:#1c1c1e;margin-bottom:4px;}
-#pwgate .pwsub{font-size:11px;color:#8a8a8e;margin-bottom:16px;}
-#pwgate input{width:100%;padding:12px 14px;border:1px solid #e6e6e6;border-radius:12px;font-size:15px;font-family:inherit;outline:none;margin-bottom:12px;}
-#pwgate button{width:100%;padding:13px;border:none;border-radius:12px;background:#3438F0;color:#fff;font-weight:700;font-size:15px;font-family:inherit;cursor:pointer;}
-#pwgate #pwerr{color:#e0453a;font-size:12px;margin-top:10px;min-height:16px;}
-</style>
-<div id="pwgate"><div class="pwbox">
-  <div class="pwlock"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 018 0v3" stroke="currentColor" stroke-width="1.7"/></svg></div>
-  <div class="pwttl">パスワードを入力してください</div>
-  <div class="pwsub">家族あんしん共有サービス デモ</div>
-  <input id="pwin" type="password" placeholder="パスワード" autocomplete="off">
-  <button id="pwbtn">表示する</button>
-  <div id="pwerr"></div>
-</div></div>
-<script>
-(function(){var PW="kazoku-anshin",K="hns_demo_ok";
-var g=document.getElementById("pwgate"),i=document.getElementById("pwin"),e=document.getElementById("pwerr");
-try{if(sessionStorage.getItem(K)==="1"){g.classList.add("hide");return;}}catch(_){}
-function ok(){if(i.value===PW){try{sessionStorage.setItem(K,"1");}catch(_){}g.classList.add("hide");}else{e.textContent="パスワードが違います";i.value="";}}
-document.getElementById("pwbtn").addEventListener("click",ok);
-i.addEventListener("keydown",function(ev){if(ev.key==="Enter")ok();});
-setTimeout(function(){i.focus();},100);})();
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
+<style>#pwgate{position:fixed;inset:0;background:#0f172a;display:flex;align-items:center;justify-content:center;z-index:99999;font-family:system-ui}#pwgate .box{background:#fff;padding:32px 28px;border-radius:14px;width:300px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.3)}#pwgate h3{margin:0 0 6px;font-size:17px;color:#0f172a}#pwgate p{margin:0 0 16px;font-size:13px;color:#64748b}#pwgate input{width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:15px;box-sizing:border-box;margin-bottom:12px}#pwgate button{width:100%;padding:11px;border:0;border-radius:8px;background:#06c755;color:#fff;font-size:15px;font-weight:600;cursor:pointer}#pwgate .err{color:#b42318;font-size:12px;height:16px;margin-bottom:6px}</style>
+<div id="pwgate"><div class="box"><h3>デモを表示</h3><p>パスワードを入力してください</p><div class="err" id="pwerr"></div><input id="pwin" type="password" placeholder="パスワード" onkeydown="if(event.key==='Enter')pwck()"><button onclick="pwck()">表示する</button></div></div>
+<script>function pwck(){var v=document.getElementById("pwin").value;if(v==="kazoku-anshin"){try{sessionStorage.setItem("hns_demo_ok","1")}catch(e){}document.getElementById("pwgate").style.display="none";}else{document.getElementById("pwerr").textContent="パスワードが違います";}}try{if(sessionStorage.getItem("hns_demo_ok")==="1"){var g=document.getElementById("pwgate");if(g)g.style.display="none";}}catch(e){}</script>
 </body>
 </html>
