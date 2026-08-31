@@ -1,0 +1,1539 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<title>ワコール LINEミニアプリ モック v0.6｜試着メモ×購入・未購入分岐フォロー</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-25..200&display=block"/>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
+<style>
+/* line-screen.css — LINE-style chat screen styles.
+   Pair with line-screen.jsx. Self-contained (no external CSS vars).
+   Designed to fill an IOSDevice screen via position: absolute; inset: 0. */
+
+.ls-chat {
+position: absolute;
+inset: 0;
+background: #8db0c8;
+display: flex;
+flex-direction: column;
+font-family: -apple-system, system-ui, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+color: #111;
+}
+
+/* ---------- Header ---------- */
+.ls-header {
+background: #fff;
+display: flex;
+align-items: center;
+gap: 12px;
+padding: 10px 14px;
+border-bottom: 1px solid #e5e7e9;
+flex-shrink: 0;
+}
+.ls-hdr-left { flex-shrink: 0; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.ls-hdr-badge { font-size: 13px; font-weight: 600; color: #111; line-height: 1; }
+.ls-hdr-center { flex: 1; min-width: 0; }
+.ls-hdr-title-row { display: flex; align-items: center; gap: 4px; }
+.ls-hdr-title { font-size: 17px; font-weight: 700; color: #111; letter-spacing: -0.01em; }
+.ls-hdr-verified { flex-shrink: 0; }
+.ls-hdr-sub { font-size: 11px; color: #8a8f95; margin-top: 1px; }
+.ls-hdr-right { display: flex; gap: 14px; align-items: center; }
+
+/* ---------- Chat area ---------- */
+.ls-chat-area {
+flex: 1;
+overflow-y: auto;
+padding: 12px 10px 14px;
+background: linear-gradient(180deg, #8db0c8 0%, #9cb9ce 100%);
+}
+.ls-date {
+text-align: center;
+background: rgba(0,0,0,0.22);
+color: #fff;
+font-size: 11px;
+padding: 3px 14px;
+border-radius: 999px;
+width: fit-content;
+margin: 4px auto 14px;
+font-weight: 500;
+}
+
+/* ---------- Message row ---------- */
+.ls-msg-row {
+display: flex;
+gap: 8px;
+margin-bottom: 10px;
+align-items: flex-start;
+}
+.ls-msg-row.is-self { justify-content: flex-end; }
+.ls-avatar-spacer { width: 38px; flex-shrink: 0; }
+
+.ls-avatar {
+width: 38px; height: 38px;
+border-radius: 50%;
+background: #fff;
+display: flex; align-items: center; justify-content: center;
+flex-shrink: 0;
+box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+overflow: hidden;
+}
+.ls-avatar img { width: 28px; height: 28px; object-fit: contain; }
+.ls-avatar-placeholder {
+width: 100%; height: 100%;
+display: flex; align-items: center; justify-content: center;
+background: #cfd8dc;
+color: #455a64;
+font-size: 14px;
+font-weight: 700;
+}
+
+.ls-msg-group {
+display: flex;
+flex-direction: column;
+max-width: 72%;
+position: relative;
+}
+.ls-msg-row.is-self .ls-msg-group { align-items: flex-end; }
+.ls-name { font-size: 11px; color: #fff; margin: 0 4px 3px; font-weight: 500; }
+
+.ls-bubble {
+background: #fff;
+color: #111;
+padding: 10px 14px;
+border-radius: 16px;
+font-size: 13.5px;
+line-height: 1.55;
+letter-spacing: -0.005em;
+white-space: pre-wrap;
+word-break: break-word;
+}
+.ls-bubble.is-self { background: #6ee17b; color: #0a3d15; }
+.ls-bubble.has-image {
+padding: 4px;
+background: #fff;
+}
+.ls-bubble-image {
+display: block;
+max-width: 220px;
+border-radius: 12px;
+}
+.ls-bubble-caption { padding: 6px 8px 4px; }
+
+.ls-time {
+font-size: 10px;
+color: rgba(255,255,255,0.85);
+position: absolute;
+right: -44px;
+bottom: 2px;
+white-space: nowrap;
+}
+.ls-msg-row.is-self .ls-time {
+left: -44px;
+right: auto;
+}
+
+/* ---------- Typing indicator + bubble entry animation ---------- */
+.ls-typing {
+display: inline-flex;
+align-items: center;
+gap: 4px;
+background: #fff;
+border-radius: 18px;
+padding: 12px 14px;
+box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+animation: ls-bubble-in 260ms cubic-bezier(0.22, 1, 0.36, 1);
+transform-origin: left center;
+}
+.ls-msg-row.is-self .ls-typing { transform-origin: right center; }
+.ls-typing > span {
+width: 6px; height: 6px; border-radius: 50%;
+background: #a8afb3;
+animation: ls-typing-dot 1.1s infinite ease-in-out;
+}
+.ls-typing > span:nth-child(2) { animation-delay: 0.18s; }
+.ls-typing > span:nth-child(3) { animation-delay: 0.36s; }
+@keyframes ls-typing-dot {
+0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+30% { transform: translateY(-3px); opacity: 1; }
+}
+@keyframes ls-bubble-in {
+0% { opacity: 0; transform: translateY(6px) scale(0.96); }
+100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.ls-msg-enter .ls-bubble,
+.ls-msg-enter .ls-name,
+.ls-msg-enter .ls-time {
+animation: ls-bubble-in 300ms cubic-bezier(0.22, 1, 0.36, 1);
+transform-origin: left center;
+}
+.ls-msg-row.is-self.ls-msg-enter .ls-bubble {
+transform-origin: right center;
+}
+
+/* ---------- Rich menu ---------- */
+.ls-richmenu {
+background: #0a0a0a;
+display: flex;
+flex-direction: column;
+gap: 1px;
+flex-shrink: 0;
+}
+.ls-rm-grid {
+display: grid;
+gap: 1px;
+background: #0a0a0a;
+}
+.ls-rm-col {
+display: flex;
+flex-direction: column;
+gap: 1px;
+background: #0a0a0a;
+}
+.ls-rm-col > .ls-rm-tile { flex: 1; }
+
+.ls-rm-tile {
+background: #fff;
+border: none;
+color: #1a1a1a;
+cursor: pointer;
+font-family: inherit;
+position: relative;
+overflow: hidden;
+padding: 14px;
+min-height: 89px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+gap: 6px;
+font-size: 13px;
+font-weight: 600;
+text-align: center;
+}
+.ls-rm-tile > .ls-rm-icon { color: #2968d8; }
+
+.ls-rm-tile.is-wide {
+flex-direction: row;
+min-height: 48px;
+padding: 12px 14px;
+font-size: 12px;
+}
+.ls-rm-tile.is-wide > .ls-rm-icon { color: #555; }
+
+.ls-rm-tile.is-primary {
+align-items: stretch;
+justify-content: stretch;
+padding: 18px 18px 16px;
+min-height: 180px;
+text-align: left;
+}
+.ls-rm-primary-inner {
+flex: 1;
+display: flex;
+flex-direction: column;
+position: relative;
+z-index: 1;
+}
+.ls-rm-primary-eyebrow {
+font-family: 'Inter', system-ui, sans-serif;
+font-size: 10px;
+font-weight: 700;
+letter-spacing: 0.14em;
+text-transform: uppercase;
+display: flex;
+align-items: center;
+gap: 4px;
+color: #2968d8;
+}
+.ls-rm-primary-title {
+font-size: 28px;
+font-weight: 700;
+line-height: 1.1;
+margin-top: 10px;
+letter-spacing: -0.02em;
+color: #1a1a1a;
+}
+.ls-rm-primary-foot {
+margin-top: auto;
+display: flex;
+justify-content: space-between;
+align-items: center;
+font-size: 11px;
+font-weight: 600;
+color: #666;
+padding-top: 14px;
+}
+.ls-rm-primary-deco {
+position: absolute;
+right: -14px;
+bottom: 12px;
+pointer-events: none;
+line-height: 1;
+z-index: 0;
+}
+
+/* ---------- Menu toggle bar (▼ / ▲) ---------- */
+.ls-menu-toggle {
+background: #fff;
+border-top: 1px solid #e5e7e9;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 12px 14px;
+position: relative;
+flex-shrink: 0;
+}
+.ls-menu-toggle .is-clickable { cursor: pointer; user-select: none; }
+.ls-menu-toggle-label.is-clickable:active { color: #111; }
+.ls-menu-toggle-kbd.is-clickable:active { color: #111 !important; }
+.ls-menu-toggle-kbd {
+position: absolute;
+left: 14px;
+font-size: 22px !important;
+color: #6b7280 !important;
+}
+.ls-menu-toggle-label {
+font-size: 13px;
+font-weight: 500;
+color: #555;
+}
+
+/* ---------- Input bar ---------- */
+.ls-input-bar {
+background: #fff;
+border-top: 1px solid #e5e7e9;
+display: flex;
+align-items: center;
+padding: 8px 12px;
+gap: 10px;
+flex-shrink: 0;
+}
+.ls-input-bar > .material-symbols-rounded {
+font-size: 24px !important;
+color: #6b7280 !important;
+flex-shrink: 0;
+}
+.ls-input-field {
+flex: 1;
+background: #f3f4f6;
+border-radius: 999px;
+padding: 8px 14px;
+color: #9ca3af;
+font-size: 14px;
+line-height: 1.3;
+font-family: -apple-system, system-ui, sans-serif;
+}
+
+</style>
+<style>
+body { margin: 0; padding: 36px 20px 60px; background: #f3f4f6; min-height: 100vh;
+font-family: -apple-system, system-ui, 'Noto Sans JP', sans-serif; }
+.page { max-width: 1480px; margin: 0 auto; }
+h1 { font-size: 26px; color: #1F3864; border-bottom: 3px solid #1F3864; padding-bottom: 10px; margin: 0 0 8px; }
+.subtitle { color: #666; font-size: 13px; margin-bottom: 24px; }
+.flow-box { background: #fff; border-radius: 10px; padding: 20px 22px; margin-bottom: 34px;
+box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+.flow-box h2 { font-size: 15px; color: #1F3864; margin: 0 0 12px; }
+.flow-step { display: inline-block; background: #1F3864; color: #fff; padding: 7px 13px;
+border-radius: 6px; font-size: 12px; font-weight: 600; margin: 3px; }
+.flow-step.brand { background: #B03060; }
+.flow-arrow { color: #06C755; font-weight: 700; margin: 0 4px; }
+.flow-notes { margin-top: 12px; font-size: 12px; color: #555; line-height: 1.8; }
+.flow-notes strong { color: #1F3864; }
+.gallery { display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: center; }
+.frame-label { font-size: 13px; font-weight: 700; color: #1F3864; text-align: center; margin-bottom: 10px; }
+.frame-desc { font-size: 11px; color: #666; text-align: center; max-width: 300px; margin: 8px auto 22px; line-height: 1.55; }
+.note-box { background: #fff; border-left: 4px solid #06C755; padding: 16px 20px; margin-top: 26px;
+font-size: 13px; line-height: 1.8; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+.note-box strong { color: #1F3864; }
+/* brand override: rich menu icons in Wacoal rose */
+.ls-rm-tile > .ls-rm-icon { color: #B03060; }
+.ls-rm-primary-eyebrow { color: #B03060; }
+</style>
+</head>
+<body>
+<div class="page">
+<h1>ワコール LINEミニアプリ モック v0.6</h1>
+<div class="subtitle">試着メモ（商品バーコードスキャン）× 購入／未購入の分岐フォロー × ワコールメンバーズ登録動線 ｜ 作成：株式会社Mico ｜ 2026年8月26日</div>
+
+<div class="flow-box">
+<h2>全体フロー</h2>
+<div>
+<span class="flow-step brand">店頭POPのQR／NFC</span><span class="flow-arrow">→</span>
+<span class="flow-step">起動直後に許諾（友だち追加つき）→ホーム</span><span class="flow-arrow">→</span>
+<span class="flow-step brand">商品バーコードをスキャン</span><span class="flow-arrow">→</span>
+<span class="flow-step">試着メモがLINEに残る</span><span class="flow-arrow">→</span>
+<span class="flow-step">会員登録・ID連携（既存／新規の分岐）</span><span class="flow-arrow">→</span>
+<span class="flow-step">会計（メンバーズポイント照合で購買判定）</span><span class="flow-arrow">→</span>
+<span class="flow-step brand">購入者／未購入者で分岐フォロー配信</span>
+</div>
+<div class="flow-notes">
+・入口は<strong>店舗POPのQRコード／NFCタグ</strong>（リッチメニュー不要。<strong>友だち登録がない方も取り込める</strong>）。起動直後の<strong>許諾ポップアップに友だち追加オプションを同梱</strong>し、利用開始と同時に友だち数増加に寄与<br>
+・許諾後は<strong>ホームを経てすぐバーコードスキャンへ</strong>（初回はオンボーディング、2回目以降は最近の試着メモを表示）。バーコードは<strong>SKU単位（サイズ・カラー等を含む）前提</strong>＝サイズ・カラー自動判定、商品情報は<strong>データフィード連携</strong>で自動取得<br>
+・<strong>仮会員は設けず</strong>、試着クローゼットの後に会員分岐：<strong>既存会員＝LINEソーシャルログインで自動ID連携／新規＝クイック入力で登録</strong>。登録の動機づけは<strong>購入時のポイント付与＋未購入フォロー配信の受け取り</strong>で訴求<br>
+・購買の有無は<strong>ワコールメンバーズのポイント（会計時提示）</strong>と試着メモの突合で判定。<strong>購入者＝着心地フォロー・セット提案／未購入者＝在庫・クーポン案内</strong>の2分岐で自動配信
+</div>
+</div>
+
+<div class="gallery" id="mount"></div>
+
+<div class="note-box">
+<strong>📌 注記：</strong>本モックは v0.6（2026/08/26）のドラフトです。商品バーコードが品番・サイズ・カラーを含むSKU単位であることはワコール様側で確認済みです。実画面はワコール様ブランドガイドラインに合わせて調整します。<strong>仮会員は設けず、最初からワコールメンバーズ（本会員）登録を促す方針</strong>を反映しています。<strong>商品バーコードはサイズ・カラー等のユニーク情報を含むSKU単位（JAN等）を前提</strong>としており、品番単位のバーコードの場合はサイズ・カラーをお客様が手動選択するフォールバックで対応します。クイック入力（共通プロフィール）は認証済みLINEミニアプリ＋利用申請が前提です。データフィード形式・ワコールメンバーズ（ポイント／会員基盤）との連携方式は要件定義で確定します。<strong>既存会員の自動ID連携（SCR-105）には、①既存LINE会員証／ソーシャルログインと本ミニアプリが同一プロバイダー配下であること（LINEユーザーIDはプロバイダー単位で異なるため）、②会員基盤側でのUID照合連携、の2つが前提条件となります（既存チャネル構成の確認が必要）。</strong>社外共有時は匿名化版を使用してください。
+</div>
+</div>
+
+<script type="text/babel">
+// iphone-frame.jsx — iOS 26 (Liquid Glass) device frame, self-contained.
+// Drop-in via <script type="text/babel" src="iphone-frame.jsx"><\/script>.
+// Exposes (on window): IOSDevice, IOSStatusBar, IOSNavBar, IOSGlassPill,
+// IOSList, IOSListRow, IOSKeyboard.
+//
+// Usage:
+//   <IOSDevice width={390} height={844}>
+//     <YourScreen/>
+//   </IOSDevice>
+
+function IOSStatusBar({ dark = false, time = '9:41' }) {
+const c = dark ? '#fff' : '#000000';
+return (
+<div style={{
+display: 'flex', gap: 154, alignItems: 'center', justifyContent: 'center',
+padding: '21px 24px 19px', boxSizing: 'border-box',
+position: 'relative', zIndex: 20, width: '100%',
+}}>
+<div style={{ flex: 1, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 1.5 }}>
+<span style={{
+fontFamily: '-apple-system, "SF Pro", system-ui', fontWeight: 590,
+fontSize: 17, lineHeight: '22px', color: c,
+}}>{time}</span>
+</div>
+<div style={{ flex: 1, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, paddingTop: 1, paddingRight: 1 }}>
+<svg width="19" height="12" viewBox="0 0 19 12">
+<rect x="0" y="7.5" width="3.2" height="4.5" rx="0.7" fill={c}/>
+<rect x="4.8" y="5" width="3.2" height="7" rx="0.7" fill={c}/>
+<rect x="9.6" y="2.5" width="3.2" height="9.5" rx="0.7" fill={c}/>
+<rect x="14.4" y="0" width="3.2" height="12" rx="0.7" fill={c}/>
+</svg>
+<svg width="17" height="12" viewBox="0 0 17 12">
+<path d="M8.5 3.2C10.8 3.2 12.9 4.1 14.4 5.6L15.5 4.5C13.7 2.7 11.2 1.5 8.5 1.5C5.8 1.5 3.3 2.7 1.5 4.5L2.6 5.6C4.1 4.1 6.2 3.2 8.5 3.2Z" fill={c}/>
+<path d="M8.5 6.8C9.9 6.8 11.1 7.3 12 8.2L13.1 7.1C11.8 5.9 10.2 5.1 8.5 5.1C6.8 5.1 5.2 5.9 3.9 7.1L5 8.2C5.9 7.3 7.1 6.8 8.5 6.8Z" fill={c}/>
+<circle cx="8.5" cy="10.5" r="1.5" fill={c}/>
+</svg>
+<svg width="27" height="13" viewBox="0 0 27 13">
+<rect x="0.5" y="0.5" width="23" height="12" rx="3.5" stroke={c} strokeOpacity="0.35" fill="none"/>
+<rect x="2" y="2" width="20" height="9" rx="2" fill={c}/>
+<path d="M25 4.5V8.5C25.8 8.2 26.5 7.2 26.5 6.5C26.5 5.8 25.8 4.8 25 4.5Z" fill={c} fillOpacity="0.4"/>
+</svg>
+</div>
+</div>
+);
+}
+
+function IOSGlassPill({ children, dark = false, style = {} }) {
+return (
+<div style={{
+height: 44, minWidth: 44, borderRadius: 9999,
+position: 'relative', overflow: 'hidden',
+display: 'flex', alignItems: 'center', justifyContent: 'center',
+boxShadow: dark
+? '0 2px 6px rgba(0,0,0,0.35), 0 6px 16px rgba(0,0,0,0.2)'
+: '0 1px 3px rgba(0,0,0,0.07), 0 3px 10px rgba(0,0,0,0.06)',
+...style,
+}}>
+<div style={{
+position: 'absolute', inset: 0, borderRadius: 9999,
+backdropFilter: 'blur(12px) saturate(180%)',
+WebkitBackdropFilter: 'blur(12px) saturate(180%)',
+background: dark ? 'rgba(120,120,128,0.28)' : 'rgba(255,255,255,0.5)',
+}} />
+<div style={{
+position: 'absolute', inset: 0, borderRadius: 9999,
+boxShadow: dark
+? 'inset 1.5px 1.5px 1px rgba(255,255,255,0.15), inset -1px -1px 1px rgba(255,255,255,0.08)'
+: 'inset 1.5px 1.5px 1px rgba(255,255,255,0.7), inset -1px -1px 1px rgba(255,255,255,0.4)',
+border: dark ? '0.5px solid rgba(255,255,255,0.15)' : '0.5px solid rgba(0,0,0,0.06)',
+}} />
+<div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', padding: '0 4px' }}>
+{children}
+</div>
+</div>
+);
+}
+
+function IOSNavBar({ title = 'Title', dark = false, trailingIcon = true }) {
+const muted = dark ? 'rgba(255,255,255,0.6)' : '#404040';
+const text = dark ? '#fff' : '#000';
+const pillIcon = (content) => (
+<IOSGlassPill dark={dark}>
+<div style={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+{content}
+</div>
+</IOSGlassPill>
+);
+return (
+<div style={{
+display: 'flex', flexDirection: 'column', gap: 10,
+paddingTop: 62, paddingBottom: 10, position: 'relative', zIndex: 5,
+}}>
+<div style={{
+display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+padding: '0 16px',
+}}>
+{pillIcon(
+<svg width="12" height="20" viewBox="0 0 12 20" fill="none" style={{ marginLeft: -1 }}>
+<path d="M10 2L2 10l8 8" stroke={muted} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+)}
+{trailingIcon && pillIcon(
+<svg width="22" height="6" viewBox="0 0 22 6">
+<circle cx="3" cy="3" r="2.5" fill={muted}/>
+<circle cx="11" cy="3" r="2.5" fill={muted}/>
+<circle cx="19" cy="3" r="2.5" fill={muted}/>
+</svg>
+)}
+</div>
+<div style={{
+padding: '0 16px',
+fontFamily: '-apple-system, system-ui',
+fontSize: 34, fontWeight: 700, lineHeight: '41px',
+color: text, letterSpacing: 0.4,
+}}>{title}</div>
+</div>
+);
+}
+
+function IOSListRow({ title, detail, icon, chevron = true, isLast = false, dark = false }) {
+const text = dark ? '#fff' : '#000';
+const sec = dark ? 'rgba(235,235,245,0.6)' : 'rgba(60,60,67,0.6)';
+const ter = dark ? 'rgba(235,235,245,0.3)' : 'rgba(60,60,67,0.3)';
+const sep = dark ? 'rgba(84,84,88,0.65)' : 'rgba(60,60,67,0.12)';
+return (
+<div style={{
+display: 'flex', alignItems: 'center', minHeight: 52,
+padding: '0 16px', position: 'relative',
+fontFamily: '-apple-system, system-ui', fontSize: 17,
+letterSpacing: -0.43,
+}}>
+{icon && (
+<div style={{
+width: 30, height: 30, borderRadius: 7, background: icon,
+marginRight: 12, flexShrink: 0,
+}} />
+)}
+<div style={{ flex: 1, color: text }}>{title}</div>
+{detail && <span style={{ color: sec, marginRight: 6 }}>{detail}</span>}
+{chevron && (
+<svg width="8" height="14" viewBox="0 0 8 14" style={{ flexShrink: 0 }}>
+<path d="M1 1l6 6-6 6" stroke={ter} strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+)}
+{!isLast && (
+<div style={{
+position: 'absolute', bottom: 0, right: 0,
+left: icon ? 58 : 16, height: 0.5, background: sep,
+}} />
+)}
+</div>
+);
+}
+
+function IOSList({ header, children, dark = false }) {
+const hc = dark ? 'rgba(235,235,245,0.6)' : 'rgba(60,60,67,0.6)';
+const bg = dark ? '#1C1C1E' : '#fff';
+return (
+<div>
+{header && (
+<div style={{
+fontFamily: '-apple-system, system-ui', fontSize: 13,
+color: hc, textTransform: 'uppercase',
+padding: '8px 36px 6px', letterSpacing: -0.08,
+}}>{header}</div>
+)}
+<div style={{
+background: bg, borderRadius: 26,
+margin: '0 16px', overflow: 'hidden',
+}}>{children}</div>
+</div>
+);
+}
+
+function IOSDevice({
+children, width = 390, height = 844, dark = false,
+title, keyboard = false,
+}) {
+const OUTER_R = 60;
+const SCREEN_R = 48;
+const BEZEL = 10;
+const W = width + BEZEL * 2;
+const H = height + BEZEL * 2;
+return (
+<div style={{
+width: W, height: H, borderRadius: OUTER_R, position: 'relative',
+background:
+'linear-gradient(135deg, #6e6e73 0%, #3a3a3c 30%, #2c2c2e 55%, #4a4a4c 80%, #1c1c1e 100%)',
+padding: BEZEL,
+boxSizing: 'border-box',
+boxShadow: [
+'0 2px 0 rgba(255,255,255,0.15) inset',
+'0 -2px 0 rgba(0,0,0,0.5) inset',
+'0 0 0 1px rgba(0,0,0,0.6)',
+].join(', '),
+fontFamily: '-apple-system, system-ui, sans-serif',
+WebkitFontSmoothing: 'antialiased',
+}}>
+{/* side buttons */}
+<div style={{position:'absolute', left:-2, top:96, width:3, height:30, borderRadius:1,
+background:'linear-gradient(90deg, #1a1a1c 0%, #3a3a3c 50%, #1a1a1c 100%)',
+boxShadow:'inset 0 1px 0 rgba(255,255,255,0.1)'}}/>
+<div style={{position:'absolute', left:-2, top:140, width:3, height:56, borderRadius:1,
+background:'linear-gradient(90deg, #1a1a1c 0%, #3a3a3c 50%, #1a1a1c 100%)'}}/>
+<div style={{position:'absolute', left:-2, top:208, width:3, height:56, borderRadius:1,
+background:'linear-gradient(90deg, #1a1a1c 0%, #3a3a3c 50%, #1a1a1c 100%)'}}/>
+<div style={{position:'absolute', right:-2, top:176, width:3, height:90, borderRadius:1,
+background:'linear-gradient(90deg, #1a1a1c 0%, #3a3a3c 50%, #1a1a1c 100%)'}}/>
+
+<div style={{
+width: width, height: height, borderRadius: SCREEN_R, overflow: 'hidden',
+position: 'relative', background: dark ? '#000' : '#ffffff',
+boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.9), inset 0 0 2px 1px rgba(255,255,255,0.02)',
+clipPath: `inset(0 round ${SCREEN_R}px)`,
+}}>
+{/* dynamic island */}
+<div style={{
+position: 'absolute', top: 11, left: '50%', transform: 'translateX(-50%)',
+width: 126, height: 37, borderRadius: 24,
+background: '#000',
+boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,0.08), 0 1px 2px rgba(0,0,0,0.6)',
+zIndex: 50,
+}}>
+<div style={{
+position:'absolute', right:14, top:'50%', transform:'translateY(-50%)',
+width:9, height:9, borderRadius:'50%',
+background:'radial-gradient(circle at 35% 35%, #1a2a3a 0%, #050810 60%, #000 100%)',
+boxShadow:'inset 0 0 0 0.5px rgba(255,255,255,0.08)',
+}}/>
+</div>
+<div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
+<IOSStatusBar dark={dark} />
+</div>
+<div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+{title !== undefined && <IOSNavBar title={title} dark={dark} />}
+<div style={{ flex: 1, overflow: 'auto', position: 'relative' }}>{children}</div>
+{keyboard && <IOSKeyboard dark={dark} />}
+</div>
+{/* home indicator */}
+<div style={{
+position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 60,
+height: 34, display: 'flex', justifyContent: 'center', alignItems: 'flex-end',
+paddingBottom: 8, pointerEvents: 'none',
+}}>
+<div style={{
+width: 139, height: 5, borderRadius: 100,
+background: dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.35)',
+}} />
+</div>
+</div>
+</div>
+);
+}
+
+function IOSKeyboard({ dark = false }) {
+const glyph = dark ? 'rgba(255,255,255,0.7)' : '#595959';
+const sugg = dark ? 'rgba(255,255,255,0.6)' : '#333';
+const keyBg = dark ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.85)';
+const icons = {
+shift: <svg width="19" height="17" viewBox="0 0 19 17"><path d="M9.5 1L1 9.5h4.5V16h8V9.5H18L9.5 1z" fill={glyph}/></svg>,
+del: <svg width="23" height="17" viewBox="0 0 23 17"><path d="M7 1h13a2 2 0 012 2v11a2 2 0 01-2 2H7l-6-7.5L7 1z" fill="none" stroke={glyph} strokeWidth="1.6" strokeLinejoin="round"/><path d="M10 5l7 7M17 5l-7 7" stroke={glyph} strokeWidth="1.6" strokeLinecap="round"/></svg>,
+ret: <svg width="20" height="14" viewBox="0 0 20 14"><path d="M18 1v6H4m0 0l4-4M4 7l4 4" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+};
+const key = (content, { w, flex, ret, fs = 25, k } = {}) => (
+<div key={k} style={{
+height: 42, borderRadius: 8.5,
+flex: flex ? 1 : undefined, width: w, minWidth: 0,
+background: ret ? '#08f' : keyBg,
+boxShadow: '0 1px 0 rgba(0,0,0,0.075)',
+display: 'flex', alignItems: 'center', justifyContent: 'center',
+fontFamily: '-apple-system, "SF Compact", system-ui',
+fontSize: fs, fontWeight: 458, color: ret ? '#fff' : glyph,
+}}>{content}</div>
+);
+const row = (keys, pad = 0) => (
+<div style={{ display: 'flex', gap: 6.5, justifyContent: 'center', padding: `0 ${pad}px` }}>
+{keys.map(l => key(l, { flex: true, k: l }))}
+</div>
+);
+return (
+<div style={{
+position: 'relative', zIndex: 15, borderRadius: 27, overflow: 'hidden',
+padding: '11px 0 2px',
+display: 'flex', flexDirection: 'column', alignItems: 'center',
+boxShadow: dark
+? '0 -2px 20px rgba(0,0,0,0.09)'
+: '0 -1px 6px rgba(0,0,0,0.018), 0 -3px 20px rgba(0,0,0,0.012)',
+}}>
+<div style={{
+position: 'absolute', inset: 0, borderRadius: 27,
+backdropFilter: 'blur(12px) saturate(180%)',
+WebkitBackdropFilter: 'blur(12px) saturate(180%)',
+background: dark ? 'rgba(120,120,128,0.14)' : 'rgba(255,255,255,0.25)',
+}} />
+<div style={{
+position: 'absolute', inset: 0, borderRadius: 27,
+boxShadow: dark
+? 'inset 1.5px 1.5px 1px rgba(255,255,255,0.15)'
+: 'inset 1.5px 1.5px 1px rgba(255,255,255,0.7), inset -1px -1px 1px rgba(255,255,255,0.4)',
+border: dark ? '0.5px solid rgba(255,255,255,0.15)' : '0.5px solid rgba(0,0,0,0.06)',
+pointerEvents: 'none',
+}} />
+<div style={{
+display: 'flex', gap: 20, alignItems: 'center',
+padding: '8px 22px 13px', width: '100%', boxSizing: 'border-box',
+position: 'relative',
+}}>
+{['"The"', 'the', 'to'].map((w, i) => (
+<React.Fragment key={i}>
+{i > 0 && <div style={{ width: 1, height: 25, background: '#ccc', opacity: 0.3 }} />}
+<div style={{
+flex: 1, textAlign: 'center',
+fontFamily: '-apple-system, system-ui', fontSize: 17,
+color: sugg, letterSpacing: -0.43, lineHeight: '22px',
+}}>{w}</div>
+</React.Fragment>
+))}
+</div>
+<div style={{
+display: 'flex', flexDirection: 'column', gap: 13,
+padding: '0 6.5px', width: '100%', boxSizing: 'border-box',
+position: 'relative',
+}}>
+{row(['q','w','e','r','t','y','u','i','o','p'])}
+{row(['a','s','d','f','g','h','j','k','l'], 20)}
+<div style={{ display: 'flex', gap: 14.25, alignItems: 'center' }}>
+{key(icons.shift, { w: 45, k: 'shift' })}
+<div style={{ display: 'flex', gap: 6.5, flex: 1 }}>
+{['z','x','c','v','b','n','m'].map(l => key(l, { flex: true, k: l }))}
+</div>
+{key(icons.del, { w: 45, k: 'del' })}
+</div>
+<div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+{key('ABC', { w: 92.25, fs: 18, k: 'abc' })}
+{key('', { flex: true, k: 'space' })}
+{key(icons.ret, { w: 92.25, ret: true, k: 'ret' })}
+</div>
+</div>
+<div style={{ height: 56, width: '100%', position: 'relative' }} />
+</div>
+);
+}
+
+Object.assign(window, {
+IOSDevice, IOSStatusBar, IOSNavBar, IOSGlassPill, IOSList, IOSListRow, IOSKeyboard,
+});
+
+</script>
+<script type="text/babel">
+// line-screen.jsx — LINE-style chat screen with typed message reveal.
+// Drop-in via <script type="text/babel" src="line-screen.jsx"><\/script>.
+// Pair with line-screen.css. Requires React + Material Symbols Rounded font.
+//
+// Exposes (on window):
+//   LineScreen, LineRichMenu, LineRichMenuGrid, LineRichMenuCol,
+//   LineRichMenuTile, LineRichMenuPrimary
+
+function LineScreen({
+accountName = '公式アカウント',
+avatar = null,
+messages = [],
+richMenu = null,
+dateLabel = '今日',
+onBack = null,
+headerIcons = null,
+statusBarOffset = 54,
+subtitle = null,
+verified = false,
+unreadBadge = null,
+inputBar = false,
+menuToggle = null,
+onMenuToggleClick = null,
+onKeyboardClick = null,
+}) {
+// state[i] = 'typing' | 'shown' | undefined
+const [state, setState] = React.useState({});
+
+React.useEffect(() => {
+const timers = [];
+messages.forEach((m, i) => {
+const delay = m.delay ?? 0;
+const showTyping = m.showTyping ?? 0;
+if (showTyping > 0) {
+const typingStart = Math.max(0, delay - showTyping);
+timers.push(setTimeout(() => {
+setState(s => ({ ...s, [i]: 'typing' }));
+}, typingStart));
+}
+timers.push(setTimeout(() => {
+setState(s => ({ ...s, [i]: 'shown' }));
+}, delay));
+});
+return () => timers.forEach(clearTimeout);
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
+
+const initial = (accountName || '?').trim().charAt(0).toUpperCase();
+
+return (
+<div className="ls-chat" style={{ paddingTop: statusBarOffset }}>
+{/* Header */}
+<div className="ls-header">
+<div className="ls-hdr-left" onClick={onBack || undefined}>
+<span className="material-symbols-rounded" style={{ fontSize: 22, color: '#333' }}>arrow_back_ios_new</span>
+{unreadBadge != null && <span className="ls-hdr-badge">{unreadBadge}</span>}
+</div>
+<div className="ls-hdr-center">
+<div className="ls-hdr-title-row">
+{verified && (
+<span className="material-symbols-rounded ls-hdr-verified"
+style={{ fontSize: 18, color: '#06c755', fontVariationSettings: "'FILL' 1" }}>
+verified
+</span>
+)}
+<span className="ls-hdr-title">{accountName}</span>
+</div>
+{subtitle && <div className="ls-hdr-sub">{subtitle}</div>}
+</div>
+<div className="ls-hdr-right">
+{headerIcons || (
+<>
+<span className="material-symbols-rounded" style={{ fontSize: 24, color: '#333' }}>search</span>
+<span className="material-symbols-rounded" style={{ fontSize: 24, color: '#333' }}>article</span>
+<span className="material-symbols-rounded" style={{ fontSize: 24, color: '#333' }}>menu</span>
+</>
+)}
+</div>
+</div>
+
+{/* Chat area */}
+<div className="ls-chat-area">
+{dateLabel && <div className="ls-date">{dateLabel}</div>}
+{messages.map((m, i) => {
+const s = state[i];
+if (!s) return null;
+const isSelf = m.from === 'me';
+const prev = i > 0 ? messages[i - 1] : null;
+const isCont = !!prev && prev.from === m.from;
+const showAvatar = !isSelf && !isCont;
+const showName = !isSelf && !isCont;
+
+return (
+<div
+key={i}
+className={[
+'ls-msg-row',
+isSelf ? 'is-self' : '',
+isCont ? 'is-cont' : '',
+s === 'shown' ? 'ls-msg-enter' : '',
+].filter(Boolean).join(' ')}
+>
+{!isSelf && (showAvatar ? (
+<div className="ls-avatar">
+{avatar
+? <img src={avatar} alt=""/>
+: <div className="ls-avatar-placeholder">{initial}</div>}
+</div>
+) : (
+<div className="ls-avatar-spacer"/>
+))}
+<div className="ls-msg-group">
+{showName && <div className="ls-name">{accountName}</div>}
+{s === 'typing' ? (
+<div className="ls-typing"><span/><span/><span/></div>
+) : (
+<>
+<div className={[
+'ls-bubble',
+isSelf ? 'is-self' : '',
+m.image ? 'has-image' : '',
+].filter(Boolean).join(' ')}>
+{m.image && <img className="ls-bubble-image" src={m.image} alt=""/>}
+{m.text && (m.image
+? <div className="ls-bubble-caption">{m.text}</div>
+: m.text)}
+</div>
+{m.time && <div className="ls-time">{m.time}</div>}
+</>
+)}
+</div>
+</div>
+);
+})}
+</div>
+
+{/* Rich menu */}
+{richMenu && <div className="ls-richmenu">{richMenu}</div>}
+
+{/* Menu toggle bar — keyboard icon on the left (switches to input mode) +
+centred メニュー▼/▲ (toggles rich menu open/closed). */}
+{menuToggle && (
+<div className="ls-menu-toggle">
+<span
+className={[
+'material-symbols-rounded',
+'ls-menu-toggle-kbd',
+onKeyboardClick ? 'is-clickable' : '',
+].filter(Boolean).join(' ')}
+onClick={onKeyboardClick || undefined}
+role={onKeyboardClick ? 'button' : undefined}
+>keyboard</span>
+<span
+className={['ls-menu-toggle-label', onMenuToggleClick ? 'is-clickable' : ''].filter(Boolean).join(' ')}
+onClick={onMenuToggleClick || undefined}
+role={onMenuToggleClick ? 'button' : undefined}
+>メニュー{menuToggle === 'open' ? '▼' : '▲'}</span>
+</div>
+)}
+
+{/* Input bar — typical LINE chat composer */}
+{inputBar && (
+<div className="ls-input-bar">
+<span className="material-symbols-rounded">add</span>
+<span className="material-symbols-rounded">photo_camera</span>
+<span className="material-symbols-rounded">image</span>
+<div className="ls-input-field">Aa</div>
+<span className="material-symbols-rounded">sentiment_satisfied</span>
+<span className="material-symbols-rounded">mic</span>
+</div>
+)}
+</div>
+);
+}
+
+// ---------- Rich menu helpers ----------
+
+function LineRichMenu({ children }) {
+// The richMenu prop on LineScreen already wraps children in .ls-richmenu.
+// This component is for cases where you build the menu standalone, or
+// want explicit semantic grouping. Renders as a Fragment.
+return <>{children}</>;
+}
+
+function LineRichMenuGrid({ cols = '1fr 1fr', children, style }) {
+return (
+<div className="ls-rm-grid" style={{ gridTemplateColumns: cols, ...style }}>
+{children}
+</div>
+);
+}
+
+function LineRichMenuCol({ children }) {
+return <div className="ls-rm-col">{children}</div>;
+}
+
+function LineRichMenuTile({
+icon = null,
+iconSize,
+label,
+onClick,
+wide = false,
+children,
+style,
+}) {
+const cls = ['ls-rm-tile', wide ? 'is-wide' : ''].filter(Boolean).join(' ');
+const defaultIconSize = wide ? 20 : 22;
+if (children) {
+return <button className={cls} onClick={onClick} style={style}>{children}</button>;
+}
+return (
+<button className={cls} onClick={onClick} style={style}>
+{icon && (
+<span className="material-symbols-rounded ls-rm-icon"
+style={{ fontSize: iconSize ?? defaultIconSize }}>
+{icon}
+</span>
+)}
+{label && <span>{label}</span>}
+</button>
+);
+}
+
+function LineRichMenuPrimary({
+eyebrow,
+eyebrowIcon,
+title,
+foot,
+footIcon = 'arrow_forward',
+decoration,
+onClick,
+style,
+}) {
+return (
+<button className="ls-rm-tile is-primary" onClick={onClick} style={style}>
+<div className="ls-rm-primary-inner">
+{eyebrow && (
+<div className="ls-rm-primary-eyebrow">
+{eyebrowIcon && (
+<span className="material-symbols-rounded"
+style={{ fontSize: 14, fontVariationSettings: "'FILL' 1" }}>
+{eyebrowIcon}
+</span>
+)}
+{eyebrow}
+</div>
+)}
+{title && <div className="ls-rm-primary-title">{title}</div>}
+{foot && (
+<div className="ls-rm-primary-foot">
+<span>{foot}</span>
+{footIcon && (
+<span className="material-symbols-rounded" style={{ fontSize: 18 }}>
+{footIcon}
+</span>
+)}
+</div>
+)}
+</div>
+{decoration && <div className="ls-rm-primary-deco">{decoration}</div>}
+</button>
+);
+}
+
+Object.assign(window, {
+LineScreen,
+LineRichMenu,
+LineRichMenuGrid,
+LineRichMenuCol,
+LineRichMenuTile,
+LineRichMenuPrimary,
+});
+
+</script>
+
+<script type="text/babel" data-presets="react">
+const ROSE = '#B03060';
+const ROSE_DARK = '#7A1F42';
+const ROSE_PALE = '#FFF6F9';
+const ROSE_LINE = '#F3C6D6';
+
+// ---------- gallery frame (scaled device) ----------
+const S = 0.62;
+function Frame({ label, desc, children }) {
+return (
+<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+<div className="frame-label">{label}</div>
+<div style={{ width: 410 * S, height: 864 * S, overflow: 'hidden' }}>
+<div style={{ transform: `scale(${S})`, transformOrigin: 'top left' }}>
+{children}
+</div>
+</div>
+<div className="frame-desc">{desc}</div>
+</div>
+);
+}
+
+// ---------- mini app chrome (LIFF-like header) ----------
+function MiniAppScreen({ title, children, dark = false }) {
+return (
+<div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+background: dark ? '#101014' : '#F6F6F8', paddingTop: 54,
+fontFamily: "-apple-system, system-ui, 'Hiragino Sans', 'Noto Sans JP', sans-serif" }}>
+<div style={{ background: dark ? '#101014' : '#fff', borderBottom: dark ? '1px solid #26262c' : '1px solid #e8e8ec',
+padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+<span className="material-symbols-rounded" style={{ fontSize: 20, color: dark ? '#fff' : '#333' }}>arrow_back_ios_new</span>
+<span style={{ fontSize: 15, fontWeight: 700, color: dark ? '#fff' : '#111' }}>{title}</span>
+<span className="material-symbols-rounded" style={{ fontSize: 22, color: dark ? '#fff' : '#333' }}>close</span>
+</div>
+<div style={{ flex: 1, overflowY: 'auto', position: 'relative' }}>{children}</div>
+</div>
+);
+}
+
+// ---------- SCR-101: LINE Login consent screen (with friend-add option) ----------
+function Toggle({ on = true }) {
+return (
+<div style={{ width: 44, height: 26, borderRadius: 999, flexShrink: 0, position: 'relative',
+background: on ? '#06C755' : '#D9D9DE', transition: '.15s' }}>
+<div style={{ position: 'absolute', top: 2, left: on ? 20 : 2, width: 22, height: 22, borderRadius: '50%',
+background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,0.25)' }}/>
+</div>
+);
+}
+
+function ScrConsent() {
+const rowStyle = { display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+padding: '13px 0', borderBottom: '1px solid #EEEEF0' };
+return (
+<IOSDevice width={390} height={844}>
+<div style={{ position: 'absolute', inset: 0, background: '#fff', paddingTop: 54, overflowY: 'auto',
+fontFamily: "-apple-system, system-ui, 'Hiragino Sans', 'Noto Sans JP', sans-serif" }}>
+<div style={{ padding: '18px 22px 30px' }}>
+{/* app header */}
+<div style={{ textAlign: 'center', marginBottom: 16 }}>
+<div style={{ width: 56, height: 56, borderRadius: '50%', margin: '0 auto 10px',
+background: `linear-gradient(135deg, ${ROSE} 0%, ${ROSE_DARK} 100%)`,
+display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: 24 }}>W</div>
+<div style={{ fontSize: 16, fontWeight: 700, color: '#111' }}>ワコール 試着メモ</div>
+<div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>提供：株式会社ワコール</div>
+<div style={{ fontSize: 11, color: '#888', marginTop: 6 }}>試着した商品をLINEに保存できるミニアプリです。</div>
+<div style={{ fontSize: 12, color: '#333', marginTop: 10 }}><b>所在国・地域：</b>日本</div>
+</div>
+
+{/* friend add block */}
+<div style={{ border: '1.5px solid #E5E7E9', borderRadius: 12, padding: '12px 14px', marginBottom: 18 }}>
+<div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+<div style={{ width: 30, height: 30, borderRadius: 8,
+background: `linear-gradient(135deg, ${ROSE} 0%, ${ROSE_DARK} 100%)`,
+display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: 13 }}>W</div>
+<span className="material-symbols-rounded" style={{ fontSize: 15, color: '#06C755', fontVariationSettings: "'FILL' 1" }}>verified</span>
+<span style={{ fontSize: 13.5, fontWeight: 700, color: '#111' }}>ワコール</span>
+</div>
+<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+<span style={{ fontSize: 13, color: '#111' }}>友だち追加する <span style={{ color: '#888', fontSize: 11 }}>˅</span></span>
+<Toggle on/>
+</div>
+<div style={{ fontSize: 10.5, color: '#999', marginTop: 6, lineHeight: 1.6 }}>
+友だち追加をしないと、友だち限定の情報を見逃すかもしれません。
+</div>
+</div>
+
+{/* permissions */}
+<div style={{ fontSize: 12.5, fontWeight: 700, color: '#111', marginBottom: 2 }}>以下を上記サービスに許可します</div>
+<div style={rowStyle}>
+<span style={{ fontSize: 13, color: '#111' }}>メインプロフィール情報（必須） <span style={{ color: '#888', fontSize: 11 }}>˄</span></span>
+<Toggle on/>
+</div>
+<div style={rowStyle}>
+<span style={{ fontSize: 13, color: '#111' }}>あなたの内部識別子（必須） <span style={{ color: '#888', fontSize: 11 }}>˄</span></span>
+<Toggle on/>
+</div>
+
+<div style={{ fontSize: 10, color: '#aaa', margin: '16px 0 14px', lineHeight: 1.6 }}>
+注意事項：許可した内容は、サービス提供のために利用されます。詳細はプライバシーポリシーをご確認ください。
+</div>
+
+<button style={{ display: 'block', width: '100%', padding: 14, background: '#06C755', color: '#fff',
+border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, fontFamily: 'inherit' }}>
+許可する
+</button>
+<div style={{ textAlign: 'center', fontSize: 13, color: '#555', marginTop: 14 }}>キャンセル</div>
+</div>
+</div>
+</IOSDevice>
+);
+}
+
+// ---------- SCR-102: first-launch home ----------
+function ScrHomeFirst() {
+const step = (icon, num, title, body) => (
+<div style={{ background: '#fff', borderRadius: 12, padding: '12px 14px', display: 'flex', gap: 12,
+alignItems: 'flex-start', marginBottom: 8, boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+<div style={{ width: 34, height: 34, borderRadius: 10, flexShrink: 0, background: ROSE_PALE,
+border: `1px solid ${ROSE_LINE}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+<span className="material-symbols-rounded" style={{ fontSize: 19, color: ROSE }}>{icon}</span>
+</div>
+<div>
+<div style={{ fontSize: 12.5, fontWeight: 700, color: '#111' }}>{num}. {title}</div>
+<div style={{ fontSize: 11, color: '#666', lineHeight: 1.55, marginTop: 2 }}>{body}</div>
+</div>
+</div>
+);
+return (
+<IOSDevice width={390} height={844}>
+<MiniAppScreen title="ワコール 試着メモ">
+<div style={{ padding: 16 }}>
+<div style={{ textAlign: 'center', margin: '14px 0 14px' }}>
+<div style={{ fontSize: 11, color: ROSE, fontWeight: 700, letterSpacing: 1.5, marginBottom: 4 }}>WACOAL FITTING LOG</div>
+<div style={{ fontSize: 19, fontWeight: 700, color: '#111' }}>試着メモへようこそ</div>
+<div style={{ fontSize: 12, color: '#666', marginTop: 6, lineHeight: 1.6 }}>
+試着した商品を、スタッフに声をかけずに<br/>LINEに残せるサービスです
+</div>
+</div>
+{step('barcode_scanner', 1, '商品タグのバーコードをスキャン', 'サイズ・カラーは自動で判定されます')}
+{step('checkroom', 2, '試着メモとして保存', '保存した記録はLINEトークにも届きます')}
+{step('notifications', 3, '気になる商品を後からチェック', '在庫やクーポンのご案内をお届けします')}
+<button style={{ display: 'block', width: '100%', marginTop: 14, padding: 15, background: ROSE, color: '#fff',
+border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 700, fontFamily: 'inherit' }}>
+バーコードをスキャンする
+</button>
+<div style={{ textAlign: 'center', fontSize: 11, color: '#888', marginTop: 12 }}>
+ワコールメンバーズ会員の方はこちら（ID連携）
+</div>
+</div>
+</MiniAppScreen>
+</IOSDevice>
+);
+}
+
+// ---------- SCR-108: returning-visit home ----------
+function ScrHomeReturn() {
+return (
+<IOSDevice width={390} height={844}>
+<MiniAppScreen title="ワコール 試着メモ">
+<div style={{ padding: 16 }}>
+<div style={{ background: '#fff', borderRadius: 14, padding: '14px 16px', marginBottom: 12,
+display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+<div>
+<div style={{ fontSize: 14, fontWeight: 700, color: '#111' }}>おかえりなさい、山田さま</div>
+<div style={{ marginTop: 4 }}>
+<span style={{ fontSize: 10, fontWeight: 700, padding: '2px 9px', borderRadius: 999,
+background: '#E6F9EC', color: '#0a8f3c', border: '1px solid #b9ecc9' }}>メンバーズ連携済み</span>
+</div>
+</div>
+<span className="material-symbols-rounded" style={{ fontSize: 26, color: ROSE }}>account_circle</span>
+</div>
+<button style={{ display: 'block', width: '100%', padding: 15, background: ROSE, color: '#fff',
+border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 700, fontFamily: 'inherit', marginBottom: 14 }}>
+バーコードをスキャンする
+</button>
+<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '0 2px 8px' }}>
+<span style={{ fontSize: 12.5, fontWeight: 700, color: '#555' }}>最近の試着メモ</span>
+<span style={{ fontSize: 11, color: ROSE, fontWeight: 700 }}>クローゼットをすべて見る ›</span>
+</div>
+<ClosetItem name="リフトアップブラ〈ローズ〉" code="BRB476" size="B75" color="ローズ" date="7/16 14:05" store="銀座店" bought={false}/>
+<ClosetItem name="ノンワイヤーブラ" code="BRA210" size="M" color="ベージュ" date="7/16 14:12" store="銀座店" bought={false}/>
+<div style={{ background: ROSE_PALE, border: `1px solid ${ROSE_LINE}`, borderRadius: 12,
+padding: '10px 14px', fontSize: 11.5, color: ROSE_DARK, lineHeight: 1.6, marginTop: 6 }}>
+未購入の試着アイテムの在庫・クーポン情報を、LINEで自動お知らせ中です
+</div>
+</div>
+</MiniAppScreen>
+</IOSDevice>
+);
+}
+
+// ---------- SCR-103: barcode scan ----------
+function ScrScan() {
+return (
+<IOSDevice width={390} height={844} dark>
+<MiniAppScreen title="試着メモ｜バーコードスキャン" dark>
+<div style={{ position: 'absolute', inset: 0, background:
+'radial-gradient(circle at 50% 36%, #3a3a44 0%, #1a1a20 70%)' }}/>
+<div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 56 }}>
+<div style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13, marginBottom: 26 }}>
+商品タグのバーコードを枠に合わせてください
+</div>
+<div style={{ width: 290, height: 160, position: 'relative' }}>
+{[{t:0,l:0,bt:1,bl:1},{t:0,r:0,bt:1,br:1},{b:0,l:0,bb:1,bl:1},{b:0,r:0,bb:1,br:1}].map((c,i)=>(
+<div key={i} style={{ position: 'absolute', width: 30, height: 30,
+top: c.t, left: c.l, right: c.r, bottom: c.b,
+borderTop: c.bt ? '3.5px solid #fff' : 'none',
+borderLeft: c.bl ? '3.5px solid #fff' : 'none',
+borderRight: c.br ? '3.5px solid #fff' : 'none',
+borderBottom: c.bb ? '3.5px solid #fff' : 'none',
+borderRadius: 4 }}/>
+))}
+<div style={{ position: 'absolute', inset: 20, background: '#fff', borderRadius: 8,
+display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+<div style={{ width: '82%', height: 58,
+background: `repeating-linear-gradient(90deg,
+#111 0 2px, #fff 2px 4px, #111 4px 5px, #fff 5px 9px,
+#111 9px 12px, #fff 12px 14px, #111 14px 15px, #fff 15px 18px,
+#111 18px 20px, #fff 20px 23px)` }}/>
+<div style={{ fontSize: 10.5, color: '#333', letterSpacing: 1.5 }}>4 902510 476205</div>
+</div>
+<div style={{ position: 'absolute', left: 8, right: 8, top: '50%', height: 2.5,
+background: 'linear-gradient(90deg, transparent, #06C755, transparent)' }}/>
+</div>
+<div style={{ marginTop: 14, background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.25)',
+borderRadius: 999, padding: '6px 14px', color: '#fff', fontSize: 11, fontWeight: 600 }}>
+バーコードはサイズ・カラー込みのSKU単位を想定
+</div>
+<div style={{ marginTop: 18, width: 320, background: 'rgba(255,255,255,0.96)', borderRadius: 14, padding: '14px 16px' }}>
+<div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+<span className="material-symbols-rounded" style={{ fontSize: 22, color: ROSE }}>rss_feed</span>
+<div style={{ fontSize: 12, color: '#333', lineHeight: 1.6 }}>
+既存の商品タグのバーコードを読むと、<b>データフィード</b>から商品名・サイズ・カラー・価格を自動取得します。<br/>
+<span style={{ color: '#888', fontSize: 11 }}>タグの変更・QR貼付や店舗スタッフの操作は不要です</span>
+</div>
+</div>
+</div>
+</div>
+</MiniAppScreen>
+</IOSDevice>
+);
+}
+
+// ---------- SCR-103: product confirm & save ----------
+function Chip({ children, on }) {
+return (
+<span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '7px 14px',
+borderRadius: 999, fontSize: 13, fontWeight: 600, marginRight: 8, marginBottom: 8,
+background: on ? ROSE : '#fff', color: on ? '#fff' : '#444',
+border: on ? `1.5px solid ${ROSE}` : '1.5px solid #d9d9de' }}>
+{on && <span className="material-symbols-rounded" style={{ fontSize: 15 }}>check</span>}
+{children}
+</span>
+);
+}
+
+function ScrSave() {
+return (
+<IOSDevice width={390} height={844}>
+<MiniAppScreen title="試着メモ｜商品確認">
+<div style={{ padding: 16 }}>
+<div style={{ background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+<div style={{ height: 190, background: `linear-gradient(135deg, ${ROSE} 0%, ${ROSE_DARK} 100%)`,
+display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+<span className="material-symbols-rounded" style={{ fontSize: 84, color: 'rgba(255,255,255,0.85)' }}>checkroom</span>
+<span style={{ position: 'absolute', top: 12, left: 12, background: 'rgba(255,255,255,0.92)', color: ROSE_DARK,
+fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 999 }}>スキャン完了</span>
+</div>
+<div style={{ padding: 16 }}>
+<div style={{ fontSize: 11, color: '#999', letterSpacing: 0.4 }}>JAN 4902510476205 ｜ BRB476-RO-B75 ｜ ワコール 銀座店</div>
+<div style={{ fontSize: 17, fontWeight: 700, margin: '4px 0 2px', color: '#111' }}>リフトアップブラ〈ローズ〉</div>
+<div style={{ fontSize: 15, fontWeight: 700, color: ROSE_DARK, marginBottom: 14 }}>¥8,690<span style={{ fontSize: 11, color: '#999', fontWeight: 500 }}>（税込）</span></div>
+<div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+<span style={{ fontSize: 12, fontWeight: 700, color: '#555' }}>試着サイズ</span>
+<span style={{ fontSize: 9.5, fontWeight: 700, color: '#06803c', background: '#E6F9EC',
+border: '1px solid #b9ecc9', borderRadius: 999, padding: '2px 8px' }}>バーコードから自動判定</span>
+</div>
+<div><Chip on>B75</Chip></div>
+<div style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '8px 0 6px' }}>
+<span style={{ fontSize: 12, fontWeight: 700, color: '#555' }}>カラー</span>
+<span style={{ fontSize: 9.5, fontWeight: 700, color: '#06803c', background: '#E6F9EC',
+border: '1px solid #b9ecc9', borderRadius: 999, padding: '2px 8px' }}>バーコードから自動判定</span>
+</div>
+<div><Chip on>ローズ</Chip></div>
+<div style={{ fontSize: 10.5, color: '#999', marginTop: 10 }}>※ サイズ・カラーが異なる場合はタップして変更できます</div>
+</div>
+</div>
+<button style={{ display: 'block', width: '100%', marginTop: 16, padding: 15, background: ROSE, color: '#fff',
+border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 700, fontFamily: 'inherit' }}>
+この内容で試着メモに保存
+</button>
+<div style={{ textAlign: 'center', fontSize: 11, color: '#888', marginTop: 10 }}>
+保存するとLINEトークにも記録が届きます
+</div>
+</div>
+</MiniAppScreen>
+</IOSDevice>
+);
+}
+
+// ---------- SCR-104: fitting closet ----------
+function ClosetItem({ name, code, size, color, date, store, bought }) {
+return (
+<div style={{ background: '#fff', borderRadius: 14, padding: 14, display: 'flex', gap: 12, marginBottom: 10,
+boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+<div style={{ width: 58, height: 58, borderRadius: 10, flexShrink: 0,
+background: `linear-gradient(135deg, ${ROSE} 0%, ${ROSE_DARK} 100%)`,
+display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+<span className="material-symbols-rounded" style={{ fontSize: 30, color: 'rgba(255,255,255,0.85)' }}>checkroom</span>
+</div>
+<div style={{ flex: 1, minWidth: 0 }}>
+<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}>
+<span style={{ fontSize: 13.5, fontWeight: 700, color: '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</span>
+<span style={{ flexShrink: 0, fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 999,
+background: bought ? '#E6F9EC' : ROSE_PALE, color: bought ? '#0a8f3c' : ROSE_DARK,
+border: bought ? '1px solid #b9ecc9' : `1px solid ${ROSE_LINE}` }}>
+{bought ? '購入済み' : '未購入'}
+</span>
+</div>
+<div style={{ fontSize: 11.5, color: '#666', marginTop: 3 }}>{size} ｜ {color} ｜ {code}</div>
+<div style={{ fontSize: 10.5, color: '#999', marginTop: 2 }}>{date} ｜ {store}で試着</div>
+</div>
+</div>
+);
+}
+
+function ScrCloset() {
+return (
+<IOSDevice width={390} height={844}>
+<MiniAppScreen title="試着クローゼット">
+<div style={{ padding: 16 }}>
+<div style={{ background: ROSE_PALE, border: `1px solid ${ROSE_LINE}`, borderRadius: 12,
+padding: '10px 14px', fontSize: 11.5, color: ROSE_DARK, lineHeight: 1.6, marginBottom: 14 }}>
+試着した商品の記録です。ご購入状況はワコールメンバーズのご利用情報（会計時のポイント提示）から自動で更新されます。
+</div>
+<div style={{ fontSize: 12, fontWeight: 700, color: '#555', margin: '0 2px 8px' }}>2026年7月16日</div>
+<ClosetItem name="リフトアップブラ〈ローズ〉" code="BRB476" size="B75" color="ローズ" date="7/16 14:05" store="銀座店" bought={false}/>
+<ClosetItem name="ノンワイヤーブラ" code="BRA210" size="M" color="ベージュ" date="7/16 14:12" store="銀座店" bought={false}/>
+<div style={{ fontSize: 12, fontWeight: 700, color: '#555', margin: '12px 2px 8px' }}>2026年6月28日</div>
+<ClosetItem name="ナイトアップブラ" code="BRC114" size="M" color="ネイビー" date="6/28 16:40" store="新宿店" bought={true}/>
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 14 }}>
+<div style={{ background: ROSE_PALE, border: `1px solid ${ROSE_LINE}`, borderRadius: 12, padding: '10px 12px' }}>
+<div style={{ fontSize: 11, fontWeight: 700, color: ROSE_DARK, marginBottom: 4 }}>未購入の商品</div>
+<div style={{ fontSize: 10.5, color: '#666', lineHeight: 1.6 }}>在庫・クーポンなどのご案内をLINEでお届けします</div>
+</div>
+<div style={{ background: '#EEF3FB', border: '1px solid #C9D8F0', borderRadius: 12, padding: '10px 12px' }}>
+<div style={{ fontSize: 11, fontWeight: 700, color: '#1F3864', marginBottom: 4 }}>ご購入済みの商品</div>
+<div style={{ fontSize: 10.5, color: '#666', lineHeight: 1.6 }}>着心地フォローとおすすめのセット商品をお届けします</div>
+</div>
+</div>
+</div>
+</MiniAppScreen>
+</IOSDevice>
+);
+}
+
+// ---------- SCR-105: member branch (existing login / new registration) ----------
+function ScrMemberBranch() {
+return (
+<IOSDevice width={390} height={844}>
+<MiniAppScreen title="会員登録・ログイン">
+<div style={{ padding: 16 }}>
+<div style={{ background: ROSE_PALE, border: `1px solid ${ROSE_LINE}`, borderRadius: 12,
+padding: '12px 14px', fontSize: 12, color: ROSE_DARK, lineHeight: 1.8, marginBottom: 14 }}>
+<b>会員登録すると…</b><br/>
+✔ ご購入時にワコールメンバーズのポイントが貯まる<br/>
+✔ 試着した商品の在庫・クーポンのご案内（フォロー配信）を受け取れる
+</div>
+<div style={{ background: '#fff', borderRadius: 14, padding: 16, boxShadow: '0 1px 4px rgba(0,0,0,0.05)', marginBottom: 12 }}>
+<div style={{ fontSize: 13.5, fontWeight: 700, color: '#111', marginBottom: 4 }}>すでにワコールメンバーズ会員の方</div>
+<div style={{ fontSize: 11.5, color: '#666', lineHeight: 1.6, marginBottom: 10 }}>
+LINEアカウントに紐づく会員情報を照合して連携します。LINE会員証をご利用の方は追加入力なしで完了できる想定です。
+</div>
+<button style={{ display: 'block', width: '100%', padding: 13, background: '#06C755', color: '#fff',
+border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 700, fontFamily: 'inherit' }}>
+LINEでログインして連携
+</button>
+</div>
+<div style={{ background: '#fff', borderRadius: 14, padding: 16, boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+<div style={{ fontSize: 13.5, fontWeight: 700, color: '#111', marginBottom: 4 }}>はじめての方</div>
+<div style={{ fontSize: 11.5, color: '#666', lineHeight: 1.6, marginBottom: 10 }}>
+クイック入力でLINEの情報を自動反映。約30秒で登録が完了します。
+</div>
+<button style={{ display: 'block', width: '100%', padding: 13, background: ROSE, color: '#fff',
+border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 700, fontFamily: 'inherit' }}>
+クイック入力で新規登録
+</button>
+</div>
+<div style={{ textAlign: 'center', fontSize: 11, color: '#888', marginTop: 14 }}>あとで登録する</div>
+</div>
+</MiniAppScreen>
+</IOSDevice>
+);
+}
+
+// ---------- SCR-106: Wacoal Members registration (quick fill) ----------
+function ScrMembers() {
+return (
+<IOSDevice width={390} height={844}>
+<MiniAppScreen title="ワコールメンバーズ登録">
+<div style={{ padding: 16 }}>
+<div style={{ background: '#fff', borderRadius: 14, padding: 16, boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+<h2 style={{ fontSize: 16, color: '#1F3864', margin: '0 0 6px' }}>あと少しで登録完了です</h2>
+<p style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginBottom: 14 }}>
+LINEの情報を自動入力済み。<span style={{ color: '#06C755', fontWeight: 600 }}>緑色の項目は確認するだけでOK</span>です。
+</p>
+<div className="field" style={{ marginBottom: 12 }}>
+<label style={{ display: 'block', fontSize: 12, color: '#333', marginBottom: 4, fontWeight: 600 }}>
+お名前 <span style={{ color: '#E53935', fontSize: 11 }}>必須</span> <span style={{ color: '#06C755', fontSize: 10, fontWeight: 600 }}>✔ LINEから自動入力</span></label>
+<input type="text" defaultValue="山田 花子" style={{ width: '100%', padding: '8px 10px', fontSize: 13,
+border: '1px solid #06C755', background: '#F0FBF4', borderRadius: 6 }}/>
+</div>
+<div style={{ marginBottom: 12 }}>
+<label style={{ display: 'block', fontSize: 12, color: '#333', marginBottom: 4, fontWeight: 600 }}>
+生年月日 <span style={{ color: '#E53935', fontSize: 11 }}>必須</span></label>
+<input type="text" defaultValue="1990/01/01" style={{ width: '100%', padding: '8px 10px', fontSize: 13,
+border: '1px solid #ccc', borderRadius: 6 }}/>
+</div>
+<div style={{ marginBottom: 12 }}>
+<label style={{ display: 'block', fontSize: 12, color: '#333', marginBottom: 4, fontWeight: 600 }}>
+メールアドレス <span style={{ color: '#E53935', fontSize: 11 }}>必須</span> <span style={{ color: '#06C755', fontSize: 10, fontWeight: 600 }}>✔ LINEから自動入力</span></label>
+<input type="email" defaultValue="hanako@example.com" style={{ width: '100%', padding: '8px 10px', fontSize: 13,
+border: '1px solid #06C755', background: '#F0FBF4', borderRadius: 6 }}/>
+</div>
+<div style={{ fontSize: 12, color: '#333', display: 'flex', gap: 6, alignItems: 'flex-start', marginBottom: 4 }}>
+<input type="checkbox" defaultChecked style={{ marginTop: 3 }}/>ワコールメンバーズ会員規約・プライバシーポリシーに同意する
+</div>
+</div>
+<button style={{ display: 'block', width: '100%', marginTop: 14, padding: 15, background: ROSE, color: '#fff',
+border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 700, fontFamily: 'inherit' }}>
+ワコールメンバーズに登録する
+</button>
+<div style={{ textAlign: 'center', fontSize: 10.5, color: '#888', marginTop: 10, lineHeight: 1.6 }}>
+既にメンバーズ会員の方はLINEログインで自動ID連携されるため、この画面は表示されません
+</div>
+</div>
+</MiniAppScreen>
+</IOSDevice>
+);
+}
+
+// ---------- SCR-106: follow-up broadcast ----------
+function ScrFollow() {
+const MESSAGES = [
+{ from: 'them', text: <>先日は銀座店へのご来店ありがとうございました🌹<br/>ご試着いただいた「リフトアップブラ（B75／ローズ）」はいかがでしたか？</>, delay: 600, showTyping: 600, time: '10:00' },
+{ from: 'them', text: <>サイズ・カラー違いの在庫もご用意しています。<br/>いまなら試着メモから使える10%OFFクーポンをお届け🎁</>, delay: 2300, showTyping: 900, time: '10:00' },
+{ from: 'me', text: '試着メモを開く', delay: 3600, time: '10:03' },
+];
+return (
+<IOSDevice width={390} height={844}>
+<LineScreen
+accountName="ワコール" verified subtitle="WACOAL 公式"
+dateLabel="試着から3日後（自動配信）"
+messages={MESSAGES}
+menuToggle="closed"
+/>
+</IOSDevice>
+);
+}
+
+// ---------- SCR-107: buyer follow-up broadcast ----------
+function ScrFollowBuyer() {
+const MESSAGES = [
+{ from: 'them', text: <>先日は「リフトアップブラ（B75／ローズ）」をお買い上げいただきありがとうございました🌹<br/>着心地はいかがですか？</>, delay: 600, showTyping: 600, time: '10:00' },
+{ from: 'them', text: <>ご購入いただいたブラと同じシリーズの、おそろいのショーツをご用意しています。セットでのご利用がおすすめです✨</>, delay: 2300, showTyping: 900, time: '10:00' },
+{ from: 'them', text: <>ワコールメンバーズにご登録いただくと、ポイントやサイズの記録を次回のお買い物でもご利用いただけます。</>, delay: 3800, showTyping: 800, time: '10:00' },
+{ from: 'me', text: 'セット商品を見る', delay: 5000, time: '10:04' },
+];
+return (
+<IOSDevice width={390} height={844}>
+<LineScreen
+accountName="ワコール" verified subtitle="WACOAL 公式"
+dateLabel="ご購入から7日後（自動配信）"
+messages={MESSAGES}
+menuToggle="closed"
+/>
+</IOSDevice>
+);
+}
+
+// ---------- page ----------
+function Page() {
+return (
+<>
+<Frame label="SCR-101 ｜ 起動直後の許諾画面（LINEログイン）" desc="店舗POPのQR／NFCから起動した直後に表示されるLINEログイン許諾画面（実仕様準拠）。友だち追加オプションを同梱し、利用開始と同時に友だち数増加へ。">
+<ScrConsent/>
+</Frame>
+<Frame label="SCR-102 ｜ 初回起動ホーム" desc="許諾後に最初に表示されるホーム。使い方3ステップでオンボーディングし、そのままスキャンへ。既存メンバーズ会員のID連携導線も下部に配置。">
+<ScrHomeFirst/>
+</Frame>
+<Frame label="SCR-103 ｜ 商品バーコードスキャン" desc="既存の商品タグのバーコード（SKU単位）を読み取り。商品名・サイズ・カラー・価格はデータフィード連携で自動取得（タグ変更・店員作業は不要）。">
+<ScrScan/>
+</Frame>
+<Frame label="SCR-104 ｜ 商品確認・試着メモ保存" desc="サイズ・カラーはバーコードから自動判定済み。お客様は内容を確認して保存の1タップだけ。保存記録はLINEトークにも届く。">
+<ScrSave/>
+</Frame>
+<Frame label="SCR-105 ｜ 試着クローゼット（購入／未購入の分岐ハブ）" desc="試着メモの一覧。購入済み／未購入はワコールメンバーズのポイント照合で自動更新され、それぞれに合わせたフォローへ分岐。">
+<ScrCloset/>
+</Frame>
+<Frame label="SCR-106 ｜ 会員登録・ログインの分岐" desc="試着クローゼットの後に表示。既存会員はLINEログインで会員情報を照合して連携（LINE会員証経由の会員は追加入力なしを想定※）、はじめての方はクイック入力へ。登録メリット（購入時ポイント・フォロー配信）で動機づけ。">
+<ScrMemberBranch/>
+</Frame>
+<Frame label="SCR-107 ｜ ワコールメンバーズ登録（クイック入力）" desc="新規会員はミニアプリ内でクイック入力登録（クイック入力はミニアプリ外では利用不可のためアプリ内で完結）。LINEの情報を自動反映し最小入力で完了。">
+<ScrMembers/>
+</Frame>
+<Frame label="SCR-108 ｜ 2回目以降の起動ホーム" desc="再訪時はオンボーディングを出さず、会員ステータス＋最近の試着メモ＋スキャンCTAを表示。フォロー配信からの再訪もこの画面に着地。">
+<ScrHomeReturn/>
+</Frame>
+<Frame label="SCR-109 ｜ 未購入者フォロー配信" desc="試着したが購入しなかったお客様に、試着商品を添えた在庫・クーポン案内を自動配信（試着3日後・再入荷時など）。">
+<ScrFollow/>
+</Frame>
+<Frame label="SCR-110 ｜ 購入者フォロー配信" desc="ご購入のお客様には着心地フォロー＋クロスセル（おそろいのショーツ等のセット提案）＋メンバーズ登録促進を自動配信。">
+<ScrFollowBuyer/>
+</Frame>
+</>
+);
+}
+
+ReactDOM.createRoot(document.getElementById('mount')).render(<Page/>);
+</script>
+
+</body>
+</html>
