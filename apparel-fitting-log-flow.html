@@ -2,12 +2,12 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"/>
-<title>アパレル試着メモ×購入・未購入分岐フォロー LINEミニアプリ モック v0.5</title>
+<title>アパレル試着メモ×購入・未購入分岐フォロー LINEミニアプリ モック v0.6</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <meta name="catalog:group" content="業種別 提案モック">
 <meta name="catalog:title" content="試着メモ×購入・未購入分岐フォロー｜アパレルミニアプリ">
 <meta name="catalog:badge" content="アパレル">
-<meta name="catalog:desc" content="店舗POPのQR/NFCから起動→許諾画面（友だち追加オプション同梱で友だち数増加）→商品タグのバーコード（SKU単位＝サイズ・カラー自動判定）をスキャン→試着メモをLINEに保存→メンバーズポイント照合で購買判定→購入者（着心地・セット提案）／未購入者（在庫・クーポン）の分岐フォロー配信。会員分岐＝既存はLINEログイン照合連携・新規はクイック入力（仮会員なし）。mock-component製・8画面。ブランド名は架空（MERIA）。">
+<meta name="catalog:desc" content="店舗POPのQR/NFCから起動→許諾画面（友だち追加オプション同梱）→初回/再訪で出し分けるホーム→商品タグのバーコード（SKU単位＝サイズ・カラー自動判定）をスキャン→試着メモをLINEに保存→メンバーズポイント照合で購買判定→購入者（着心地・セット提案）／未購入者（在庫・クーポン）の分岐フォロー配信。会員分岐＝既存はLINEログイン照合連携・新規はクイック入力（仮会員なし）。mock-component製・10画面。ブランド名は架空（MERIA）。">
 <meta name="catalog:icon" content="🛍️">
 <meta name="catalog:order" content="60">
 <meta name="catalog:iconColor" content="#B03060">
@@ -367,14 +367,14 @@ font-size: 13px; line-height: 1.8; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
 </head>
 <body>
 <div class="page">
-<h1>アパレル 試着メモ×購入・未購入分岐フォロー ミニアプリ モック v0.5</h1>
-<div class="subtitle">試着メモ（商品バーコードスキャン）× 購入／未購入の分岐フォロー × MERIAメンバーズ登録動線 ｜ 作成：株式会社Mico ｜ 2026年7月27日 ｜ ※ブランド名「MERIA」は説明用の架空ブランドです</div>
+<h1>アパレル 試着メモ×購入・未購入分岐フォロー ミニアプリ モック v0.6</h1>
+<div class="subtitle">試着メモ（商品バーコードスキャン）× 購入／未購入の分岐フォロー × MERIAメンバーズ登録動線 ｜ 作成：株式会社Mico ｜ 2026年8月26日 ｜ ※ブランド名「MERIA」は説明用の架空ブランドです</div>
 
 <div class="flow-box">
 <h2>全体フロー</h2>
 <div>
 <span class="flow-step brand">店頭POPのQR／NFC</span><span class="flow-arrow">→</span>
-<span class="flow-step">起動直後に許諾ポップアップ（友だち追加つき）</span><span class="flow-arrow">→</span>
+<span class="flow-step">起動直後に許諾（友だち追加つき）→ホーム</span><span class="flow-arrow">→</span>
 <span class="flow-step brand">商品バーコードをスキャン</span><span class="flow-arrow">→</span>
 <span class="flow-step">試着メモがLINEに残る</span><span class="flow-arrow">→</span>
 <span class="flow-step">会員登録・ID連携（既存／新規の分岐）</span><span class="flow-arrow">→</span>
@@ -383,7 +383,7 @@ font-size: 13px; line-height: 1.8; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
 </div>
 <div class="flow-notes">
 ・入口は<strong>店舗POPのQRコード／NFCタグ</strong>（リッチメニュー不要。<strong>友だち登録がない方も取り込める</strong>）。起動直後の<strong>許諾ポップアップに友だち追加オプションを同梱</strong>し、利用開始と同時に友だち数増加に寄与<br>
-・許諾後は<strong>そのままバーコードスキャンへ</strong>（ログイン画面を挟まないスムーズな動線）。バーコードは<strong>SKU単位（サイズ・カラー等を含む）前提</strong>＝サイズ・カラー自動判定、商品情報は<strong>データフィード連携</strong>で自動取得<br>
+・許諾後は<strong>ホームを経てすぐバーコードスキャンへ</strong>（初回はオンボーディング、2回目以降は最近の試着メモを表示）。バーコードは<strong>SKU単位（サイズ・カラー等を含む）前提</strong>＝サイズ・カラー自動判定、商品情報は<strong>データフィード連携</strong>で自動取得<br>
 ・<strong>仮会員は設けず</strong>、試着クローゼットの後に会員分岐：<strong>既存会員＝LINEソーシャルログインで自動ID連携／新規＝クイック入力で登録</strong>。登録の動機づけは<strong>購入時のポイント付与＋未購入フォロー配信の受け取り</strong>で訴求<br>
 ・購買の有無は<strong>MERIAメンバーズのポイント（会計時提示）</strong>と試着メモの突合で判定。<strong>購入者＝着心地フォロー・セット提案／未購入者＝在庫・クーポン案内</strong>の2分岐で自動配信
 </div>
@@ -392,7 +392,7 @@ font-size: 13px; line-height: 1.8; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
 <div class="gallery" id="mount"></div>
 
 <div class="note-box">
-<strong>📌 注記：</strong>本モックは v0.5（2026/07/27）のドラフトです。商品バーコードが品番・サイズ・カラーを含むSKU単位であることはクライアント様側で確認済みです。実画面はクライアント様のブランドガイドラインに合わせて調整します。ブランド名「MERIA」は架空です。<strong>仮会員は設けず、最初からMERIAメンバーズ（本会員）登録を促す方針</strong>を反映しています。<strong>商品バーコードはサイズ・カラー等のユニーク情報を含むSKU単位（JAN等）を前提</strong>としており、品番単位のバーコードの場合はサイズ・カラーをお客様が手動選択するフォールバックで対応します。クイック入力（共通プロフィール）は認証済みLINEミニアプリ＋利用申請が前提です。データフィード形式・MERIAメンバーズ（ポイント／会員基盤）との連携方式は要件定義で確定します。<strong>既存会員の自動ID連携（SCR-105）には、①既存LINE会員証／ソーシャルログインと本ミニアプリが同一プロバイダー配下であること（LINEユーザーIDはプロバイダー単位で異なるため）、②会員基盤側でのUID照合連携、の2つが前提条件となります（既存チャネル構成の確認が必要）。</strong>
+<strong>📌 注記：</strong>本モックは v0.6（2026/08/26）のドラフトです。商品バーコードが品番・サイズ・カラーを含むSKU単位であることはクライアント様側で確認済みです。実画面はクライアント様のブランドガイドラインに合わせて調整します。ブランド名「MERIA」は架空です。<strong>仮会員は設けず、最初からMERIAメンバーズ（本会員）登録を促す方針</strong>を反映しています。<strong>商品バーコードはサイズ・カラー等のユニーク情報を含むSKU単位（JAN等）を前提</strong>としており、品番単位のバーコードの場合はサイズ・カラーをお客様が手動選択するフォールバックで対応します。クイック入力（共通プロフィール）は認証済みLINEミニアプリ＋利用申請が前提です。データフィード形式・MERIAメンバーズ（ポイント／会員基盤）との連携方式は要件定義で確定します。<strong>既存会員の自動ID連携（SCR-105）には、①既存LINE会員証／ソーシャルログインと本ミニアプリが同一プロバイダー配下であること（LINEユーザーIDはプロバイダー単位で異なるため）、②会員基盤側でのUID照合連携、の2つが前提条件となります（既存チャネル構成の確認が必要）。</strong>
 </div>
 </div>
 
@@ -1134,7 +1134,86 @@ border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, fontFamily: 'in
 );
 }
 
-// ---------- SCR-102: barcode scan ----------
+// ---------- SCR-102: first-launch home ----------
+function ScrHomeFirst() {
+const step = (icon, num, title, body) => (
+<div style={{ background: '#fff', borderRadius: 12, padding: '12px 14px', display: 'flex', gap: 12,
+alignItems: 'flex-start', marginBottom: 8, boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+<div style={{ width: 34, height: 34, borderRadius: 10, flexShrink: 0, background: ROSE_PALE,
+border: `1px solid ${ROSE_LINE}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+<span className="material-symbols-rounded" style={{ fontSize: 19, color: ROSE }}>{icon}</span>
+</div>
+<div>
+<div style={{ fontSize: 12.5, fontWeight: 700, color: '#111' }}>{num}. {title}</div>
+<div style={{ fontSize: 11, color: '#666', lineHeight: 1.55, marginTop: 2 }}>{body}</div>
+</div>
+</div>
+);
+return (
+<IOSDevice width={390} height={844}>
+<MiniAppScreen title="MERIA 試着メモ">
+<div style={{ padding: 16 }}>
+<div style={{ textAlign: 'center', margin: '14px 0 14px' }}>
+<div style={{ fontSize: 11, color: ROSE, fontWeight: 700, letterSpacing: 1.5, marginBottom: 4 }}>MERIA FITTING LOG</div>
+<div style={{ fontSize: 19, fontWeight: 700, color: '#111' }}>試着メモへようこそ</div>
+<div style={{ fontSize: 12, color: '#666', marginTop: 6, lineHeight: 1.6 }}>
+試着した商品を、スタッフに声をかけずに<br/>LINEに残せるサービスです
+</div>
+</div>
+{step('barcode_scanner', 1, '商品タグのバーコードをスキャン', 'サイズ・カラーは自動で判定されます')}
+{step('checkroom', 2, '試着メモとして保存', '保存した記録はLINEトークにも届きます')}
+{step('notifications', 3, '気になる商品を後からチェック', '在庫やクーポンのご案内をお届けします')}
+<button style={{ display: 'block', width: '100%', marginTop: 14, padding: 15, background: ROSE, color: '#fff',
+border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 700, fontFamily: 'inherit' }}>
+バーコードをスキャンする
+</button>
+<div style={{ textAlign: 'center', fontSize: 11, color: '#888', marginTop: 12 }}>
+MERIAメンバーズ会員の方はこちら（ID連携）
+</div>
+</div>
+</MiniAppScreen>
+</IOSDevice>
+);
+}
+
+// ---------- SCR-108: returning-visit home ----------
+function ScrHomeReturn() {
+return (
+<IOSDevice width={390} height={844}>
+<MiniAppScreen title="MERIA 試着メモ">
+<div style={{ padding: 16 }}>
+<div style={{ background: '#fff', borderRadius: 14, padding: '14px 16px', marginBottom: 12,
+display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+<div>
+<div style={{ fontSize: 14, fontWeight: 700, color: '#111' }}>おかえりなさい、山田さま</div>
+<div style={{ marginTop: 4 }}>
+<span style={{ fontSize: 10, fontWeight: 700, padding: '2px 9px', borderRadius: 999,
+background: '#E6F9EC', color: '#0a8f3c', border: '1px solid #b9ecc9' }}>メンバーズ連携済み</span>
+</div>
+</div>
+<span className="material-symbols-rounded" style={{ fontSize: 26, color: ROSE }}>account_circle</span>
+</div>
+<button style={{ display: 'block', width: '100%', padding: 15, background: ROSE, color: '#fff',
+border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 700, fontFamily: 'inherit', marginBottom: 14 }}>
+バーコードをスキャンする
+</button>
+<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '0 2px 8px' }}>
+<span style={{ fontSize: 12.5, fontWeight: 700, color: '#555' }}>最近の試着メモ</span>
+<span style={{ fontSize: 11, color: ROSE, fontWeight: 700 }}>クローゼットをすべて見る ›</span>
+</div>
+<ClosetItem name="リフトアップブラ〈ローズ〉" code="BRB476" size="B75" color="ローズ" date="7/16 14:05" store="銀座店" bought={false}/>
+<ClosetItem name="ノンワイヤーブラ" code="BRA210" size="M" color="ベージュ" date="7/16 14:12" store="銀座店" bought={false}/>
+<div style={{ background: ROSE_PALE, border: `1px solid ${ROSE_LINE}`, borderRadius: 12,
+padding: '10px 14px', fontSize: 11.5, color: ROSE_DARK, lineHeight: 1.6, marginTop: 6 }}>
+未購入の試着アイテムの在庫・クーポン情報を、LINEで自動お知らせ中です
+</div>
+</div>
+</MiniAppScreen>
+</IOSDevice>
+);
+}
+
+// ---------- SCR-103: barcode scan ----------
 function ScrScan() {
 return (
 <IOSDevice width={390} height={844} dark>
@@ -1427,28 +1506,34 @@ menuToggle="closed"
 function Page() {
 return (
 <>
-<Frame label="SCR-101 ｜ 起動直後の許諾画面（LINEログイン）" desc="店舗POPのQR／NFCから起動した直後に表示されるLINEログイン許諾画面（実仕様準拠）。友だち追加オプションを同梱し、利用開始と同時に友だち数増加へ。許可後はそのままバーコードスキャンに進む。">
+<Frame label="SCR-101 ｜ 起動直後の許諾画面（LINEログイン）" desc="店舗POPのQR／NFCから起動した直後に表示されるLINEログイン許諾画面（実仕様準拠）。友だち追加オプションを同梱し、利用開始と同時に友だち数増加へ。">
 <ScrConsent/>
 </Frame>
-<Frame label="SCR-102 ｜ 商品バーコードスキャン" desc="既存の商品タグのバーコード（SKU単位）を読み取り。商品名・サイズ・カラー・価格はデータフィード連携で自動取得（タグ変更・店員作業は不要）。">
+<Frame label="SCR-102 ｜ 初回起動ホーム" desc="許諾後に最初に表示されるホーム。使い方3ステップでオンボーディングし、そのままスキャンへ。既存メンバーズ会員のID連携導線も下部に配置。">
+<ScrHomeFirst/>
+</Frame>
+<Frame label="SCR-103 ｜ 商品バーコードスキャン" desc="既存の商品タグのバーコード（SKU単位）を読み取り。商品名・サイズ・カラー・価格はデータフィード連携で自動取得（タグ変更・店員作業は不要）。">
 <ScrScan/>
 </Frame>
-<Frame label="SCR-103 ｜ 商品確認・試着メモ保存" desc="サイズ・カラーはバーコードから自動判定済み。お客様は内容を確認して保存の1タップだけ。保存記録はLINEトークにも届く。">
+<Frame label="SCR-104 ｜ 商品確認・試着メモ保存" desc="サイズ・カラーはバーコードから自動判定済み。お客様は内容を確認して保存の1タップだけ。保存記録はLINEトークにも届く。">
 <ScrSave/>
 </Frame>
-<Frame label="SCR-104 ｜ 試着クローゼット（購入／未購入の分岐ハブ）" desc="試着メモの一覧。購入済み／未購入はMERIAメンバーズのポイント照合で自動更新され、それぞれに合わせたフォローへ分岐。">
+<Frame label="SCR-105 ｜ 試着クローゼット（購入／未購入の分岐ハブ）" desc="試着メモの一覧。購入済み／未購入はMERIAメンバーズのポイント照合で自動更新され、それぞれに合わせたフォローへ分岐。">
 <ScrCloset/>
 </Frame>
-<Frame label="SCR-105 ｜ 会員登録・ログインの分岐" desc="試着クローゼットの後に表示。既存会員はLINEログインで会員情報を照合して連携（LINE会員証経由の会員は追加入力なしを想定※）、はじめての方はクイック入力へ。登録メリット（購入時ポイント・フォロー配信）で動機づけ。">
+<Frame label="SCR-106 ｜ 会員登録・ログインの分岐" desc="試着クローゼットの後に表示。既存会員はLINEログインで会員情報を照合して連携（LINE会員証経由の会員は追加入力なしを想定※）、はじめての方はクイック入力へ。登録メリット（購入時ポイント・フォロー配信）で動機づけ。">
 <ScrMemberBranch/>
 </Frame>
-<Frame label="SCR-106 ｜ MERIAメンバーズ登録（クイック入力）" desc="新規会員はミニアプリ内でクイック入力登録（クイック入力はミニアプリ外では利用不可のためアプリ内で完結）。LINEの情報を自動反映し最小入力で完了。">
+<Frame label="SCR-107 ｜ MERIAメンバーズ登録（クイック入力）" desc="新規会員はミニアプリ内でクイック入力登録（クイック入力はミニアプリ外では利用不可のためアプリ内で完結）。LINEの情報を自動反映し最小入力で完了。">
 <ScrMembers/>
 </Frame>
-<Frame label="SCR-107 ｜ 未購入者フォロー配信" desc="試着したが購入しなかったお客様に、試着商品を添えた在庫・クーポン案内を自動配信（試着3日後・再入荷時など）。">
+<Frame label="SCR-108 ｜ 2回目以降の起動ホーム" desc="再訪時はオンボーディングを出さず、会員ステータス＋最近の試着メモ＋スキャンCTAを表示。フォロー配信からの再訪もこの画面に着地。">
+<ScrHomeReturn/>
+</Frame>
+<Frame label="SCR-109 ｜ 未購入者フォロー配信" desc="試着したが購入しなかったお客様に、試着商品を添えた在庫・クーポン案内を自動配信（試着3日後・再入荷時など）。">
 <ScrFollow/>
 </Frame>
-<Frame label="SCR-108 ｜ 購入者フォロー配信" desc="ご購入のお客様には着心地フォロー＋クロスセル（おそろいのショーツ等のセット提案）＋メンバーズ登録促進を自動配信。">
+<Frame label="SCR-110 ｜ 購入者フォロー配信" desc="ご購入のお客様には着心地フォロー＋クロスセル（おそろいのショーツ等のセット提案）＋メンバーズ登録促進を自動配信。">
 <ScrFollowBuyer/>
 </Frame>
 </>
