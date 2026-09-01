@@ -131,8 +131,9 @@
   .cat{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:8px}
   .cat .ci{width:40px;height:40px;flex:0 0 auto;border-radius:10px;background:linear-gradient(135deg,#e7f2f4,#cfe4ea);display:flex;align-items:center;justify-content:center;font-size:20px}
   .cat .cx{flex:1;min-width:0}.cat .cx b{font-size:13.5px;display:block}.cat .cx span{font-size:11px;color:var(--sub)}
-  .vbtn{border:none;background:var(--brand);color:#fff;font-size:12px;font-weight:700;border-radius:9px;padding:9px 12px;white-space:nowrap}
-  .vbtn.done{background:#e9f7fa;color:var(--brand-d)}
+  /* 状態バッジ：押せない要素なのでボタンに見せない（枠線＋淡色のラベル） */
+  .vbtn{display:inline-flex;align-items:center;gap:4px;background:#f2f4f7;border:1px solid #ccd4de;color:#78838f;font-size:11px;font-weight:700;border-radius:6px;padding:4px 9px;white-space:nowrap;letter-spacing:.02em}
+  .vbtn.done{background:#e9f7fa;border-color:#a6dde8;color:var(--brand-d)}
 
   /* redeem ticket */
   .ticket{border:2px dashed var(--accent);border-radius:16px;background:#fffaf6;padding:18px 14px;text-align:center;margin-bottom:10px}
@@ -140,7 +141,9 @@
   .ticket h3{margin:6px 0 2px;font-size:17px;color:#9a4718}
   .ticket .g{font-size:15px;font-weight:800;color:var(--accent);margin:6px 0}
   .ticket .where{font-size:12.5px;color:#7c4a29;background:#fff;border-radius:10px;padding:9px 10px;margin-top:10px;line-height:1.6}
-  .ticket .code{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8a5a3a;margin-top:8px}
+  .ticket.used{border-color:#b6c0cc;background:#f4f6f9}
+  .ticket.used h3{color:#5b6573}
+  .ticket.used .g{color:#5b6573}
 
   /* stepper（初回ジャーニーの現在地） */
   .steps{display:none;background:#fff;border-bottom:1px solid var(--bd);padding:8px 4px 7px;flex:0 0 auto;z-index:7}
@@ -166,6 +169,17 @@
   .box{background:#fff;border-radius:18px;padding:24px 20px;text-align:center;max-width:300px;width:100%}
   .box .e{font-size:38px}.box h3{margin:8px 0 4px;font-size:17px}.box p{margin:0 0 16px;font-size:13px;color:var(--sub)}
   .box button{background:var(--brand);color:#fff;border:none;border-radius:11px;padding:12px;font-size:14px;font-weight:700;width:100%;cursor:pointer}
+  .box .ovb{display:flex;gap:8px}
+  .box .ovb button{flex:1;font-size:13.5px;white-space:nowrap;padding:12px 6px}
+  .box button.ghost{background:#eef1f5;color:#5b6573}
+  #ov-cancel{display:none}
+  .ov.confirm #ov-cancel{display:block}
+  .ov.confirm #ov-btn{background:var(--accent)}
+  /* コンプリート時の受け取り案内（大きく） */
+  .bigpickup{background:linear-gradient(135deg,var(--accent),#f2a06d);color:#fff;border-radius:16px;padding:16px 14px;text-align:center;margin:10px 0 14px;box-shadow:0 8px 20px rgba(232,118,59,.32)}
+  .bigpickup .bpe{font-size:30px;line-height:1}
+  .bigpickup .bpt{font-size:16.5px;font-weight:800;line-height:1.45;margin-top:6px}
+  .nav a.used{opacity:.38;filter:grayscale(1)}
   .scan{position:absolute;inset:0;background:#0b1016;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:25;color:#fff}
   .scan.show{display:flex}
   /* カメラのフェーズ：ph-perm=権限確認 / ph-boot=起動中 / ph-live=読み取り待機 / ph-read=読み取り中 */
@@ -227,20 +241,20 @@
     <h1>ブースQRを読み取る</h1>
     <p class="lead">入口は <b>entry_point = talk_bubble</b>。会場のブースQRを読むと<b>友だち追加</b>→トークに案内バブルが届き、そこからミニアプリを開きます。</p>
 
-    <div class="note warn"><b>重要：スタンプは「ミニアプリ内のカメラ」で読み取ったときだけ付与されます。</b>掲出QRをLINEのカメラで読むのは<b>入口（友だち追加）まで</b>。台紙を発行したあと、アプリ内カメラで<b>もう一度そのブースのQRを読む</b>とスタンプが1個入ります。</div>
+    <div class="note warn"><b>重要：スタンプはミニアプリ内のカメラで読み取ったときだけ付与されます。</b>掲出QRをLINEのカメラで読むのは<b>入口（友だち追加）まで</b>です。</div>
 
     <div class="sec"><h2><span class="bar"></span>① 会場のブースQRから入る（本命）</h2>
-      <div class="note">まだ友だちでない来場者：QR → <b>友だち追加</b> → <b>既存の登録フロー（挨拶MSG → 情報回収3問）</b> → その最後の<b>ミニアプリ吹き出し</b> → ミニアプリ起動 → <b>カメラ起動</b> → <b>読み取り</b> → <b>スタンプGET</b>。<b>ミニアプリ側にアンケート画面はありません。</b></div>
+      <div class="note">QR → <b>友だち追加</b> → <b>既存の登録フロー（挨拶MSG → 情報回収3問）</b> → <b>ミニアプリの吹き出し</b> → 起動 → カメラ → 読み取り → スタンプGET。</div>
       <select id="entry-booth" class="sel" style="margin:8px 0"></select>
       <button class="btn" id="entry-qr">ブースQRを読む → 友だち追加</button>
     </div>
 
     <div class="sec"><h2><span class="bar"></span>② すでに友だち（トーク内バブル／ME配信）</h2>
-      <div class="note">既存の友だちは<b>トークに残っている案内バブル</b>、または<b>配信メッセージ</b>で起動します。既存の登録フローで情報回収まで済んでいる前提なので、<b>そのままスタンプ台紙に直行</b>。<b>リッチメニューは使いません</b>（クライアントのリッチメニューは<b>店舗ごとに出し分けており、その出し分けが顧客の都道府県属性に紐づいている</b>ため、スタンプラリーの枠を足せないケース）。会期中だけタイルを足す案も運用工数の点で却下。</div>
+      <div class="note">既存の友だちは<b>トークに残ったバブル</b>または<b>MEからの配信</b>で起動し、<b>そのままスタンプ台紙へ直行</b>します。<b>リッチメニューは本件では使いません</b>（店舗別の出し分けに使われているため）。</div>
       <button class="btn" id="entry-rm" style="background:#5C7C88">トーク内のバブル → ミニアプリ起動</button>
     </div>
 
-    <div class="note warn" style="margin-top:12px"><b>【要確認】</b>会場は主催ブースを含む<b>4ブース</b>（goal=4）で作成しています。5ブース目の有無、およびテスト用に会期前（8月中）を有効期間にするかは未確定です。</div>
+    <div class="note warn" style="margin-top:12px"><b>【要確認】</b>4ブース（goal=4）で作成しています。5ブース目の有無は未確定です。</div>
   </section>
 
   
@@ -262,7 +276,7 @@
         <select id="q-pref" class="sel"><option value="">選択してください…</option></select></div>
       <div class="field"><label>③ 最も興味のある旅行の形態<span class="req">必須</span></label>
         <select id="q-type" class="sel"><option value="">選択してください…</option></select></div>
-      <div class="note" style="margin:8px 0 0">本番ではこの3問は<b>LINEのトーク内（既存の情報回収フロー）</b>で完結します。<b>ミニアプリ側にアンケート画面はありません</b>。右のカスタム属性は<b>この既存フローが書き込みます</b>。</div>
+      <div class="note" style="margin:8px 0 0">本番ではこの3問は<b>LINEのトーク内</b>で完結します。右のカスタム属性は<b>この既存フローが書き込みます</b>。</div>
     </div>
     <div class="talk" id="talk-bubble-wrap" style="display:none">
       <div class="row"><div class="ava">🧳</div><div class="cardbub">
@@ -271,9 +285,7 @@
       </div></div>
     </div>
     <div class="note" id="talk-wait">※ 3問すべてに回答すると、<b>登録フローの最後にスタンプラリーの吹き出し</b>が届きます。</div>
-    <div class="note">※ <b>未友だちにはリッチメニューが表示されない</b>ため、初回の入口はこのトーク内バブルしか成立しません（entry_point = talk_bubble）。2回目以降は<b>トークに残ったバブル</b>またはMEからの配信で起動します（リッチメニューは店舗別の出し分けに使われているため本件では使いません）。案内バブルの画像・文言は<b>【要確認】</b>（先方提供待ち）。</div>
     <div class="note">※ この時点ではまだスタンプは入っていません。<b>ミニアプリを開き、アプリ内カメラで読み取って初めて1個目</b>が付きます。</div>
-    <div class="note warn">※ 本件は<b>未認証ミニアプリ</b>（審査なし）で公開します。未認証は友だち追加オプションがデフォルトONにならないため、ブースQRは<b>公式アカウントの友だち追加URL</b>にして「追加 → 既存の登録フロー → ミニアプリ」の順に通す方式（案B）を推奨。※ スタンプは<b>アプリ内カメラでの読み取りのみ</b>で付与するため、<b>ブース識別子を入口QRから引き継ぐ必要はありません</b>。</div>
   </section>
     <div class="outside-foot"><b>この列（左）＝ミニアプリの外／LINEトーク。</b>既存の登録フローそのままで、<b>今回作るものではありません</b>。<br><b>右の端末の中＝ミニアプリ本体。</b>ここが今回の開発対象で、<b>アンケート画面は持ちません</b>（onboarding = none・2026-08-26 決定）。</div>
   </div>
@@ -304,13 +316,13 @@
         <div id="top-hint"></div>
         <button class="btn scanbtn" id="top-cta" style="margin-top:2px">📷 カメラを起動してQRを読み取る</button>
         <div class="sec"><h2><span class="bar"></span>対象ブース（全4か所）</h2><div id="top-spots"></div></div>
-        <div class="note">※ 会場マップ連動・多言語は<b>今回スコープ外</b>（別メニューとして整理）。</div>
       </section>
 
       <!-- スタンプ確認 -->
       <section class="view" id="v-stamp">
         <h1>スタンプ台紙</h1>
         <p class="lead">対象ブースをめぐって <b>4個</b> 集めるとコンプリート。同じブースのQRは1回だけ有効です。</p>
+        <div id="st-complete"></div>
         <div class="progwrap">
           <span class="cnt" id="st-cnt">0 / 4 個</span>
           <div class="prog"><i id="st-bar" style="width:0%"></i></div>
@@ -324,7 +336,7 @@
       <!-- プレゼント -->
       <section class="view" id="v-reward">
         <h1>プレゼント</h1>
-        <p class="lead">コンプリートすると、主催ブースで景品と交換できます（<b>現地でのお渡し</b>）。</p>
+        <p class="lead" id="rw-lead">コンプリートすると、主催ブースで景品と交換できます（<b>現地でのお渡し</b>）。</p>
         <div id="rw-body"></div>
       </section>
     </div>
@@ -334,7 +346,7 @@
       <a data-tab="v-stamp"><span class="e">🎫</span>スタンプ台紙</a>
       <a data-tab="v-reward"><span class="e">🎁</span>プレゼント</a>
     </div>
-    <div class="ov" id="ov"><div class="box"><div class="e" id="ov-e">🎉</div><h3 id="ov-h"></h3><p id="ov-p"></p><button id="ov-btn">OK</button></div></div>
+    <div class="ov" id="ov"><div class="box"><div class="e" id="ov-e">🎉</div><h3 id="ov-h"></h3><p id="ov-p"></p><div class="ovb"><button id="ov-cancel" class="ghost">キャンセル</button><button id="ov-btn">OK</button></div></div></div>
     <div class="scan" id="scan"><div class="camgate" id="cam-gate"></div><div class="frame"><div class="laser"></div></div><p id="scan-t">QRコードを読み取り中…</p><div class="pick" id="pick" style="display:none"></div><button class="scan-close" id="scan-close">✕ とじる</button></div>
   </div>
   </div>
@@ -343,7 +355,7 @@
   <div class="mepanel">
     <div class="me-top"><span class="me-brand"><span class="logo">Mico</span> Engage AI</span><span class="tag">顧客詳細</span></div>
     <div id="me-body"></div>
-    <div class="me-foot">左の操作に応じてカスタム属性が自動反映（<b>data_export.channel = me_only</b>）。個人を特定する氏名・連絡先は取得しません。<b>エリア／都道府県／旅行形態の3属性は既存の登録フロー（トーク内の情報回収）が書き込み</b>、<b>ミニアプリが書くのは進捗（stamp_count / completed / opened）だけ</b>です。<br><b>データの持ち先はMEカスタム属性のみ</b>＝専用の管理画面やCSV配布画面は作りません（周遊データの確認はMEのセグメント／CSV出力で行う）。</div>
+    <div class="me-foot"><b>エリア／都道府県／旅行形態の3属性は既存の登録フローが書き込み</b>、<b>ミニアプリが書くのは進捗（stamp_count / completed / opened）だけ</b>です。データの持ち先は ME カスタム属性のみで、専用の管理画面やCSV配布画面は作りません。</div>
   </div>
 
 </div>
@@ -366,7 +378,7 @@ const CFG={
   // checkpoints：ブース＝スタンプ取得地点。No.1 は主催ブース（required=true）
   checkpoints:[
     {id:"booth-1",name:"主催トラベル社ブース",category:"ブース",required:true, emoji:"🧳",note:"主催ブース／景品のお渡し窓口"},
-    {id:"booth-2",name:"リゾート＆ホテルズ ブース",category:"ブース",required:false,emoji:"🏨",note:"出展社ブース"},
+    {id:"booth-2",name:"リゾート＆ホテルズ ブース",category:"ブース",required:false,emoji:"♨️",note:"出展社ブース"},
     {id:"booth-3",name:"フェアリートラベル ブース",category:"ブース",required:false,emoji:"✈️",note:"出展社ブース"},
     {id:"booth-4",name:"北国ホテル＆リゾート ブース",category:"ブース",required:false,emoji:"⛰",note:"出展社ブース"}
   ],
@@ -411,6 +423,7 @@ const $=id=>document.getElementById(id);
 function nowStr(){const d=new Date(),z=n=>String(n).padStart(2,'0');return `${d.getFullYear()}/${z(d.getMonth()+1)}/${z(d.getDate())} ${z(d.getHours())}:${z(d.getMinutes())}`;}
 function count(){return S.stamps.length;}
 function completed(){return count()>=GOAL;}
+const PICKUP_SHORT=CFG.checkpoints[0].name.replace(/\s*ブース$/,"")+"ブース";
 function cpOf(id){return CFG.checkpoints.find(c=>c.id===id);}
 function hasStamp(id){return S.stamps.some(s=>s.id===id);}
 
@@ -451,7 +464,7 @@ function renderTop(){
   $("top-hero").innerHTML=`<div class="em">🧳</div><div class="ar">${CFG.campaign.name}</div><div class="sub">${TERM} 開催</div><div class="imgnote">※ メインビジュアルは差し替え前提（先方提供待ち＝要確認）。</div>`;
   $("top-spots").innerHTML=CFG.checkpoints.map(c=>{
     const done=hasStamp(c.id);
-    return `<div class="cat"><div class="ci">${c.emoji}</div><div class="cx"><b>${c.name}</b><span>${c.note}</span></div><span class="vbtn ${done?'done':''}" style="pointer-events:none">${done?'取得済':'未取得'}</span></div>`;
+    return `<div class="cat"><div class="ci">${c.emoji}</div><div class="cx"><b>${c.name}</b><span>${c.note}</span></div><span class="vbtn ${done?'done':''}">${done?'✓ 取得済':'未取得'}</span></div>`;
   }).join("");
   const eb=S.entryBooth?cpOf(S.entryBooth):null;
   const hint=$("top-hint");
@@ -517,7 +530,8 @@ function commit(id){
   renderSteps(); show("v-stamp");
   if(completed()&&!S.completedShown){
     S.completedShown=true;save();
-    toast("🎉","コンプリート！",CFG.reward_rule.tiers[0].label+" を獲得しました。"+CFG.reward_rule.pickup_text);
+    toast("🎉","コンプリート！",CFG.reward_rule.tiers[0].label+" を獲得しました。<br><b>"+PICKUP_SHORT+"</b>でお受け取りください。",
+      ()=>{document.querySelector('#nav a[data-tab=v-reward]').click();});
   }else{
     toast("🎫","スタンプGET！",c.name+"／"+count()+" / "+GOAL+" 個");
   }
@@ -526,6 +540,8 @@ function commit(id){
 /* ---- スタンプ台紙 ---- */
 function renderStamp(){
   const ac=count();
+  $("st-complete").innerHTML = completed()
+    ? `<div class="bigpickup"><div class="bpe">🎁</div><div class="bpt">${PICKUP_SHORT}で<br>プレゼントをお受け取りください</div></div>` : "";
   $("st-cnt").textContent=ac+" / "+GOAL+" 個";
   $("st-bar").style.width=(Math.min(ac,GOAL)/GOAL*100)+"%";
   let cells="";
@@ -533,10 +549,10 @@ function renderStamp(){
     cells+=`<div class="st ${s?'got':''}"><span class="e">${c?c.emoji:'？'}</span>${s?c.name.replace(/\s*ブース$/,'').slice(0,7):(i+1)+'個目'}</div>`;}
   $("st-grid").innerHTML=cells;
   const t=CFG.reward_rule.tiers[0];
-  $("st-tiers").innerHTML=`<div class="tier ${ac>=t.threshold?'done':''}"><div class="n">${t.threshold}</div><div class="txt"><b>${t.label}</b><div>${ac>=t.threshold?'獲得済み（主催ブースでお受け取り）':'スタンプ'+t.threshold+'個で解放'}</div></div><div style="font-size:18px">${ac>=t.threshold?'✅':'🔒'}</div></div>`;
+  $("st-tiers").innerHTML=`<div class="tier ${ac>=t.threshold?'done':''}"><div class="n">${t.threshold}</div><div class="txt"><b>${t.label}</b><div>${ac>=t.threshold?'獲得済み（'+PICKUP_SHORT+'でお受け取り）':'スタンプ'+t.threshold+'個で解放'}</div></div><div style="font-size:18px">${ac>=t.threshold?'✅':'🔒'}</div></div>`;
   const rest=CFG.checkpoints.filter(c=>!hasStamp(c.id));
   $("area-spots").innerHTML=rest.length
-    ? rest.map(c=>`<div class="cat"><div class="ci">${c.emoji}</div><div class="cx"><b>${c.name}</b><span>${c.note}</span></div><span class="vbtn" style="pointer-events:none;background:#c8ced7">未取得</span></div>`).join("")
+    ? rest.map(c=>`<div class="cat"><div class="ci">${c.emoji}</div><div class="cx"><b>${c.name}</b><span>${c.note}</span></div><span class="vbtn">未取得</span></div>`).join("")
     : `<div class="note">すべてのブースを回りました🎉 プレゼントタブへ進んでください。</div>`;
 }
 
@@ -595,27 +611,37 @@ function renderReward(){
       `<p style="font-size:13px;margin:8px 0 6px"><b>${t.label}</b><br>あと <b>${GOAL-ac}</b> 個でコンプリートです。</p>`+
       `<div class="prog" style="margin:12px 0"><i style="width:${Math.min(ac,GOAL)/GOAL*100}%"></i></div>`+
       `<button class="btn" onclick="document.querySelector('#nav a[data-tab=v-top]').click()">対象ブースを見る</button></div>`+
-      `<div class="note">受け取りは<b>会期中・会場内のみ</b>（reward_rule.output = booth_manual）。<span class="tbd">要確認</span> 会期後の引換や在庫切れ時の扱いは未確定。</div>`;
+      `<div class="note">受け取りは<b>会期中・会場内のみ</b>です。</div>`;
     return;
   }
   const done=!!S.redeemedAt;
-  $("rw-body").innerHTML=`<div class="ticket"><div class="e">🎁</div><h3>コンプリート達成！</h3>`+
+  $("rw-body").innerHTML=`<div class="ticket ${done?'used':''}"><div class="e">${done?'✅':'🎁'}</div><h3>${done?'受け取り済み':'コンプリート達成！'}</h3>`+
     `<div class="g">${t.label}</div>`+
-    `<div class="where">${CFG.reward_rule.pickup_text}</div>`+
-    `<div class="code">引換コード ${t.code_prefix}${1000+ac}</div></div>`+
-    (done
-      ? `<div class="note">✅ ${S.redeemedAt} に受け取り済みとして記録しました（スタッフ操作の代替＝デモ）。</div>`
-      : `<button class="btn" id="rw-go" style="background:var(--accent)">スタッフに提示して受け取る</button>`)+
-    `<div class="note" style="margin-top:10px">現地でのお渡しのため、アプリ内では<b>引換コードの表示まで</b>。スタッフ側の消込方法（画面提示のみ／スタッフQR）は<span class="tbd">要確認</span>。</div>`;
+    `<div class="where">${done?S.redeemedAt+' に受け取り済みです。':PICKUP_SHORT+'でプレゼントをお受け取りください。スタッフにこの画面をご提示ください。'}</div></div>`+
+    (done ? `` : `<button class="btn" id="rw-go" style="background:var(--accent)">スタッフに提示して受け取る</button>`);
   const b=$("rw-go");
-  if(b)b.onclick=()=>{S.redeemedAt=nowStr();S.last_at=nowStr();save();renderReward();renderME("景品交換（reward_redeemed）");
-    toast("🎁","受け取り済みにしました",t.label+" を受け取りました。ME 属性に交換日時を記録します。");};
+  if(b)b.onclick=()=>{
+    confirmBox("👥","スタッフと一緒に操作してください",
+      "この操作は<b>元に戻せません</b>。<br>スタッフの目の前で押してください。<br><br><b>本当に使用しますか？</b>",
+      "使用する",
+      ()=>{S.redeemedAt=nowStr();S.last_at=nowStr();save();renderReward();renderME("景品交換（reward_redeemed）");
+        toast("✅","受け取り済みにしました",t.label+" を受け取りました。");});
+  };
+  const L=$("rw-lead"); if(L)L.style.display=done?"none":"";
+  const tab=document.querySelector('#nav a[data-tab=v-reward]');
+  if(tab)tab.classList.toggle("used",done);
 }
 
 /* ---- overlay ---- */
-function toast(e,h,p){$("ov-e").textContent=e;$("ov-h").textContent=h;$("ov-p").textContent=p;$("ov").classList.add("show");}
-$("ov-btn").addEventListener("click",()=>$("ov").classList.remove("show"));
-$("ov").addEventListener("click",e=>{if(e.target.id==="ov")$("ov").classList.remove("show");});
+let ovYes=null;
+function closeOv(){$("ov").classList.remove("show");}
+function toast(e,h,p,onClose){$("ov-e").textContent=e;$("ov-h").textContent=h;$("ov-p").innerHTML=p;
+  $("ov").classList.remove("confirm");$("ov-btn").textContent="OK";ovYes=onClose||null;$("ov").classList.add("show");}
+function confirmBox(e,h,p,yes,onYes){$("ov-e").textContent=e;$("ov-h").textContent=h;$("ov-p").innerHTML=p;
+  $("ov").classList.add("confirm");$("ov-btn").textContent=yes;ovYes=onYes;$("ov").classList.add("show");}
+$("ov-btn").addEventListener("click",()=>{closeOv();const fn=ovYes;ovYes=null;if(fn)fn();});
+$("ov-cancel").addEventListener("click",()=>{closeOv();ovYes=null;});
+$("ov").addEventListener("click",e=>{if(e.target.id==="ov"){closeOv();ovYes=null;}});
 
 /* ---- nav / reset ---- */
 document.querySelectorAll("#nav a").forEach(a=>a.addEventListener("click",()=>{const t=a.dataset.tab;
