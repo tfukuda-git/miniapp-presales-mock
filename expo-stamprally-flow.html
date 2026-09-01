@@ -11,7 +11,7 @@
 <meta name="catalog:title" content="旅行博 回遊スタンプラリー｜触れるモック（v0.2）">
 <meta name="catalog:badge" content="更新v0.2">
 <meta name="catalog:badgeColor" content="var(--brand)">
-<meta name="catalog:desc" content="汎用スタンプラリーの「回遊イベント型（single）」構成。1会期・1エリア、出展ブースをQRで巡ってコンプリートすると主催ブースで景品を現地受け取り。入口はブースQR→友だち追加→既存の登録フロー（あいさつ→情報回収3問）→その最後のミニアプリ吹き出し（talk_bubble）。★ミニアプリ内にアンケート画面は無い（onboarding=none）。エリア／都道府県／旅行形態は既存フローが書き込み、ミニアプリは進捗（stamp_count/completed/opened）だけを書く。スタンプはミニアプリ内カメラでの読み取りでのみ付与（掲出QRの読み取りだけでは加算しない）＝友だち追加→アンケート（トーク内）→ミニアプリを開く→カメラ起動→読み取り→スタンプGETの6ステップを画面上部のステッパーで表示。同一ブースQRは1回のみ（per_checkpoint_once）。右側に顧客管理基盤のカスタム属性をリアルタイム表示。社名は架空。">
+<meta name="catalog:desc" content="汎用スタンプラリーの「回遊イベント型（single）」構成。1会期・1エリア、出展ブースをQRで巡ってコンプリートすると主催ブースで景品を現地受け取り。入口はブースQR→友だち追加→既存の登録フロー（あいさつ→情報回収3問）→その最後のミニアプリ吹き出し（talk_bubble）。★ミニアプリ内にアンケート画面は無い（onboarding=none）。エリア／都道府県／旅行形態は既存フローが書き込み、ミニアプリは進捗（stamp_count/completed/opened）だけを書く。スタンプはミニアプリ内カメラでの読み取りでのみ付与（掲出QRの読み取りだけでは加算しない）＝友だち追加→アンケート（トーク内）→ミニアプリを開く→カメラ起動→読み取り→スタンプGETの6ステップを画面上部のステッパーで表示。同一ブースQRは1回のみ（per_checkpoint_once）。画面は3列構成＝左：ミニアプリの外（LINEトーク／既存の登録フロー・開発対象外）、中央：ミニアプリ本体（開発対象）、右：顧客管理基盤のカスタム属性をリアルタイム表示。社名は架空。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -29,6 +29,26 @@
 
   .app{width:100%;max-width:400px;background:var(--bg);position:relative;display:flex;flex-direction:column;overflow:hidden;height:844px;max-height:94vh;border-radius:38px;box-shadow:0 20px 60px rgba(20,35,60,.28);border:10px solid #11161d}
   @media(max-width:479px){.app{height:auto;min-height:88vh;border-radius:24px;border-width:6px}}
+
+  /* ---- ミニアプリの外（LINEトーク＝既存の登録フロー） ---- */
+  .outside{width:100%;max-width:390px;display:flex;flex-direction:column;gap:12px;align-self:stretch;max-height:94vh;overflow-y:auto}
+  @media(max-width:899px){.outside{max-height:none;overflow:visible}}
+  .ohd{background:#123C4A;color:#fff;border-radius:14px;padding:11px 14px}
+  .ohd .t{font-size:13px;font-weight:800;letter-spacing:.01em}
+  .ohd .s{font-size:10.5px;opacity:.85;margin-top:3px;line-height:1.5}
+  .obox{background:#fff;border:1.5px solid var(--bd);border-radius:16px;padding:15px 15px 16px;position:relative}
+  .obox h1{font-size:17px}
+  .obox .onum{position:absolute;top:-9px;left:14px;background:#123C4A;color:#fff;font-size:10px;font-weight:800;border-radius:20px;padding:3px 10px}
+  .obox.locked{pointer-events:none;padding-top:44px}
+  .obox.locked>*:not(.onum):not(.lockmsg){opacity:.32;filter:grayscale(.8)}
+  .obox.locked .lockmsg{display:block}
+  .lockmsg{display:none;position:absolute;top:16px;left:15px;right:15px;background:#fff5e9;border:1px solid #f0c9a4;color:#9a5a1e;font-size:11.5px;font-weight:800;border-radius:10px;padding:7px 10px;text-align:center}
+  .outside-foot{font-size:11px;color:#3d5563;background:#dbe6ec;border:1px solid #b9cdd7;border-radius:12px;padding:10px 12px;line-height:1.6}
+  .applabel{font-size:11px;font-weight:800;color:#123C4A;text-align:center;margin-bottom:7px;letter-spacing:.02em}
+  .idle{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:60vh;color:#8b95a3;padding:0 26px}
+  .idle .ic{font-size:44px;margin-bottom:12px;opacity:.5}
+  .idle .h{font-size:15px;font-weight:800;color:#5b6573;margin-bottom:6px}
+  .idle .p{font-size:12px;line-height:1.7}
 
   .banner{background:#11161d;color:#dfe7f2;font-size:11px;text-align:center;padding:6px 10px}
   .banner b{color:#7fffa8}
@@ -196,66 +216,86 @@
 </head>
 <body>
 <div class="stage">
+  <!-- ===== OUTSIDE THE APP：LINEトーク（既存の登録フロー） ===== -->
+  <div class="outside">
+    <div class="ohd">
+      <div class="t">📱 ここはミニアプリの「外」です</div>
+      <div class="s">LINEのトーク画面で起こること。<b>アンケート3問は既存の Mico Engage AI の設定で完結</b>し、今回のミニアプリ開発には含まれません。</div>
+    </div>
+  
+  <section class="obox" id="o-entry"><div class="onum">① 会場での操作</div>
+    <h1>ブースQRを読み取る</h1>
+    <p class="lead">入口は <b>entry_point = talk_bubble</b>。会場のブースQRを読むと<b>友だち追加</b>→トークに案内バブルが届き、そこからミニアプリを開きます。</p>
+
+    <div class="note warn"><b>重要：スタンプは「ミニアプリ内のカメラ」で読み取ったときだけ付与されます。</b>掲出QRをLINEのカメラで読むのは<b>入口（友だち追加）まで</b>。台紙を発行したあと、アプリ内カメラで<b>もう一度そのブースのQRを読む</b>とスタンプが1個入ります。</div>
+
+    <div class="sec"><h2><span class="bar"></span>① 会場のブースQRから入る（本命）</h2>
+      <div class="note">まだ友だちでない来場者：QR → <b>友だち追加</b> → <b>既存の登録フロー（挨拶MSG → 情報回収3問）</b> → その最後の<b>ミニアプリ吹き出し</b> → ミニアプリ起動 → <b>カメラ起動</b> → <b>読み取り</b> → <b>スタンプGET</b>。<b>ミニアプリ側にアンケート画面はありません。</b></div>
+      <select id="entry-booth" class="sel" style="margin:8px 0"></select>
+      <button class="btn" id="entry-qr">ブースQRを読む → 友だち追加</button>
+    </div>
+
+    <div class="sec"><h2><span class="bar"></span>② すでに友だち（トーク内バブル／ME配信）</h2>
+      <div class="note">既存の友だちは<b>トークに残っている案内バブル</b>、または<b>配信メッセージ</b>で起動します。既存の登録フローで情報回収まで済んでいる前提なので、<b>そのままスタンプ台紙に直行</b>。<b>リッチメニューは使いません</b>（クライアントのリッチメニューは<b>店舗ごとに出し分けており、その出し分けが顧客の都道府県属性に紐づいている</b>ため、スタンプラリーの枠を足せないケース）。会期中だけタイルを足す案も運用工数の点で却下。</div>
+      <button class="btn" id="entry-rm" style="background:#5C7C88">トーク内のバブル → ミニアプリ起動</button>
+    </div>
+
+    <div class="note warn" style="margin-top:12px"><b>【要確認】</b>会場は主催ブースを含む<b>4ブース</b>（goal=4）で作成しています。5ブース目の有無、およびテスト用に会期前（8月中）を有効期間にするかは未確定です。</div>
+  </section>
+
+  
+  <section class="obox locked" id="o-talk"><div class="onum">② LINEトーク（既存の登録フロー）</div>
+    <div class="lockmsg">まず ① で「ブースQRを読む」を押してください</div>
+    <h1>LINEトーク内の登録フロー</h1>
+    <p class="lead">ブースQRの読み取りで公式アカウントを友だち追加。<b>既存の登録フロー（挨拶MSG → 情報回収）</b>がそのまま流れ、その最後に<b>スタンプラリーの吹き出し</b>が届きます。</p>
+    <div class="talk">
+      <div class="row"><div class="ava">🧳</div><div><div class="name">旅行博 公式アカウント</div><div class="bub">友だち登録ありがとうございます！<br>あなたに合ったお得な情報を届けるために、<b>簡単なアンケート</b>に答えてください（たった30秒）</div></div></div>
+      <div class="row"><div class="ava">🧳</div><div class="bub">① <b>お住まいのエリア</b>をタップしてください</div></div>
+      <div class="row"><div class="ava">🧳</div><div class="bub">② <b>お住まいの都道府県</b>をタップしてください</div></div>
+      <div class="row"><div class="ava">🧳</div><div class="bub">③ <b>最も興味のある旅行の形態</b>を教えてください</div></div>
+    </div>
+    <div class="lineform">
+      <div class="lf-h">▼ トーク内での回答（デモ操作）</div>
+      <div class="field"><label>① お住まいのエリア<span class="req">必須</span></label>
+        <select id="q-area" class="sel"><option value="">選択してください…</option></select></div>
+      <div class="field"><label>② お住まいの都道府県<span class="req">必須</span></label>
+        <select id="q-pref" class="sel"><option value="">選択してください…</option></select></div>
+      <div class="field"><label>③ 最も興味のある旅行の形態<span class="req">必須</span></label>
+        <select id="q-type" class="sel"><option value="">選択してください…</option></select></div>
+      <div class="note" style="margin:8px 0 0">本番ではこの3問は<b>LINEのトーク内（既存の情報回収フロー）</b>で完結します。<b>ミニアプリ側にアンケート画面はありません</b>。右のカスタム属性は<b>この既存フローが書き込みます</b>。</div>
+    </div>
+    <div class="talk" id="talk-bubble-wrap" style="display:none">
+      <div class="row"><div class="ava">🧳</div><div class="cardbub">
+        <div class="hero"><div class="t">会場をめぐって<br>スタンプを集めよう</div><div class="s" id="talk-term"></div></div>
+        <div class="act" id="talk-open">▶ スタンプラリーを始める</div>
+      </div></div>
+    </div>
+    <div class="note" id="talk-wait">※ 3問すべてに回答すると、<b>登録フローの最後にスタンプラリーの吹き出し</b>が届きます。</div>
+    <div class="note">※ <b>未友だちにはリッチメニューが表示されない</b>ため、初回の入口はこのトーク内バブルしか成立しません（entry_point = talk_bubble）。2回目以降は<b>トークに残ったバブル</b>またはMEからの配信で起動します（リッチメニューは店舗別の出し分けに使われているため本件では使いません）。案内バブルの画像・文言は<b>【要確認】</b>（先方提供待ち）。</div>
+    <div class="note">※ この時点ではまだスタンプは入っていません。<b>ミニアプリを開き、アプリ内カメラで読み取って初めて1個目</b>が付きます。</div>
+    <div class="note warn">※ 本件は<b>未認証ミニアプリ</b>（審査なし）で公開します。未認証は友だち追加オプションがデフォルトONにならないため、ブースQRは<b>公式アカウントの友だち追加URL</b>にして「追加 → 既存の登録フロー → ミニアプリ」の順に通す方式（案B）を推奨。※ スタンプは<b>アプリ内カメラでの読み取りのみ</b>で付与するため、<b>ブース識別子を入口QRから引き継ぐ必要はありません</b>。</div>
+  </section>
+    <div class="outside-foot"><b>この列（左）＝ミニアプリの外／LINEトーク。</b>既存の登録フローそのままで、<b>今回作るものではありません</b>。<br><b>右の端末の中＝ミニアプリ本体。</b>ここが今回の開発対象で、<b>アンケート画面は持ちません</b>（onboarding = none・2026-08-26 決定）。</div>
+  </div>
+
   <!-- PHONE -->
+  <div style="width:100%;max-width:400px">
+  <div class="applabel">▼ 端末の中＝ミニアプリ本体（今回の開発対象）</div>
   <div class="app">
-    <div class="banner">回遊イベント型（<b>area_mode=single</b>）｜<b>ミニアプリ内にアンケートはありません</b>（既存の登録フローで取得）。初回の流れ＝<b>友だち追加→アンケート（トーク内）→ミニアプリを開く→カメラ起動→読み取り→スタンプGET</b>。<b>スタンプはミニアプリ内カメラで読み取ったときだけ付与</b>。掲出QRは入口であって、それだけでは加算されません｜右上⟳で最初から</div>
+    <div class="banner">ミニアプリ内に<b>アンケート画面はありません</b>（onboarding = none）｜右上⟳で最初から</div>
     <div class="hd">
       <span class="t">🧳 旅行博 回遊スタンプラリー <span class="pill">ミニアプリ</span></span>
       <span class="actions"><span id="reset" title="リセット">⟳</span></span>
     </div>
     <div class="steps" id="steps"></div>
     <div class="scroll">
-      <!-- ENTRY -->
-      <section class="view on" id="v-entry">
-        <h1>流入パターン（デモ操作）</h1>
-        <p class="lead">入口は <b>entry_point = talk_bubble</b>。会場のブースQRを読むと<b>友だち追加</b>→トークに案内バブルが届き、そこからミニアプリを開きます。</p>
-
-        <div class="note warn"><b>重要：スタンプは「ミニアプリ内のカメラ」で読み取ったときだけ付与されます。</b>掲出QRをLINEのカメラで読むのは<b>入口（友だち追加）まで</b>。台紙を発行したあと、アプリ内カメラで<b>もう一度そのブースのQRを読む</b>とスタンプが1個入ります。</div>
-
-        <div class="sec"><h2><span class="bar"></span>① 会場のブースQRから入る（本命）</h2>
-          <div class="note">まだ友だちでない来場者：QR → <b>友だち追加</b> → <b>既存の登録フロー（挨拶MSG → 情報回収3問）</b> → その最後の<b>ミニアプリ吹き出し</b> → ミニアプリ起動 → <b>カメラ起動</b> → <b>読み取り</b> → <b>スタンプGET</b>。<b>ミニアプリ側にアンケート画面はありません。</b></div>
-          <select id="entry-booth" class="sel" style="margin:8px 0"></select>
-          <button class="btn" id="entry-qr">ブースQRを読む → 友だち追加</button>
+      <!-- IDLE（ミニアプリ未起動） -->
+      <section class="view on" id="v-idle">
+        <div class="idle">
+          <div class="ic">🎫</div>
+          <div class="h">ミニアプリはまだ開かれていません</div>
+          <div class="p">左のトーク画面で<b>3問に回答</b>すると、登録フローの最後に<b>スタンプラリーの吹き出し</b>が届きます。<br>その吹き出しをタップすると、ここにミニアプリが開きます。</div>
         </div>
-
-        <div class="sec"><h2><span class="bar"></span>② すでに友だち（トーク内バブル／ME配信）</h2>
-          <div class="note">既存の友だちは<b>トークに残っている案内バブル</b>、または<b>配信メッセージ</b>で起動します。既存の登録フローで情報回収まで済んでいる前提なので、<b>そのままスタンプ台紙に直行</b>。<b>リッチメニューは使いません</b>（クライアントのリッチメニューは<b>店舗ごとに出し分けており、その出し分けが顧客の都道府県属性に紐づいている</b>ため、スタンプラリーの枠を足せないケース）。会期中だけタイルを足す案も運用工数の点で却下。</div>
-          <button class="btn" id="entry-rm" style="background:#5C7C88">トーク内のバブル → ミニアプリ起動</button>
-        </div>
-
-        <div class="note warn" style="margin-top:12px"><b>【要確認】</b>会場は主催ブースを含む<b>4ブース</b>（goal=4）で作成しています。5ブース目の有無、およびテスト用に会期前（8月中）を有効期間にするかは未確定です。</div>
-      </section>
-
-      <!-- TALK（LINEトーク画面の簡易再現）＝既存の登録フロー -->
-      <section class="view" id="v-talk">
-        <h1>友だち追加されました</h1>
-        <p class="lead">ブースQRの読み取りで公式アカウントを友だち追加。<b>既存の登録フロー（挨拶MSG → 情報回収）</b>がそのまま流れ、その最後に<b>スタンプラリーの吹き出し</b>が届きます。</p>
-        <div class="talk">
-          <div class="row"><div class="ava">🧳</div><div><div class="name">旅行博 公式アカウント</div><div class="bub">友だち登録ありがとうございます！<br>あなたに合ったお得な情報を届けるために、<b>簡単なアンケート</b>に答えてください（たった30秒）</div></div></div>
-          <div class="row"><div class="ava">🧳</div><div class="bub">① <b>お住まいのエリア</b>をタップしてください</div></div>
-          <div class="row"><div class="ava">🧳</div><div class="bub">② <b>お住まいの都道府県</b>をタップしてください</div></div>
-          <div class="row"><div class="ava">🧳</div><div class="bub">③ <b>最も興味のある旅行の形態</b>を教えてください</div></div>
-        </div>
-        <div class="lineform">
-          <div class="lf-h">▼ トーク内での回答（デモ操作）</div>
-          <div class="field"><label>① お住まいのエリア<span class="req">必須</span></label>
-            <select id="q-area" class="sel"><option value="">選択してください…</option></select></div>
-          <div class="field"><label>② お住まいの都道府県<span class="req">必須</span></label>
-            <select id="q-pref" class="sel"><option value="">選択してください…</option></select></div>
-          <div class="field"><label>③ 最も興味のある旅行の形態<span class="req">必須</span></label>
-            <select id="q-type" class="sel"><option value="">選択してください…</option></select></div>
-          <div class="note" style="margin:8px 0 0">本番ではこの3問は<b>LINEのトーク内（既存の情報回収フロー）</b>で完結します。<b>ミニアプリ側にアンケート画面はありません</b>。右のカスタム属性は<b>この既存フローが書き込みます</b>。</div>
-        </div>
-        <div class="talk" id="talk-bubble-wrap" style="display:none">
-          <div class="row"><div class="ava">🧳</div><div class="cardbub">
-            <div class="hero"><div class="t">会場をめぐって<br>スタンプを集めよう</div><div class="s" id="talk-term"></div></div>
-            <div class="act" id="talk-open">▶ スタンプラリーを始める</div>
-          </div></div>
-        </div>
-        <div class="note" id="talk-wait">※ 3問すべてに回答すると、<b>登録フローの最後にスタンプラリーの吹き出し</b>が届きます。</div>
-        <div class="note">※ <b>未友だちにはリッチメニューが表示されない</b>ため、初回の入口はこのトーク内バブルしか成立しません（entry_point = talk_bubble）。2回目以降は<b>トークに残ったバブル</b>またはMEからの配信で起動します（リッチメニューは店舗別の出し分けに使われているため本件では使いません）。案内バブルの画像・文言は<b>【要確認】</b>（先方提供待ち）。</div>
-        <div class="note">※ この時点ではまだスタンプは入っていません。<b>ミニアプリを開き、アプリ内カメラで読み取って初めて1個目</b>が付きます。</div>
-        <div class="note warn">※ 本件は<b>未認証ミニアプリ</b>（審査なし）で公開します。未認証は友だち追加オプションがデフォルトONにならないため、ブースQRは<b>公式アカウントの友だち追加URL</b>にして「追加 → 既存の登録フロー → ミニアプリ」の順に通す方式（案B）を推奨。※ スタンプは<b>アプリ内カメラでの読み取りのみ</b>で付与するため、<b>ブース識別子を入口QRから引き継ぐ必要はありません</b>。</div>
       </section>
 
       <!-- TOP -->
@@ -296,6 +336,7 @@
     </div>
     <div class="ov" id="ov"><div class="box"><div class="e" id="ov-e">🎉</div><h3 id="ov-h"></h3><p id="ov-p"></p><button id="ov-btn">OK</button></div></div>
     <div class="scan" id="scan"><div class="camgate" id="cam-gate"></div><div class="frame"><div class="laser"></div></div><p id="scan-t">QRコードを読み取り中…</p><div class="pick" id="pick" style="display:none"></div><button class="scan-close" id="scan-close">✕ とじる</button></div>
+  </div>
   </div>
 
   <!-- ME CUSTOM ATTRIBUTE PANEL -->
@@ -506,7 +547,9 @@ function renderEntry(){
 }
 $("entry-qr").addEventListener("click",()=>{
   S.inflow="現地ブースQR"; S.entryBooth=$("entry-booth").value; S.step=2; save();
-  renderME(); show("v-talk");
+  renderME(); renderSteps();
+  $("o-talk").classList.remove("locked");
+  $("o-talk").scrollIntoView({behavior:"smooth",block:"nearest"});
   toast("👋","友だち追加されました","公式アカウントのトークに案内バブルが届きました。この時点ではまだスタンプは入っていません。");
 });
 $("entry-rm").addEventListener("click",()=>{
@@ -582,13 +625,15 @@ document.querySelectorAll("#nav a").forEach(a=>a.addEventListener("click",()=>{c
   show(t);}));
 $("reset").addEventListener("click",()=>{S=blank();save();
   ["q-area","q-pref","q-type"].forEach(id=>$(id).value="");fillSelect($("q-pref"),OPT_PREF);validate();
-  $("nav").classList.remove("on");$("scan").className="scan";renderME();renderEntry();show("v-entry");});
+  $("nav").classList.remove("on");$("scan").className="scan";
+  $("o-talk").classList.add("locked");
+  renderME();renderEntry();show("v-idle");});
 
 /* ---- boot ---- */
 $("q-area").value=S.survey.area;if(S.survey.area&&PREF_BY_AREA[S.survey.area])fillSelect($("q-pref"),PREF_BY_AREA[S.survey.area]);$("q-pref").value=S.survey.pref;$("q-type").value=S.survey.type;validate();
 renderME();renderEntry();
 if(S.registered){$("nav").classList.add("on");renderTop();renderStamp();renderReward();show("v-top");}
-else{show("v-entry");}
+else{show("v-idle"); if(S.step>=2)$("o-talk").classList.remove("locked");}
 </script>
 </body>
 </html>
