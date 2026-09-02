@@ -222,7 +222,7 @@ function insCard(ins,idx){
 function screenHome(){
   return '<div class="head-row"><div><div class="h1">マイ保険</div><div class="sub">'+myInsurances.length+'件の保険を管理中</div></div>'
     +'<button class="btn-add" '+A("go","add")+'>'+I.plus+' 保険を追加</button></div>'
-    +'<div class="note">保険情報の追加・編集・削除は契約者ご本人のみ行えます（各保険カード右上の「⋮」メニューから）。共有された家族は閲覧のみ可能です。</div>'
+    +'<div class="note">保険情報の追加・編集・削除はご契約者本人のみ行えます（各保険カード右上の「⋮」メニューから）。変更があった場合はご自身で更新をお願いします。※'+CUST+'の契約も含め、当社での自動更新は行われません。共有された家族は閲覧のみ可能です。</div>'
     +(myInsurances.length? myInsurances.map(insCard).join("")
       : '<div class="card" style="text-align:center;color:var(--muted);padding:32px 16px"><div style="color:#cfd1d6;margin-bottom:8px;display:flex;justify-content:center">'+I.shield.replace('width="22" height="22"','width="34" height="34"')+'</div>まだ保険が登録されていません<div style="font-size:12.5px;margin-top:6px">右上の「保険を追加」から登録できます</div></div>');
 }
@@ -258,8 +258,8 @@ function screenSettings(){
 }
 function screenTutorial(){
   var steps=[
-    {ic:I.shield,t:"保険をかんたん登録",d:"保険会社名を入れるだけ。証券や名刺を見ながら、ご自身の保険をまとめて登録できます。"},
-    {ic:I.people,t:"ご家族と安全に共有",d:"登録した保険情報を、LINEでつながるご家族と共有。共有先は承認制で、いつでも停止できます。"},
+    {ic:I.shield,t:"保険をかんたん登録",d:"保険会社名を入れるだけ。証券や名刺を見ながら、ご自身の保険をまとめて登録できます。",note:"情報の登録・更新はお客様自身でお願いします。最新の内容に保てるよう、定期的な見直しをおすすめします。"},
+    {ic:I.people,t:"ご家族と安全に共有",d:"登録した保険情報を、LINEでつながるご家族と共有。共有先は承認制で、いつでも停止できます。",note:"「誰に」「何を」共有するかはいつでも変更できます。ご利用や共有に関するご家族間のトラブルについて、当社は責任を負いかねます。"},
     {ic:I.phone,t:"もしもの時は緊急連絡先へ",d:"担当者や保険会社の窓口にワンタップで発信。ご家族が困ったときに、すぐ確認・連絡できます。"}
   ];
   var s=state.tuStep||0;var st=steps[s];var last=(s===steps.length-1);
@@ -273,6 +273,7 @@ function screenTutorial(){
     +'<div style="width:100px;height:100px;border-radius:30px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;margin-bottom:26px">'+ic+'</div>'
     +'<h2 style="font-size:22px;margin:0 0 14px">'+st.t+'</h2>'
     +'<p style="color:var(--ink2);line-height:1.8;font-size:15px;max-width:290px;margin:0">'+st.d+'</p></div>'
+    +(st.note?'<div style="background:#fff8ec;border:1px solid #f0d8a8;border-radius:10px;color:#8a6d1f;font-size:12.5px;line-height:1.6;padding:10px 12px;margin:0 4px">'+I.alert.replace('width="18" height="18"','width="14" height="14"')+' '+st.note+'</div>':'')
     +'<div style="text-align:center;margin:22px 0 18px">'+dots+'</div>'
     +'<button class="btn btn-primary btn-block" '+A("tuNext")+'>'+(last?(state.tuReplay?'閉じる':'はじめる'):'次へ')+'</button>';
 }
@@ -304,7 +305,7 @@ function formFieldVal(lbl,val){return '<div class="form-field"><div class="lbl">
 function screenAdd(){
   var s=state.addStep;
   var steps='<div class="steps"><div class="bar on"></div><div class="bar'+(s>=1?' on':'')+'"></div><div class="bar'+(s>=2?' on':'')+'"></div></div>'
-    +'<div class="steplabels"><span class="'+(s==0?'on':'')+'">登録</span><span class="'+(s==1?'on':'')+'">確認</span><span class="'+(s==2?'on':'')+'">同意</span></div>';
+    +'<div class="steplabels"><span class="'+(s==0?'on':'')+'">登録</span><span class="'+(s==1?'on':'')+'">確認</span><span class="'+(s==2?'on':'')+'">注意事項</span></div>';
   var bar='<div class="backbar"><button class="back" '+A("addBack")+'>'+I.back+' '+(s==0?"マイ保険に戻る":"戻る")+'</button></div>';
   var body="";
   if(s==0){
@@ -332,15 +333,14 @@ function screenAdd(){
       +(state.photo?'<div class="ok-banner">'+I.check+' 証券写真を添付済み（自動入力は今後対応）</div>':'')
       +'<div class="card" style="padding:4px 16px">'+rows+'</div><button class="btn btn-primary btn-block" '+A("setStep","2")+'>この内容で次へ進む</button>';
   } else {
-    body='<div class="center-title"><h2>情報の取扱いへの同意</h2><p>登録には以下への同意が必要です</p></div>'
-      +'<div class="consent-box blue"><div class="ct">情報の取扱いについて</div><ul>'
-      +'<li>・ご家族（ご自身が選んだ方）への保険情報の共有（第三者提供）</li>'
-      +'<li>・本サービスの提供・運営のため、登録情報を'+CUST+'に提供すること</li>'
-      +'<li>・登録できるのはご自身が契約者の保険契約に限ります。共有先は承認制で、いつでも解除できます。</li>'
-      +'<li>・個人情報は'+CUST+'のプライバシーポリシーに従い取り扱われます。</li></ul>'
-      +'<div style="color:#98a2b3;font-size:11.5px;margin-top:2px;line-height:1.5">※上記は利用規約・プライバシーポリシーの要約です（本デモは要約表示）。</div></div>'
-      +'<div class="check-row" '+A("toggleC","1")+'><div id="ccb" class="cb'+(state.c1?' on':'')+'">'+(state.c1?I.check:"")+'</div><div class="ctxt">上記の情報の取扱いに同意します</div></div>'
-      +'<button id="cbtn" class="btn btn-primary btn-block" style="opacity:'+(state.c1?1:.45)+'" '+A("registerDone")+'>同意して保険を登録する</button>';
+    body='<div class="center-title"><h2>登録前のご確認</h2><p>登録の前に以下をご確認ください</p></div>'
+      +'<div class="consent-box blue"><div class="ct">手動登録・保障の範囲</div><ul>'
+      +'<li>・登録情報は入力内容に基づくため、'+CUST+'による自動更新や最新性・正確性・全量性の保証は行いません。給付金の請求時等は各社の保険証券をご確認ください。</li></ul></div>'
+      +'<div class="consent-box blue" style="margin-top:10px"><div class="ct">登録情報の利用</div><ul>'
+      +'<li>・登録された情報は、'+CUST+'からのご案内等に一部利用することがあります。</li></ul></div>'
+      +'<div class="check-row" '+A("toggleC","1")+'><div id="ccb" class="cb'+(state.c1?' on':'')+'">'+(state.c1?I.check:"")+'</div><div class="ctxt">上記の注意事項を確認しました</div></div>'
+      +'<button id="cbtn" class="btn btn-primary btn-block" style="opacity:'+(state.c1?1:.45)+'" '+A("registerDone")+'>登録する</button>'
+      +'<button class="btn btn-ghost btn-block" style="margin-top:10px" '+A("go","")+'>キャンセル</button>';
   }
   return bar+steps+body;
 }
@@ -367,7 +367,12 @@ function screenInvite(){
     +'<div class="note">LINEの友だちから共有相手を選びます。<b>「LINEの友だちを選んで送る」を押すとLINEの送信先選択が開きます。</b>選んだ相手にLINEで通知が届きます。</div>'
     +'<div class="center-title" style="margin-top:2px"><h2>この保険を共有します</h2><p>「共有」をオンにしている保険（'+shared.length+'件）が対象です</p></div>'
     +'<div class="card" style="padding:6px 16px">'+(list||'<div class="note" style="margin:8px 0">共有をオンにしている保険がありません。マイ保険で共有をオンにしてください。</div>')+'</div>'
-    +'<div class="note">共有すると相手のLINEに通知が届き、相手が「受け取る」と閲覧できるようになります。共有はいつでも停止できます。</div>'
+    +'<div class="consent-box blue" style="margin-top:2px"><div class="ct">共有内容について</div><ul>'
+    +'<li>・「共有」をオンにしている保険（'+shared.length+'件）が対象です。</li>'
+    +'<li>・共有する情報は<b>ご契約者ご本人によって登録された情報</b>です。'+CUST+'による自動更新や正確性の保証は行いません。</li></ul></div>'
+    +'<div class="consent-box blue" style="margin-top:10px"><div class="ct">共有相手について</div><ul>'
+    +'<li>・共有すると相手のLINEに通知が届き、相手が「受け取る」と対象の情報が閲覧可能になります。</li>'
+    +'<li>・共有相手の管理や誤送信等によるトラブルはお客様の責任となります（共有はいつでも解除可能です）。</li></ul></div>'
     +'<div style="background:#eef1f6;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:2px 0 14px">'
     +'<div style="font-size:12px;color:var(--muted);margin-bottom:8px">▼ ご家族のLINEにこのように届きます（イメージ）</div>'
     +'<div style="background:#8aa7c8;border-radius:10px;padding:12px 10px">'
@@ -381,7 +386,8 @@ function screenInvite(){
     +'<div style="padding:0 11px 9px;font-size:11.5px;color:var(--ink2);line-height:1.5">リンクを開くにはこちらをタップ</div>'
     +'</div></div></div></div></div>'
     +'<div class="check-row" '+A("inviteToggle")+'><div id="ivcb" class="cb'+(state.inviteConfirmed?' on':'')+'">'+(state.inviteConfirmed?I.check:"")+'</div><div class="ctxt">上記の注意事項を確認しました</div></div>'
-    +'<button id="ivbtn" class="btn btn-primary btn-block" style="opacity:'+(state.inviteConfirmed?1:.45)+'" '+A("openPicker")+'>LINEの友だちを選んで送る</button>';
+    +'<button id="ivbtn" class="btn btn-primary btn-block" style="opacity:'+(state.inviteConfirmed?1:.45)+'" '+A("openPicker")+'>LINEの友だちを選んで送る</button>'
+    +'<button class="btn btn-ghost btn-block" style="margin-top:10px" '+A("goTab","family")+'>キャンセル</button>';
 }
 function deskFor(co){var d={};d[CUST]="0120-101-101";d[COMP]="0120-202-202";return d[co]||"0120-000-000";}
 function emgType(name){var m=name.match(/（([^）]+)）/);return m?m[1]:name;}
@@ -438,14 +444,13 @@ function screenProfile(){
     +formFieldDate("p_bd","生年月日",state.pbd)
     +formFieldId("p_tel","電話番号（任意）","例）090-0000-0000",state.ptel)
     +'<div class="note">LINEのお名前のみ取得しているため、正式なお名前をご登録ください。生年月日は同姓同名の識別に使用します。</div>'
-    +'<div class="consent-box blue" style="margin-top:4px"><div class="ct">プライバシーポリシー・利用規約への同意</div><div style="max-height:132px;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#fff;border:1px solid #dfe3ea;border-radius:8px;padding:8px 12px;margin-top:6px"><ul style="margin:0;padding-left:2px">'
-      +'<li>・本サービスは、ご自身が契約者となっている保険の証券情報・担当者名などを登録・管理し、ご家族と共有できるサービスです。登録できるのはご自身が契約者の保険契約に限ります。</li>'
-      +'<li>・共有はいつでもマイ保険から解除できます（公式アカウントのブロックや友だち削除だけでは解除されません）。</li>'
-      +'<li>・登録情報はご自身の責任で管理いただきます。情報の毀損・消失について当社は責任を負いません。</li>'
-      +'<li>・個人情報は、'+CUST+'のプライバシーポリシー（個人情報保護基本方針）に従い適切に取り扱い、必要な範囲で業務委託先に委託する場合があります。</li>'
-      +'<li>・未成年の方のご利用には法定代理人の同意が必要です。</li>'
-      +'<li>・準拠法は日本法、専属的合意管轄は東京地方裁判所等とします。</li></ul>'
-      +'<div style="color:#98a2b3;font-size:11.5px;margin-top:2px;line-height:1.5">※上記は利用規約・プライバシーポリシーの要約です。ご利用前に全文をご確認ください（本デモは要約表示）。</div></div><div style="color:#98a2b3;font-size:11px;text-align:center;margin-top:4px">▲ 内容をスクロールして確認できます</div></div>'
+    +'<div class="consent-box blue" style="margin-top:4px"><div class="ct">サービス利用にあたっての同意</div><div style="max-height:132px;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#fff;border:1px solid #dfe3ea;border-radius:8px;padding:8px 12px;margin-top:6px"><ul style="margin:0;padding-left:2px">'
+      +'<li>・<b>個人情報の取扱い</b>：LINE UIDや登録属性情報等の個人情報を'+CUST+'が管理することに同意します。</li>'
+      +'<li>・<b>営業活動への情報利用</b>：登録された情報（他社情報を含む）に基づき、'+CUST+'および提携会社が商品・サービスのご案内（LINE配信・架電等）に利用することに同意します。</li>'
+      +'<li>・<b>利用・退会</b>：本サービスの基本ルールを適用します。'+CUST+'側でイレギュラー的に登録情報を削除する場合があります。退会には所定の手続きが必要で、契約消滅やアプリ削除だけでは退会となりません。</li>'
+      +'<li>・<b>免責・非全量性</b>：掲載情報は契約の全量ではなく、最新性・正確性は登録者に依存します。ご家族間のトラブルについて'+CUST+'は責任を負いません。</li>'
+      +'<li>・<b>他社保険情報の収集・保持</b>：'+CUST+'以外の保険会社（他社）の証券画像や契約内容を'+CUST+'のシステムで保管・管理することに同意します。</li></ul>'
+      +'<div style="color:#98a2b3;font-size:11.5px;margin-top:2px;line-height:1.5">※上記は同意事項の要約です。詳細は利用規約・プライバシーポリシーをご確認ください（本デモは要約表示）。</div></div><div style="color:#98a2b3;font-size:11px;text-align:center;margin-top:4px">▲ 内容をスクロールして確認できます</div></div>'
     +'<div class="check-row" '+A("toggleP")+'><div id="ppcb" class="cb'+(state.pconsent?' on':'')+'">'+(state.pconsent?I.check:"")+'</div><div class="ctxt">プライバシーポリシー・利用規約に同意します</div></div>'
     +'<button id="ppbtn" class="btn btn-primary btn-block" style="margin-top:4px;opacity:'+(state.pconsent?1:.45)+'" '+A("saveProfile")+'>登録する</button>';
 }
@@ -487,6 +492,7 @@ function screenPicker(){
     +'<div class="head-row"><div class="h1" style="font-size:22px">送信先を選択</div></div>'
     +'<div class="note">LINEの友だち一覧です（LINEの送信先選択のイメージ）。共有相手を選んで送信します（複数選択可）。<br>※このデモでは、送信すると<b>右の端末（共有先のご家族）</b>に届きます。</div>'
     +'<div class="section-label">トーク</div>'+rows
+    +(state.pickerSel.length?'<div class="consent-box blue" style="margin-top:12px"><div class="ct">送信前のご確認</div><ul><li>・共有すると<b>'+esc(state.pickerSel.join('、'))+'</b>さんのLINEに通知が届き、相手が「受け取る」と対象の情報が閲覧可能になります。</li></ul></div>':'')
     +'<button class="btn btn-primary btn-block" style="margin-top:14px;opacity:'+(state.pickerSel.length?1:.45)+'" '+A("pickerSend")+'>送信'+(state.pickerSel.length?'（'+state.pickerSel.length+'名）':'')+'</button>';
 }
 
@@ -628,7 +634,7 @@ function fSettings(){
 }
 function fTutorial(){
   var steps=[
-    {ic:I.shield,t:"共有された保険を確認",d:"ご家族が共有した保険情報を、このアプリでいつでも確認できます。"},
+    {ic:I.shield,t:"共有された保険を確認",d:"ご家族が共有した保険情報を、このアプリでいつでも確認できます。",note:"閲覧できる情報が全て・最新とは限りません。ご不明点は招待者（ご契約者）にご確認ください。"},
     {ic:I.phone,t:"もしもの時は緊急連絡先へ",d:"担当者や保険会社の窓口にワンタップで発信。いざというときにすぐ連絡できます。"},
     {ic:I.people,t:"ご自身の保険も共有できます",d:"あなた自身の保険を登録して、ご家族と共有することもできます。"}
   ];
@@ -643,6 +649,7 @@ function fTutorial(){
     +'<div style="width:100px;height:100px;border-radius:30px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;margin-bottom:26px">'+ic+'</div>'
     +'<h2 style="font-size:22px;margin:0 0 14px">'+st.t+'</h2>'
     +'<p style="color:var(--ink2);line-height:1.8;font-size:15px;max-width:290px;margin:0">'+st.d+'</p></div>'
+    +(st.note?'<div style="background:#fff8ec;border:1px solid #f0d8a8;border-radius:10px;color:#8a6d1f;font-size:12.5px;line-height:1.6;padding:10px 12px;margin:0 4px">'+I.alert.replace('width="18" height="18"','width="14" height="14"')+' '+st.note+'</div>':'')
     +'<div style="text-align:center;margin:22px 0 18px">'+dots+'</div>'
     +'<button class="btn btn-primary btn-block" '+A("ftuNext")+'>'+(last?(famB.tuReplay?'閉じる':'はじめる'):'次へ')+'</button>';
 }
