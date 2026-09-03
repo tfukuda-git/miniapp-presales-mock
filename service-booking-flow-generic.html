@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>自動車ディーラー向け｜マイカー登録・入庫予約 ミニアプリ モック（汎用版 v1.0）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{
+  --accent:#3438F0; --accent-light:#DBE1FF; --mid:#6E82FF; --deep:#201DB6; --navy:#1B1D3B;
+  --white:#fff; --bg:#FAF9FB; --fg1:#282829; --fg2:#666; --gray:#B3B3B3; --border:#E6E6E6;
+  --line:#06C755; --me:#E8590C;
+  --font:'Noto Sans JP',-apple-system,'Hiragino Sans','Yu Gothic',Meiryo,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--bg);color:var(--fg1);line-height:1.5;font-feature-settings:'palt' 1;padding:28px 20px 60px;}
+.wrap{max-width:1240px;margin:0 auto;}
+.eyebrow{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.08em;}
+h1{font-size:23px;font-weight:700;letter-spacing:-.02em;color:var(--navy);padding-bottom:9px;border-bottom:3px solid var(--accent);margin-top:2px;}
+.subtitle{color:var(--fg2);font-size:12.5px;margin:8px 0 20px;}
+.subtitle b{color:var(--navy);}
+
+/* ===== stage ===== */
+.stage{display:flex;gap:26px;align-items:flex-start;}
+.devicecol{flex:none;}
+.guide{flex:1;min-width:0;max-width:430px;background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;height:756px;}
+@media(max-width:1080px){.stage{flex-direction:column;align-items:center;}.guide{max-width:340px;width:100%;height:auto;max-height:560px;}}
+
+/* device */
+.phone{width:340px;height:700px;border:10px solid var(--navy);border-radius:36px;background:#fff;overflow:hidden;position:relative;box-shadow:0 10px 30px rgba(27,29,59,.14);}
+.notch{height:20px;background:var(--navy);border-radius:0 0 13px 13px;width:110px;margin:0 auto;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:120;}
+.hdr{position:absolute;top:0;left:0;right:0;z-index:100;}
+.hdr.oa{background:var(--line);color:#fff;padding:26px 12px 9px;font-size:12.5px;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+.hdr.liff{background:#fff;color:var(--navy);padding:26px 12px 9px;font-size:12.5px;font-weight:700;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}
+.hdr.plain{background:#fff;height:26px;}
+.hdr .vb{font-size:9px;background:var(--line);color:#fff;border-radius:3px;padding:1px 4px;margin-left:4px;vertical-align:1px;}
+.hdr .ic{font-weight:400;opacity:.85;}
+.screens{position:absolute;left:0;right:0;bottom:0;overflow:hidden;}
+.screen{position:absolute;inset:0;overflow-y:auto;display:none;background:#fff;}
+.screen.active{display:block;animation:sin .22s ease;}
+@keyframes sin{from{opacity:0;transform:translateX(12px);}to{opacity:1;transform:none;}}
+.pad{padding:14px;}
+
+/* pc frame */
+.pc{width:340px;border:9px solid var(--navy);border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(27,29,59,.14);background:#fff;height:700px;position:relative;}
+.pc-bar{background:var(--navy);padding:7px 10px;display:flex;align-items:center;gap:5px;}
+.pc-dot{width:9px;height:9px;border-radius:50%;}.pc-dot.r{background:#ff5f57;}.pc-dot.y{background:#ffbd2e;}.pc-dot.g{background:#28c940;}
+.pc-url{flex:1;background:#3a3c63;color:#cfd2ff;border-radius:5px;padding:3px 8px;font-size:9.5px;margin-left:6px;overflow:hidden;white-space:nowrap;}
+.pc-screens{position:absolute;top:33px;left:0;right:0;bottom:0;overflow:hidden;}
+.hide{display:none !important;}
+
+/* nav under device */
+.navrow{display:flex;align-items:center;gap:8px;margin-top:14px;width:340px;}
+.navbtn{flex:none;border:1px solid var(--accent);background:#fff;color:var(--accent);border-radius:9px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.navbtn:disabled{opacity:.35;cursor:default;}
+.stepcap{flex:1;text-align:center;font-size:11px;color:var(--fg2);}
+.hintbar{width:340px;margin-top:10px;font-size:10.5px;color:var(--fg2);background:#fff;border:1px dashed var(--mid);border-radius:9px;padding:8px 10px;line-height:1.6;}
+.hintbar b{color:var(--deep);}
+
+/* ===== guide panel ===== */
+.g-head{padding:13px 16px;border-bottom:1px solid var(--border);background:var(--navy);color:#fff;}
+.g-head .t{font-size:13px;font-weight:700;}
+.g-head .s{font-size:10.5px;opacity:.75;margin-top:2px;}
+.g-lanes{border-bottom:1px solid var(--border);padding:10px 12px;max-height:236px;overflow-y:auto;background:#FBFBFE;}
+.lane{display:flex;gap:8px;margin-bottom:7px;}
+.lane .lbl{flex:none;width:64px;font-size:9.5px;font-weight:700;padding-top:3px;letter-spacing:.02em;}
+.lane .steps{display:flex;flex-wrap:wrap;gap:4px;flex:1;border-left:3px solid;padding-left:7px;}
+.sbtn{font-size:10px;border:1px solid var(--border);background:#fff;border-radius:6px;padding:3px 6px;cursor:pointer;font-family:var(--font);color:var(--fg2);line-height:1.3;text-align:left;}
+.sbtn .n{font-weight:700;margin-right:3px;}
+.sbtn:hover{border-color:var(--mid);}
+.sbtn.on{color:#fff;border-color:transparent;font-weight:700;}
+.g-body{padding:14px 16px;overflow-y:auto;flex:1;}
+.g-phase{font-size:10.5px;font-weight:700;letter-spacing:.05em;}
+.g-title{font-size:16px;font-weight:700;color:var(--navy);margin:3px 0 6px;}
+.g-sys{display:inline-block;font-size:9.5px;font-weight:700;color:#fff;border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px;}
+.g-lead{font-size:12px;color:var(--fg1);line-height:1.75;margin-bottom:10px;}
+.g-sec{margin-top:12px;}
+.g-sec h4{font-size:10.5px;font-weight:700;color:var(--accent);letter-spacing:.04em;margin-bottom:5px;}
+.g-sec ul{list-style:none;}
+.g-sec li{font-size:11.5px;color:var(--fg1);line-height:1.65;padding-left:12px;position:relative;margin-bottom:4px;}
+.g-sec li:before{content:"";position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:var(--mid);}
+.g-note{background:var(--accent-light);border:1px solid var(--mid);border-radius:9px;padding:9px 11px;font-size:11px;color:var(--deep);line-height:1.7;margin-top:12px;}
+.g-bd{border:1px dashed var(--navy);border-radius:9px;padding:8px 10px;font-size:11px;color:var(--navy);line-height:1.65;margin-top:10px;background:#FBFBFE;}
+.g-issue{display:inline-block;background:#D1232A;color:#fff;font-size:9.5px;font-weight:700;border-radius:999px;padding:1px 8px;margin-right:4px;}
+
+/* ===== LIFF parts ===== */
+h2.st{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+p.lead{font-size:11px;color:var(--fg2);margin-bottom:12px;line-height:1.55;}
+.field{margin-bottom:11px;}
+.field label{display:block;font-size:11px;font-weight:700;margin-bottom:4px;}
+.field label .req{color:#fff;background:var(--accent);font-size:9px;border-radius:4px;padding:1px 5px;margin-left:4px;}
+.field input{width:100%;padding:8px 9px;font-size:12px;border:1px solid var(--border);border-radius:8px;font-family:var(--font);}
+.chip{border:1px solid var(--border);border-radius:999px;padding:6px 12px;font-size:11px;display:inline-block;margin:0 5px 5px 0;cursor:pointer;background:#fff;font-family:var(--font);}
+.chip.sel{background:var(--accent-light);border-color:var(--accent);color:var(--deep);font-weight:700;}
+.btn{display:block;width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;margin-top:12px;font-family:var(--font);}
+.btn:disabled{background:#C9CBE8;cursor:default;}
+.btn.outline{background:#fff;color:var(--accent);border:1px solid var(--accent);}
+.btn.ghost{background:#fff;color:var(--accent);border:1px dashed var(--accent);}
+.btn.line{background:var(--line);}
+.btn.sm{padding:9px;font-size:12px;}
+.vcard{border:1px solid var(--border);border-radius:11px;padding:11px;margin-bottom:9px;background:#fff;}
+.vcard .vt{font-size:13px;font-weight:700;color:var(--navy);}
+.vcard .vn{font-size:10.5px;color:var(--fg2);margin:2px 0 8px;}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;font-size:10.5px;margin-top:6px;cursor:pointer;}
+.toggle{width:34px;height:19px;border-radius:999px;position:relative;flex:none;transition:background .18s;}
+.toggle.on{background:var(--accent);} .toggle.off{background:var(--gray);}
+.toggle:after{content:"";position:absolute;top:2.5px;width:14px;height:14px;border-radius:50%;background:#fff;transition:all .18s;}
+.toggle.on:after{left:17px;} .toggle.off:after{left:3px;}
+.scan{border:2px dashed var(--accent);border-radius:11px;padding:22px 10px;text-align:center;background:#F7F8FF;cursor:pointer;}
+.scan .ico{font-size:30px;} .scan .t{font-size:12px;font-weight:700;color:var(--deep);margin-top:6px;} .scan .d{font-size:10px;color:var(--fg2);margin-top:3px;}
+.autofill{background:#F7F8FF;border:1px solid var(--accent-light);border-radius:9px;padding:9px 11px;font-size:10.5px;line-height:1.85;margin-top:10px;}
+.autofill strong{color:var(--navy);}
+.selrow{border:1px solid var(--border);border-radius:10px;padding:10px 11px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;background:#fff;}
+.selrow.sel{border-color:var(--accent);background:var(--accent-light);}
+.selrow .n{font-size:12.5px;font-weight:700;color:var(--navy);}
+.selrow .m{font-size:10px;color:var(--fg2);margin-top:2px;}
+.selrow .badge{flex:none;font-size:9.5px;font-weight:700;color:var(--deep);background:#fff;border:1px solid var(--accent-light);border-radius:999px;padding:2px 7px;}
+.mapbox{height:88px;border-radius:10px;background:linear-gradient(135deg,#e7ebff,#f3f4ff);border:1px solid var(--accent-light);position:relative;margin-bottom:10px;}
+.mapbox .pin{position:absolute;font-size:17px;}
+.cand{border:1px solid var(--border);border-radius:10px;padding:10px 11px;margin-bottom:8px;font-size:11px;cursor:pointer;background:#fff;}
+.cand.sel{border-color:var(--accent);background:#F7F8FF;}
+.cand .r{font-size:9.5px;color:var(--accent);font-weight:700;}
+.cand .v{font-weight:700;color:var(--navy);margin-top:2px;font-size:12.5px;}
+.cand .v.empty{color:var(--gray);font-weight:400;}
+.cal{width:100%;border-collapse:separate;border-spacing:3px;}
+.cal th{font-size:9.5px;color:var(--fg2);font-weight:700;padding-bottom:2px;}
+.cal td{text-align:center;}
+.cell{border:1px solid var(--border);border-radius:7px;padding:4px 0 3px;font-size:11px;cursor:pointer;background:#fff;}
+.cell .mk{display:block;font-size:10px;font-weight:700;line-height:1.1;}
+.cell.ok .mk{color:var(--line);} .cell.few .mk{color:#c98a00;}
+.cell.full{background:#f4f4f4;color:var(--gray);cursor:default;} .cell.full .mk{color:var(--gray);}
+.cell.off{background:#f7f7f7;color:var(--gray);cursor:default;font-size:10px;}
+.cell.pad{border:none;background:transparent;cursor:default;}
+.cell.sel{background:var(--accent-light);border-color:var(--accent);font-weight:700;color:var(--deep);}
+.slotline{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);border-radius:9px;padding:9px 11px;margin-top:7px;font-size:11.5px;cursor:pointer;background:#fff;}
+.slotline.sel{border-color:var(--accent);background:var(--accent-light);color:var(--deep);font-weight:700;}
+.slotline.few{border-color:#f0d27a;color:#9a6b00;}
+.slotline.full{color:var(--gray);background:#f7f7f7;cursor:default;}
+.ticket{border:2px dashed var(--accent);border-radius:12px;padding:15px;text-align:center;background:#F7F8FF;}
+.ticket .no{font-size:22px;font-weight:800;color:var(--deep);letter-spacing:.02em;}
+.ticket .st{font-size:10px;color:var(--fg2);margin-top:4px;}
+.status-pill{display:inline-block;font-size:10px;font-weight:700;border-radius:999px;padding:2px 10px;}
+.status-pill.pend{background:#FFF8E6;color:#9a6b00;border:1px solid #f0d27a;}
+.status-pill.fix{background:#EAFBF0;color:#1e8e54;border:1px solid #b7e6c9;}
+.sumbox{border:1px solid var(--border);border-radius:10px;padding:11px;font-size:11.5px;line-height:1.95;background:#fff;}
+.sumbox b{color:var(--navy);display:inline-block;width:66px;}
+.richmenu{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:8px;background:#efefef;border-top:1px solid var(--border);}
+.rm{background:#fff;border:1px solid var(--border);border-radius:8px;text-align:center;padding:10px 3px;font-size:9.5px;cursor:pointer;}
+.rm .i{font-size:18px;display:block;margin-bottom:2px;}
+.rm.main{background:var(--accent-light);border-color:var(--accent);color:var(--deep);font-weight:700;}
+.rm:active{transform:scale(.97);}
+
+/* talk */
+.msgbg{background:#8aa6c2;padding:12px;min-height:100%;}
+.msgbg.withrm{min-height:calc(100% - 104px);}
+.bubble{max-width:80%;padding:9px 11px;border-radius:13px;font-size:11.5px;line-height:1.6;margin-bottom:9px;}
+.bubble.shop{background:#fff;border-top-left-radius:3px;}
+.bubble.user{background:#aee6b8;color:#06400f;margin-left:auto;border-top-right-radius:3px;}
+.bubble .nm{font-size:9px;color:var(--fg2);margin-bottom:2px;}
+.svcmsg{background:#fff;border-radius:13px;overflow:hidden;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.12);}
+.svcmsg .h{background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:6px 11px;}
+.svcmsg .b{padding:10px 11px;}
+.svcmsg .t{font-size:12.5px;font-weight:700;color:var(--navy);line-height:1.5;}
+.svcmsg .d{font-size:10.5px;color:var(--fg2);margin-top:4px;line-height:1.55;}
+.svcmsg .act{border-top:1px solid var(--border);text-align:center;padding:9px;font-size:12px;font-weight:700;color:var(--accent);cursor:pointer;}
+.svcmsg.dm .h{background:var(--me);}
+.tstamp{text-align:center;font-size:9.5px;color:#e9f0f7;margin:2px 0 10px;}
+
+/* admin */
+.adm-wrap{padding:12px;overflow-y:auto;height:100%;background:#fff;}
+.adm-wrap h2{font-size:14px;color:var(--navy);font-weight:700;}
+.adm-wrap p.sub{font-size:10.5px;color:var(--fg2);margin:2px 0 10px;}
+.alert{display:flex;align-items:center;gap:7px;background:#FFF8E6;border:1px solid #F0D27A;border-radius:9px;padding:8px 10px;font-size:10.5px;color:#7a5a00;margin-bottom:10px;line-height:1.5;}
+.alert .dot{width:8px;height:8px;border-radius:50%;background:#E8A400;flex:none;}
+.tabs{display:flex;gap:5px;margin-bottom:9px;flex-wrap:wrap;}
+.tab{font-size:10px;border:1px solid var(--border);border-radius:999px;padding:3px 9px;color:var(--fg2);cursor:pointer;}
+.tab.on{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700;}
+table.adm{width:100%;border-collapse:collapse;font-size:10.5px;}
+table.adm th,table.adm td{padding:7px 6px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle;}
+table.adm th{background:var(--accent-light);color:var(--deep);font-weight:700;font-size:10px;}
+table.adm tr.row{cursor:pointer;}
+table.adm tr.row.on{background:#F7F8FF;}
+.tag{display:inline-block;font-size:9px;font-weight:700;border-radius:999px;padding:2px 7px;white-space:nowrap;}
+.tag.wait{background:#FFF1F0;color:#c0392b;border:1px solid #f3c0bb;}
+.tag.prog{background:#FFF8E6;color:#9a6b00;border:1px solid #f0d27a;}
+.tag.done{background:#EAFBF0;color:#1e8e54;border:1px solid #b7e6c9;}
+.action-btn{padding:3px 8px;font-size:9.5px;border:1px solid var(--accent);background:#fff;color:var(--accent);border-radius:6px;cursor:pointer;font-family:var(--font);white-space:nowrap;}
+.action-btn.fill{background:var(--accent);color:#fff;}
+.action-btn:disabled{opacity:.4;cursor:default;}
+.cpanel{border:1px solid var(--border);border-radius:11px;padding:12px;background:var(--bg);margin-top:12px;}
+.cpanel .cn{font-size:12.5px;font-weight:700;color:var(--navy);}
+.cpanel .cm{font-size:10px;color:var(--fg2);margin-bottom:8px;}
+.cpanel .row{display:flex;justify-content:space-between;font-size:10.5px;padding:5px 0;border-bottom:1px solid var(--border);}
+.copt{border:1px solid var(--border);border-radius:9px;padding:8px 10px;margin-top:7px;font-size:10.5px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;background:#fff;}
+.copt.sel{border-color:var(--accent);background:var(--accent-light);color:var(--deep);font-weight:700;}
+.kpi{display:flex;gap:8px;margin-top:10px;}
+.kpi div{flex:1;border:1px solid var(--border);border-radius:9px;padding:8px;text-align:center;background:#fff;}
+.kpi .v{font-size:15px;font-weight:800;color:var(--navy);}
+.kpi .l{font-size:9px;color:var(--fg2);}
+.segbtn{display:flex;gap:6px;font-size:10px;}
+.segbtn span{border:1px solid var(--border);border-radius:6px;padding:3px 8px;cursor:pointer;background:#fff;}
+.segbtn span.on{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:700;}
+
+/* overlays */
+.liffload{position:absolute;inset:0;background:rgba(27,29,59,.88);color:#fff;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:200;font-size:12px;}
+.liffload.on{display:flex;}
+.spin{width:26px;height:26px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.toast{position:absolute;left:14px;right:14px;bottom:18px;background:var(--navy);color:#fff;border-radius:10px;padding:11px 13px;font-size:11.5px;line-height:1.5;z-index:210;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;}
+.toast.on{opacity:1;transform:none;}
+
+/* below sections */
+.sec-title{font-size:17px;font-weight:700;color:var(--navy);border-left:6px solid var(--accent);padding-left:12px;margin:44px 0 6px;}
+.sec-note{font-size:12px;color:var(--fg2);margin:0 0 16px;padding-left:18px;}
+.journey{display:flex;flex-wrap:wrap;gap:8px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:15px;}
+.jp{flex:1;min-width:145px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;}
+.jp:hover{border-color:var(--mid);}
+.jp .ph{font-size:9.5px;font-weight:700;color:var(--accent);letter-spacing:.05em;}
+.jp .t{font-size:12.5px;font-weight:700;color:var(--navy);margin:3px 0;}
+.jp .d{font-size:10px;color:var(--fg2);line-height:1.45;}
+.imp-table{width:100%;border-collapse:collapse;font-size:12px;background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.imp-table th,.imp-table td{padding:9px 11px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;}
+.imp-table th{background:var(--navy);color:#fff;font-weight:700;font-size:12px;}
+.imp-table td.no{text-align:center;font-weight:700;color:var(--accent);width:34px;}
+.imp-table td.cat{width:50px;color:var(--fg2);font-weight:700;text-align:center;}
+.imp-table td.app{background:#F7F8FF;}
+.imp-table td.app strong{color:var(--navy);}
+.imp-table td.app a{color:var(--accent);cursor:pointer;text-decoration:none;border-bottom:1px dotted var(--accent);}
+.imp-table tr:last-child td{border-bottom:none;}
+.legend{font-size:11.5px;color:var(--fg2);line-height:2;background:#fff;border:1px solid var(--border);border-radius:14px;padding:13px 17px;margin-bottom:18px;}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:10.5px;margin-right:6px;color:#fff;font-weight:700;}
+.disc{font-size:10.5px;color:var(--gray);margin-top:20px;line-height:1.8;}
+.flow-note{background:#fff;border-left:4px solid var(--accent);padding:14px 17px;font-size:12.5px;line-height:1.85;border-radius:0 10px 10px 0;margin-top:18px;}
+.flow-note strong{color:var(--navy);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">株式会社Mico ｜ LINEミニアプリ 提案モック</p>
+  <h1>自動車ディーラー向け｜マイカー登録・入庫予約 ミニアプリ モック</h1>
+  <p class="subtitle">
+    汎用版 v1.0 ｜ <b>友だち獲得 → 車検案内 → 入庫予約 → 店舗確定 → 作業完了・お引き取り調整 → 次回案内</b> までの通しシナリオを、実際にタップして操作できるモックです。
+    ｜ 表示中のブランド名・店舗名・車名はすべて仮称です。
+  </p>
+
+  <div class="legend">
+    <span class="pill" style="background:var(--line)">LINE</span> LINE公式アカウントの標準機能
+    <span class="pill" style="background:var(--me)">ME</span> Mico Engage AI（誰に・いつ・何を出すかの制御）
+    <span class="pill" style="background:var(--accent)">ミニアプリ</span> LIFF上の個別開発
+    <span class="pill" style="background:var(--navy)">管理画面</span> 店舗スタッフ用の予約・引き取り管理<br>
+    ステップの色分け＝開発スコープの区分です。実画面は貴社ブランド・基幹システム（DMS）仕様に合わせて調整します。
+  </div>
+
+  <!-- ================= STAGE ================= -->
+  <div class="stage">
+    <div class="devicecol">
+      <!-- ===== PHONE ===== -->
+      <div class="phone" id="phone">
+        <div class="notch"></div>
+        <div class="hdr plain" id="phdr"></div>
+        <div class="screens" id="screens">
+
+          <!-- 01 友だち追加 -->
+          <section class="screen" data-k="friend">
+            <div style="height:96px;background:linear-gradient(135deg,var(--accent),var(--mid));"></div>
+            <div class="pad" style="text-align:center;margin-top:-38px;">
+              <div style="width:70px;height:70px;border-radius:50%;background:#fff;border:3px solid #fff;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 3px 10px rgba(0,0,0,.12);">🚗</div>
+              <div style="font-size:15px;font-weight:700;color:var(--navy);margin-top:8px;" data-brand="oa">○○モータース</div>
+              <div style="font-size:10.5px;color:var(--fg2);margin-top:3px;">認証済みアカウント ｜ 友だち 12,480人</div>
+              <div style="text-align:left;background:var(--bg);border-radius:10px;padding:11px;margin-top:12px;font-size:11px;line-height:1.9;">
+                ・車検／点検の時期をLINEでお知らせ<br>
+                ・入庫のご予約が24時間いつでも<br>
+                ・作業完了・お引き取りのご連絡もLINEで
+              </div>
+              <button class="btn line" data-go="talk-welcome">＋ 友だち追加</button>
+              <div style="font-size:9.5px;color:var(--gray);margin-top:8px;">流入元：店頭POP／車検証ホルダーQR／Web広告</div>
+            </div>
+          </section>
+
+          <!-- 02 あいさつ＋リッチメニュー -->
+          <section class="screen" data-k="talk-welcome">
+            <div class="msgbg withrm" style="padding-bottom:0;">
+              <div class="tstamp">今日</div>
+              <div class="bubble shop"><div class="nm" data-brand="oa">○○モータース</div>友だち追加ありがとうございます。<br>お車を登録いただくと、車検・点検の時期をLINEでお知らせします。</div>
+              <div class="bubble shop"><div class="nm" data-brand="oa">○○モータース</div>まずはマイカーを登録してください。<br>下のメニューからいつでもご予約いただけます。</div>
+            </div>
+            <div class="richmenu">
+              <div class="rm main" data-liff="bk-store"><span class="i">🚗</span>入庫予約</div>
+              <div class="rm" data-liff="mycar"><span class="i">📋</span>マイカー登録</div>
+              <div class="rm" data-go="talk-chat"><span class="i">💬</span>店舗に相談</div>
+            </div>
+          </section>
+
+          <!-- 03 マイカー登録 -->
+          <section class="screen" data-k="mycar">
+            <div class="pad">
+              <h2 class="st">お車の情報を登録</h2>
+              <p class="lead">車検満了日が入庫案内のトリガーになります。</p>
+              <div class="field">
+                <label>よく利用される店舗<span class="req">必須</span></label>
+                <div id="mycar-stores"></div>
+              </div>
+              <div id="mycar-cars"></div>
+              <button class="btn ghost" id="addcar">＋ お車を追加</button>
+              <button class="btn" data-go="regdone">この内容で登録する</button>
+              <button class="btn outline" data-go="shaken">車検証の撮影で登録する（新規のお客様）</button>
+            </div>
+          </section>
+
+          <!-- 04 車検証で登録 -->
+          <section class="screen" data-k="shaken">
+            <div class="pad">
+              <h2 class="st">車検証で かんたん登録</h2>
+              <p class="lead">お電話でのお聞き取りは不要です。</p>
+              <div class="scan" id="scanbox">
+                <div class="ico">📷</div>
+                <div class="t">車検証を撮影してアップロード</div>
+                <div class="d">枠内に合わせて撮影してください</div>
+              </div>
+              <div id="scanresult" class="hide">
+                <div class="autofill">
+                  <strong>読み取り結果（自動入力）</strong><br>
+                  車名：ミニバン／型式：XXX-XXXX000<br>
+                  登録番号：○○ 300 あ 12-34<br>
+                  初度登録：2022/04 ／ 車検満了：2026/04
+                </div>
+                <button class="btn" data-go="regdone">この内容で登録する</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- 05 登録完了 -->
+          <section class="screen" data-k="regdone">
+            <div class="pad" style="text-align:center;padding-top:40px;">
+              <div style="font-size:44px;">✅</div>
+              <h2 class="st" style="margin-top:10px;">登録が完了しました</h2>
+              <p class="lead">ミニバンの車検満了が近づいています（2026/04）。</p>
+              <button class="btn" data-liff="bk-store">続けて入庫予約に進む</button>
+              <button class="btn outline" data-go="talk-notice">あとで予約する（LINEに戻る）</button>
+            </div>
+          </section>
+
+          <!-- 06 車検案内配信 -->
+          <section class="screen" data-k="talk-notice">
+            <div class="msgbg">
+              <div class="tstamp">車検満了の30日前｜自動配信</div>
+              <div class="bubble shop"><div class="nm" data-brand="oa">○○モータース</div>お客様のミニバンの車検満了が近づいています（2026/04/30）。<br>ご予約はお早めにどうぞ。</div>
+              <div class="svcmsg">
+                <div class="h">車検のご予約</div>
+                <div class="b">
+                  <div class="t">ミニバン ／ 車検満了 2026/04/30</div>
+                  <div class="d">ボタンから予約画面が開きます（店舗・お車は入力済みの状態で起動します）</div>
+                </div>
+                <div class="act" data-liff="bk-store">予約する</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 07 店舗選択 -->
+          <section class="screen" data-k="bk-store">
+            <div class="pad">
+              <h2 class="st">ご利用店舗を選ぶ</h2>
+              <p class="lead">よく利用される店舗が先頭に表示されます。</p>
+              <div class="mapbox">
+                <span class="pin" style="left:22%;top:30%;">📍</span>
+                <span class="pin" style="left:56%;top:58%;">📍</span>
+                <span class="pin" style="left:76%;top:24%;">📍</span>
+              </div>
+              <div id="storelist"></div>
+              <button class="btn" data-go="bk-service">次へ（サービス選択）</button>
+            </div>
+          </section>
+
+          <!-- 08 サービス選択 -->
+          <section class="screen" data-k="bk-service">
+            <div class="pad">
+              <h2 class="st">ご用件を選ぶ</h2>
+              <p class="lead">所要時間が、次の日時選択の空き枠に反映されます。</p>
+              <div id="servicelist"></div>
+              <button class="btn" data-go="bk-info">次へ（予約情報）</button>
+            </div>
+          </section>
+
+          <!-- 09 予約情報 -->
+          <section class="screen" data-k="bk-info">
+            <div class="pad">
+              <h2 class="st">ご連絡先・希望日時</h2>
+              <p class="lead">ご希望は第1・第2の2枠で受け付けます（第3希望は任意）。</p>
+              <div class="field"><label>お名前（カナ）<span class="req">必須</span></label><input value="ヤマダ タロウ"></div>
+              <div class="field"><label>お電話番号<span class="req">必須</span></label><input value="090-1234-5678"></div>
+              <div class="field">
+                <label>お車</label>
+                <div id="carpick"></div>
+              </div>
+              <div class="cand" data-cand="1"><div class="r">第1希望</div><div class="v" id="cand1">タップして日時を選択 ›</div></div>
+              <div class="cand" data-cand="2"><div class="r">第2希望</div><div class="v" id="cand2">タップして日時を選択 ›</div></div>
+              <div class="cand" data-cand="3"><div class="r">第3希望（任意）</div><div class="v empty" id="cand3">＋ 追加する</div></div>
+              <button class="btn" id="toconfirm" data-go="bk-confirm">次へ（確認）</button>
+            </div>
+          </section>
+
+          <!-- 10 日時選択 -->
+          <section class="screen" data-k="bk-cal">
+            <div class="pad">
+              <h2 class="st" id="calTitle">第1希望の日時を選ぶ</h2>
+              <p class="lead">営業 9:00-18:00 ／ 火曜定休 ／ 前日17時締切<br>◎ 空きあり　△ 残りわずか　× 満枠</p>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">
+                <span style="color:var(--gray);">‹</span><span>2026年 7月</span><span style="color:var(--gray);">›</span>
+              </div>
+              <table class="cal"><thead><tr><th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th></tr></thead><tbody id="calbody"></tbody></table>
+              <div id="slotwrap" style="margin-top:12px;">
+                <div style="font-size:11.5px;font-weight:700;color:var(--navy);" id="slotTitle">日付を選んでください</div>
+                <div id="slotlist"></div>
+              </div>
+              <button class="btn" id="calDecide" disabled>この日時で決定</button>
+              <button class="btn outline" data-go="bk-info">戻る</button>
+            </div>
+          </section>
+
+          <!-- 11 確認 -->
+          <section class="screen" data-k="bk-confirm">
+            <div class="pad">
+              <h2 class="st">内容のご確認</h2>
+              <p class="lead">この時点では、まだ予約は確定していません。</p>
+              <div class="sumbox">
+                <b>店舗</b><span id="cf-store"></span><br>
+                <b>サービス</b><span id="cf-service"></span><br>
+                <b>お客様</b>ヤマダ タロウ ／ 090-1234-5678<br>
+                <b>お車</b><span id="cf-car"></span><br>
+                <b>第1希望</b><span id="cf-c1"></span><br>
+                <b>第2希望</b><span id="cf-c2"></span>
+              </div>
+              <div style="background:#FFF8E6;border:1px solid #F0D27A;border-radius:9px;padding:9px 11px;font-size:10.5px;color:#7a5a00;margin-top:10px;line-height:1.6;">
+                店舗が空き状況を確認したうえで確定します。確定結果はLINEでお知らせします。
+              </div>
+              <button class="btn" data-go="bk-done">この内容で申し込む</button>
+              <button class="btn outline" data-go="bk-info">修正する</button>
+            </div>
+          </section>
+
+          <!-- 12 受付完了 -->
+          <section class="screen" data-k="bk-done">
+            <div class="pad" style="text-align:center;padding-top:26px;">
+              <div style="font-size:40px;">📨</div>
+              <h2 class="st" style="margin-top:8px;">お申し込みを受け付けました</h2>
+              <div class="ticket" style="margin-top:12px;">
+                <div style="font-size:10px;color:var(--fg2);">受付番号</div>
+                <div class="no" id="rcpt">#1042</div>
+                <div style="margin-top:6px;"><span class="status-pill pend">受付中</span></div>
+                <div class="st">店舗が空き状況を確認し、確定日時をLINEでお知らせします。</div>
+              </div>
+              <button class="btn" data-go="admin-book">店舗側の画面を見る ›</button>
+            </div>
+          </section>
+
+          <!-- 14 確定通知・リマインド -->
+          <section class="screen" data-k="talk-fixed">
+            <div class="msgbg">
+              <div class="tstamp">店舗が確定した直後｜自動配信</div>
+              <div class="svcmsg">
+                <div class="h">ご予約確定</div>
+                <div class="b"><div class="t" id="fixmsg">7/2(木) 9:00〜 で確定しました</div>
+                <div class="d"><span id="fixsub">車検・中央店</span>。車検証と印鑑をお持ちください。</div></div>
+                <div class="act" data-toast="予約内容の変更・キャンセル画面を開きます（モックでは省略）">予約内容を確認・変更する</div>
+              </div>
+              <div class="tstamp">前日 18:00｜自動配信</div>
+              <div class="svcmsg">
+                <div class="h">前日リマインド</div>
+                <div class="b"><div class="t" id="remindmsg">明日 9:00 ご来店です</div>
+                <div class="d">ご都合が変わった場合は、こちらから変更いただけます。</div></div>
+              </div>
+              <div style="text-align:center;"><button class="btn sm" style="width:auto;padding:8px 16px;display:inline-block;" data-go="talk-chat">来店当日へ進む ›</button></div>
+            </div>
+          </section>
+
+          <!-- 15 予約後チャット・DM -->
+          <section class="screen" data-k="talk-chat">
+            <div class="msgbg">
+              <div class="tstamp">ご予約後｜店舗との1:1トーク</div>
+              <div class="bubble shop"><div class="nm" id="chatstore">中央店</div>ブレーキパッドの交換時期が近づいています。当日あわせて点検しますか？</div>
+              <div id="chatthread"></div>
+              <div style="display:flex;gap:6px;margin-bottom:10px;" id="chatchoices">
+                <button class="chip" data-reply="お願いします！代車も希望です">お願いします！代車も希望です</button>
+                <button class="chip" data-reply="今回は見送ります">今回は見送ります</button>
+              </div>
+              <div class="svcmsg dm">
+                <div class="h">デジタルDM</div>
+                <div class="b"><div class="t">夏のエアコン点検キャンペーン</div><div class="d">ご来店時にこの画面をご提示ください。</div></div>
+                <div class="act" data-toast="クーポン画面を開きます（モックでは省略）">クーポンを表示する</div>
+              </div>
+              <div style="text-align:center;"><button class="btn sm" style="width:auto;padding:8px 16px;display:inline-block;" data-go="talk-complete">作業完了まで進む ›</button></div>
+            </div>
+          </section>
+
+          <!-- 16 作業完了のお知らせ -->
+          <section class="screen" data-k="talk-complete">
+            <div class="msgbg">
+              <div class="tstamp">作業完了｜自動 or 手動で送信</div>
+              <div class="svcmsg">
+                <div class="h">作業完了のお知らせ</div>
+                <div class="b"><div class="t">ミニバンの<span id="cmpsvc">車検</span>が完了しました</div>
+                <div class="d">お引き取りが可能です。ご都合のよい日時をご指定ください。</div></div>
+                <div class="act" data-liff="pickup">🚗 引き取り日時を指定する</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 17 引き取り日時指定 -->
+          <section class="screen" data-k="pickup">
+            <div class="pad">
+              <h2 class="st">お引き取り日時を選ぶ</h2>
+              <p class="lead">混み合う時間帯は店頭でお待たせすることがあります。空いている時間帯だと、お待たせせずご案内できます。</p>
+              <div class="field"><label>お引き取り日</label><div id="pkdates"></div></div>
+              <div class="field"><label>時間帯</label><div id="pkslots"></div></div>
+              <button class="btn" id="pkbtn" disabled>この日時でお引き取り予約</button>
+            </div>
+          </section>
+
+          <!-- 18 引き取り確定・リマインド -->
+          <section class="screen" data-k="talk-pickup">
+            <div class="msgbg">
+              <div class="svcmsg">
+                <div class="h">お引き取り予約 確定</div>
+                <div class="b"><div class="t" id="pkfix">7/5(土) 14:00〜15:00 で承りました</div>
+                <div class="d">お預かり中のミニバン。到着時にこの画面をご提示ください。</div></div>
+              </div>
+              <div class="tstamp">当日｜自動配信</div>
+              <div class="svcmsg">
+                <div class="h">当日リマインド</div>
+                <div class="b"><div class="t" id="pkremind">本日 14:00 にお引き取り予定です</div>
+                <div class="d">ご都合が変わった場合は日時の変更ができます。</div></div>
+              </div>
+              <div class="tstamp">予約日を過ぎた場合｜自動配信</div>
+              <div class="svcmsg">
+                <div class="h">予約日 経過のお知らせ</div>
+                <div class="b"><div class="t">お引き取り予定日を過ぎています</div>
+                <div class="d">あらためてご都合のよい日時をお知らせください。</div></div>
+              </div>
+              <div class="tstamp">日時が未指定の場合｜追いかけの声かけ</div>
+              <div class="bubble shop"><div class="nm" data-brand="oa">○○モータース</div>お引き取り日時がまだご指定いただけていないお車があります。ご都合のよい日時をお知らせください。</div>
+              <div style="text-align:center;"><button class="btn sm" style="width:auto;padding:8px 16px;display:inline-block;" data-go="admin-pickup">店舗側の管理画面を見る ›</button></div>
+            </div>
+          </section>
+
+          <!-- 20 完了後フォロー -->
+          <section class="screen" data-k="talk-follow">
+            <div class="msgbg">
+              <div class="bubble shop"><div class="nm" id="fwstore">中央店</div>本日はご入庫ありがとうございました。点検結果はマイページからご確認いただけます。</div>
+              <div class="svcmsg">
+                <div class="h">次回のご案内</div>
+                <div class="b"><div class="t">次回点検：2026/10 ／ 次回車検：2028/04</div>
+                <div class="d">時期が近づいたらLINEでお知らせします。</div></div>
+              </div>
+              <div class="bubble shop"><div class="nm" id="fwstore2">中央店</div>オイル交換のおすすめ時期も、LINEでご案内します。</div>
+              <div style="text-align:center;margin-top:6px;">
+                <button class="btn sm" style="width:auto;padding:8px 16px;display:inline-block;" data-restart="1">↻ 次回満了 → 最初から見る</button>
+              </div>
+            </div>
+          </section>
+
+        </div>
+        <div class="liffload" id="liffload"><div class="spin"></div><div>ミニアプリを起動しています…</div></div>
+        <div class="toast" id="toast"></div>
+      </div>
+
+      <!-- ===== PC (admin) ===== -->
+      <div class="pc hide" id="pcframe">
+        <div class="pc-bar"><span class="pc-dot r"></span><span class="pc-dot y"></span><span class="pc-dot g"></span><span class="pc-url" id="pcurl">https://dealer-admin.example.com/booking</span></div>
+        <div class="pc-screens">
+
+          <section class="screen" data-k="admin-book">
+            <div class="adm-wrap">
+              <h2>予約一覧（管理ボード）</h2>
+              <p class="sub" id="adm-store">中央店 ／ 入庫リクエスト管理</p>
+              <div class="alert" id="adm-alert"><span class="dot"></span><span>新規の入庫リクエストが1件あります（<span id="adm-no">#1042</span>）— 放置防止のためアラート表示</span></div>
+              <div class="tabs"><span class="tab on">受付中 <b id="cnt-pend">8</b></span><span class="tab">確定 24</span><span class="tab">来店済 18</span><span class="tab">すべて 54</span></div>
+              <table class="adm">
+                <thead><tr><th>受付No</th><th>顧客／車両</th><th>サービス</th><th>第1希望</th><th>状態</th></tr></thead>
+                <tbody>
+                  <tr class="row on" data-row="1042"><td id="tb-no">#1042</td><td>ヤマダ タロウ<br><span style="color:var(--fg2)">ミニバン</span></td><td id="tb-svc">車検</td><td id="tb-c1">7/2(木) ◎</td><td><span class="tag wait" id="tb-tag">受付中</span></td></tr>
+                  <tr class="row" data-row="1041"><td>#1041</td><td>ワタナベ ケンイチ<br><span style="color:var(--fg2)">コンパクト</span></td><td>6ヶ月点検</td><td>7/3(金) △</td><td><span class="tag prog">対応中</span></td></tr>
+                  <tr class="row" data-row="1035"><td>#1035</td><td>ナカムラ タクヤ<br><span style="color:var(--fg2)">SUV</span></td><td>タイヤ交換</td><td>7/2(木) ×満</td><td><span class="tag wait">要再調整</span></td></tr>
+                  <tr class="row" data-row="1030"><td>#1030</td><td>ヤマグチ サクラ<br><span style="color:var(--fg2)">セダン</span></td><td>12ヶ月点検</td><td>7/6(月) ◎</td><td><span class="tag done">確定</span></td></tr>
+                </tbody>
+              </table>
+              <div class="cpanel" id="adm-detail">
+                <div class="cn">ヤマダ タロウ</div>
+                <div class="cm">受付No <span id="dt-no">#1042</span>・LINE連携済み</div>
+                <div class="row"><span>車両</span><span>ミニバン（○○ 300 あ 12-34）</span></div>
+                <div class="row"><span>サービス</span><span id="dt-svc">車検（90分）</span></div>
+                <div class="row"><span>車検満了</span><span>2026/04/30</span></div>
+                <div style="font-size:10.5px;font-weight:700;color:var(--navy);margin-top:10px;">希望日（空き状況）を選んで確定</div>
+                <div class="copt sel" data-pick="1"><span>第1希望 <b id="dt-c1">7/2(木) 9:00〜</b></span><span style="color:var(--line)">◎ 空き</span></div>
+                <div class="copt" data-pick="2"><span>第2希望 <b id="dt-c2">7/9(木) 13:00〜</b></span><span style="color:#c98a00">△ 残1</span></div>
+                <button class="btn sm" id="fixbtn">この日程で確定して通知</button>
+                <button class="btn sm outline" data-toast="1to1チャットが開きます（Mico Engage AI）">チャットで相談する</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="screen" data-k="admin-pickup">
+            <div class="adm-wrap">
+              <h2>完了・お引き取り管理ボード</h2>
+              <p class="sub">作業完了 → 通知 → お引き取りまでを一覧管理。長期在庫はアラートで可視化。</p>
+              <div class="alert"><span class="dot"></span><span>お引き取り予定 超過（在庫3日以上）が <b>2件</b> — 駐車場圧迫・追いかけ対象</span></div>
+              <table class="adm">
+                <thead><tr><th>車両／顧客</th><th>作業</th><th>完了通知</th><th>お引き取り</th><th>在庫</th><th></th></tr></thead>
+                <tbody id="pkbody"></tbody>
+              </table>
+              <div class="kpi"><div><div class="v" id="kpi-avg">1.8日</div><div class="l">平均在庫日数</div></div><div><div class="v" id="kpi-over">2件</div><div class="l">超過（3日以上）</div></div></div>
+              <div class="cpanel">
+                <div class="cn">完了通知の送信設定</div>
+                <div class="cm">作業区分ごとに 自動／手動 を設定します</div>
+                <div id="autoset"></div>
+              </div>
+              <button class="btn sm" data-go="talk-follow">お客様の完了後フォローを見る ›</button>
+            </div>
+          </section>
+
+        </div>
+        <div class="toast" id="toast2"></div>
+      </div>
+
+      <div class="navrow">
+        <button class="navbtn" id="prev">‹ 戻る</button>
+        <span class="stepcap" id="stepcap"></span>
+        <button class="navbtn" id="next">進む ›</button>
+      </div>
+      <div class="hintbar">
+        <b>操作できます。</b>店舗・サービス・カレンダー・トグル・管理ボードの行と確定ボタンは実際に反応し、選んだ内容が後続の確認画面／通知／管理画面に連動します。順路を飛ばしたいときは右のステップ番号をクリックしてください。
+      </div>
+    </div>
+
+    <!-- ===== GUIDE ===== -->
+    <aside class="guide" id="guide">
+      <div class="g-head"><div class="t">解説パネル</div><div class="s">画面の操作に合わせて説明が切り替わります</div></div>
+      <div class="g-lanes" id="lanes"></div>
+      <div class="g-body" id="gbody"></div>
+    </aside>
+  </div>
+
+  <!-- ================= BELOW ================= -->
+  <p class="sec-title">全体ジャーニー（LTVループ）</p>
+  <p class="sec-note">各フェーズをクリックすると、モックの該当画面へ移動します。</p>
+  <div class="journey" id="journey"></div>
+
+  <p class="sec-title">ディーラー現場の課題 → 本モックでの解決</p>
+  <p class="sec-note">自動車販売店の入庫予約・引き取り運用でよく挙がる課題を、As-Is → To-Be で整理しています。</p>
+  <table class="imp-table">
+    <thead><tr><th>#</th><th>区分</th><th>As-Is（現場でよくある課題）</th><th>To-Be（あるべき姿）</th><th>本モックでの実現（該当画面）</th></tr></thead>
+    <tbody>
+      <tr><td class="no">①</td><td class="cat">登録</td><td>保有車が全て1つのLINE IDに紐づき、併有車にも案内が届く</td><td>1台ごとに紐付け、使用者ごとに設定</td><td class="app"><strong>車両単位で登録・通知ON/OFF</strong>（<a data-jump="mycar">03 マイカー登録</a>）</td></tr>
+      <tr><td class="no">②</td><td class="cat">登録</td><td>法人顧客が対象外（保有台数分の運用が発生）</td><td>①と同じ</td><td class="app">複数台・法人対応。必要な車だけ通知（<a data-jump="mycar">03</a>）</td></tr>
+      <tr><td class="no">③</td><td class="cat">登録</td><td>新規客は電話で車両情報を聞き取り → 離脱が多い</td><td>車検証情報を同時取得し事前準備</td><td class="app"><strong>車検証の撮影アップロードで自動登録</strong>（<a data-jump="shaken">04</a>）</td></tr>
+      <tr><td class="no">④</td><td class="cat">予約</td><td>予約枠を3候補設定させるのが面倒で電話連絡が発生</td><td>タイムリーに対応するなら2枠でよい</td><td class="app"><strong>第1・第2の2枠でOK</strong>（第3は任意）（<a data-jump="bk-info">09</a>）</td></tr>
+      <tr><td class="no">⑤</td><td class="cat">予約</td><td>カレンダーから1日ずつしか空きを確認できない</td><td>空き状況をまとめて見せる</td><td class="app"><strong>◎△×でまとめ表示</strong>＋所要時間連動の可変スロット（<a data-jump="bk-cal">10</a>）</td></tr>
+      <tr><td class="no">⑥</td><td class="cat">受付</td><td>基幹システムでしか確認できず対応漏れ（放置）が起きる</td><td>リクエストのアラート・ステータス可視化</td><td class="app"><strong>管理ボードにアラート＋対応ステータス</strong>（<a data-jump="admin-book">13</a>）</td></tr>
+      <tr><td class="no">⑦</td><td class="cat">受付</td><td>予約受理後にLINEで追加連絡ができない</td><td>チャットでやり取り（デジタルDMも）</td><td class="app"><strong>予約後チャット＆デジタルDM</strong>（<a data-jump="talk-chat">15</a>）</td></tr>
+      <tr><td class="no">⑧</td><td class="cat">通知</td><td>洗車のような軽作業も修理も、完了案内が一律で手間・タイミングがばらつく</td><td>作業区分で自動・手動を使い分ける</td><td class="app"><strong>完了通知の自動／手動 出し分け</strong>（<a data-jump="talk-complete">16</a>・<a data-jump="admin-pickup">19</a>）</td></tr>
+      <tr><td class="no">⑨</td><td class="cat">引取</td><td>完了車をなかなか取りに来ず、駐車場圧迫・追いかけ工数が増大</td><td>引き取りを促し、放置を解消したい</td><td class="app"><strong>未指定への自動追いかけ＋在庫日数の可視化</strong>（<a data-jump="talk-pickup">18</a>・<a data-jump="admin-pickup">19</a>）</td></tr>
+      <tr><td class="no">⑩</td><td class="cat">引取</td><td>「土日の朝」などお引き取りが集中し、店頭で長時間待たせる</td><td>双方の都合を合わせ、来店を平準化したい</td><td class="app"><strong>お客様が日時を指定＋混雑の見える化で分散</strong>（<a data-jump="pickup">17</a>）</td></tr>
+    </tbody>
+  </table>
+
+  <div class="flow-note">
+    <strong>このモックの狙い：</strong>「予約」で入口を整えるだけでなく、<strong>出口（お引き取り）</strong>まで設計している点が差別化です。
+    入口では車両単位の登録と空き枠のまとめ表示で予約完了率を上げ、出口では完了通知の自動／手動の出し分けとお客様自身による日時指定で、
+    駐車場圧迫・追いかけ工数・土日朝の来店集中を同時に抑えます。
+  </div>
+
+  <p class="disc">
+    ※ 本モックは汎用サンプルです。表示中のアカウント名・店舗名・車名・ナンバー・顧客名・管理画面URLはすべて仮称で、特定の企業・メーカー・車種を示すものではありません。<br>
+    ※ ブランド名・店舗名・サービスメニューは、HTML内 <code>CONFIG</code> の1箇所を書き換えることで差し替えられます。<br>
+    ※ URLパラメータ：<code>?step=画面キー</code> で任意画面から開始／<code>?guide=off</code> で解説パネル非表示／<code>?embed</code> で埋め込みモード。<br>
+    ※ 基幹システム（DMS）連携方式・完了通知のトリガー・空き枠のリアルタイム反映は、要件定義で確定します。単一HTML・アカウント不要。© Mico Inc. — CONFIDENTIAL
+  </p>
+</div>
+
+<script>
+/* ===================== 汎用設定（ここだけ差し替えれば個社版になります） ===================== */
+const CONFIG = {
+  oaName: '○○モータース',
+  adminUrl: 'https://dealer-admin.example.com/booking',
+  stores: [
+    {name:'中央店', dist:'1.2km', tag:'よく利用'},
+    {name:'本店',   dist:'4.5km', tag:''},
+    {name:'港南店', dist:'8.0km', tag:''}
+  ],
+  services: [
+    {name:'車検',        dur:90, note:'ピット3'},
+    {name:'12ヶ月点検',  dur:60, note:''},
+    {name:'6ヶ月点検',   dur:45, note:''},
+    {name:'オイル交換',  dur:20, note:''},
+    {name:'タイヤ交換',  dur:30, note:''},
+    {name:'修理・板金',  dur:120,note:'要お預かり'}
+  ],
+  cars: [
+    {name:'ミニバン',      plate:'○○ 300 あ 12-34', user:'ご本人', exp:'2026/04', notify:true},
+    {name:'コンパクトカー', plate:'○○ 500 か 88-12', user:'ご家族', exp:'2027/09', notify:false}
+  ]
+};
+
+/* ===================== 機能区分 ===================== */
+const SYSTEMS = {
+  line:    {label:'LINE',       full:'LINE公式アカウント', color:'#06C755', note:'LINEの標準機能。デザイン・仕様はLINE側に準拠します'},
+  me:      {label:'ME',         full:'Mico Engage AI',    color:'#E8590C', note:'誰に・いつ・何を出すかを制御。配信とチャットの実行主体です'},
+  miniapp: {label:'ミニアプリ',  full:'LINEミニアプリ（LIFF）', color:'#3438F0', note:''},
+  admin:   {label:'管理画面',    full:'店舗スタッフ用 管理画面', color:'#1B1D3B', note:'基幹システム（DMS）と連携する想定です'}
+};
+
+const FLOW = [
+  {k:'friend',        no:'01', short:'友だち追加',      sys:'line',    dev:'phone'},
+  {k:'talk-welcome',  no:'02', short:'あいさつ／RM',    sys:'me',      dev:'phone'},
+  {k:'mycar',         no:'03', short:'マイカー登録',    sys:'miniapp', dev:'phone'},
+  {k:'shaken',        no:'04', short:'車検証で登録',    sys:'miniapp', dev:'phone'},
+  {k:'regdone',       no:'05', short:'登録完了',        sys:'miniapp', dev:'phone'},
+  {k:'talk-notice',   no:'06', short:'車検案内配信',    sys:'me',      dev:'phone'},
+  {k:'bk-store',      no:'07', short:'店舗選択',        sys:'miniapp', dev:'phone'},
+  {k:'bk-service',    no:'08', short:'サービス選択',    sys:'miniapp', dev:'phone'},
+  {k:'bk-info',       no:'09', short:'予約情報',        sys:'miniapp', dev:'phone'},
+  {k:'bk-cal',        no:'10', short:'日時選択',        sys:'miniapp', dev:'phone'},
+  {k:'bk-confirm',    no:'11', short:'確認',            sys:'miniapp', dev:'phone'},
+  {k:'bk-done',       no:'12', short:'受付完了',        sys:'miniapp', dev:'phone'},
+  {k:'admin-book',    no:'13', short:'店舗が確定',      sys:'admin',   dev:'pc'},
+  {k:'talk-fixed',    no:'14', short:'確定・リマインド', sys:'me',     dev:'phone'},
+  {k:'talk-chat',     no:'15', short:'予約後チャット',   sys:'me',     dev:'phone'},
+  {k:'talk-complete', no:'16', short:'作業完了通知',    sys:'me',      dev:'phone'},
+  {k:'pickup',        no:'17', short:'引取日時の指定',  sys:'miniapp', dev:'phone'},
+  {k:'talk-pickup',   no:'18', short:'引取確定・追いかけ',sys:'me',    dev:'phone'},
+  {k:'admin-pickup',  no:'19', short:'完了・引取管理',  sys:'admin',   dev:'pc'},
+  {k:'talk-follow',   no:'20', short:'完了後フォロー',  sys:'me',      dev:'phone'}
+];
+
+const HDR = {
+  'friend':        {type:'plain'},
+  'talk-welcome':  {type:'oa'},
+  'mycar':         {type:'liff', title:'マイカー登録'},
+  'shaken':        {type:'liff', title:'お車の登録'},
+  'regdone':       {type:'liff', title:'登録完了'},
+  'talk-notice':   {type:'oa'},
+  'bk-store':      {type:'liff', title:'入庫予約（1/4）'},
+  'bk-service':    {type:'liff', title:'入庫予約（2/4）'},
+  'bk-info':       {type:'liff', title:'入庫予約（3/4）'},
+  'bk-cal':        {type:'liff', title:'日時を選ぶ'},
+  'bk-confirm':    {type:'liff', title:'入庫予約（4/4）'},
+  'bk-done':       {type:'liff', title:'受付完了'},
+  'talk-fixed':    {type:'oa'},
+  'talk-chat':     {type:'oa', title:'店舗とのトーク'},
+  'talk-complete': {type:'oa'},
+  'pickup':        {type:'liff', title:'お引き取りのご予約'},
+  'talk-pickup':   {type:'oa'},
+  'talk-follow':   {type:'oa'}
+};
+
+/* ===================== 解説文 ===================== */
+const GUIDE = {
+  'friend':{phase:'PHASE 0 ／ 友だち獲得',title:'友だち追加',
+    lead:'店頭POP・車検証ホルダーのQR・Web広告からの流入を想定した、LINE標準のアカウント紹介画面です。',
+    contents:['認証済みバッジ・友だち数・提供価値3行','緑の「友だち追加」ボタン'],
+    actions:['「友だち追加」→ あいさつメッセージが届く'],
+    note:'この画面はLINE標準UIのため、カスタマイズできるのはカバー画像・アイコン・説明文のみです。'},
+  'talk-welcome':{phase:'PHASE 0 ／ 友だち獲得',title:'あいさつ＋リッチメニュー',
+    lead:'案内配信を待たずに、お客様が自分から予約できる入口をここで用意します。',
+    contents:['あいさつメッセージ（2通に分割して会話らしく）','リッチメニュー：入庫予約／マイカー登録／店舗に相談'],
+    actions:['「入庫予約」→ ミニアプリが起動し、店舗選択へ','「マイカー登録」→ 登録画面へ'],
+    backend:['登録状況（マイカー登録済み／未登録）でリッチメニューを出し分け'],
+    boundary:'タイルはLINE上に見えていますが、タップ後に開く画面はミニアプリ側です。出し分けの制御はMEが担います。',
+    note:'タイルは遷移先が実在するものだけ置きます。ダミータイルは「これも作るんですよね？」という誤解を生みます。'},
+  'mycar':{phase:'PHASE 0 ／ 登録',title:'マイカー登録（車両ごと）',issues:'①②',
+    lead:'保有車を1台ずつ登録し、車両単位で通知のON/OFFを持たせます。併有車・法人の複数台に対応する要です。',
+    contents:['よく利用する店舗の選択','車両カード（車名・ナンバー・使用者・車検満了）','車両ごとの入庫案内 通知トグル'],
+    actions:['店舗チップをタップ → 選択が切り替わる','通知トグルをタップ → ON/OFFが切り替わる','「お車を追加」→ 3台目が増える'],
+    backend:['LINEログインで自動的に本人特定（ID/PW入力なし）','車検満了日を配信トリガーとして保持'],
+    note:'車検満了日が入庫案内の起点になるため、この項目だけは必須にします。'},
+  'shaken':{phase:'PHASE 0 ／ 登録',title:'車検証で かんたん登録',issues:'③',
+    lead:'顧客情報を持たない新規のお客様でも、撮影だけで登録が完了します。電話での聞き取りによる離脱を防ぎます。',
+    contents:['撮影フレーム','読み取り結果の自動入力プレビュー'],
+    actions:['撮影エリアをタップ → 読み取り結果が表示される','「この内容で登録する」→ 登録完了へ'],
+    backend:['車検証のOCR読み取り（精度・対応範囲は要件定義で確定）','読み取り結果は登録前にお客様が確認・修正できる形にします'],
+    note:'OCRの読み取り精度は撮影環境に左右されるため、手入力での補正導線は必ず残します。'},
+  'regdone':{phase:'PHASE 0 ／ 登録',title:'登録完了 → そのまま予約へ',
+    lead:'車検満了が近い場合は、登録完了の勢いのまま予約導線へ送ります。',
+    actions:['「続けて入庫予約に進む」→ 予約フローへ','「あとで予約する」→ LINEのトークに戻る'],
+    backend:['満了日までの残日数で、予約導線を出すか出さないかを分岐']},
+  'talk-notice':{phase:'PHASE 1 ／ 案内・想起',title:'車検案内の自動配信',
+    lead:'車検満了の30日前に自動配信。ワンタップで、店舗・車両が入力済みの状態の予約画面が開きます。',
+    contents:['トークメッセージ＋サービスメッセージ形式の予約カード'],
+    actions:['「予約する」→ ミニアプリが起動（店舗・車両プリセット）'],
+    backend:['満了日30日前のセグメントを自動生成して配信','未反応者へは再配信（配信間隔は運用で調整）'],
+    boundary:'配信の実行はME、届く場所はLINE、タップ後の画面はミニアプリ。3つのシステムをまたぐ箇所です。'},
+  'bk-store':{phase:'PHASE 2 ／ 入庫予約',title:'① 店舗選択',
+    lead:'複数店舗を持つ販売会社を前提に、よく利用する店舗を先頭に出しつつ、一覧・地図から選べます。',
+    actions:['店舗カードをタップ → 選択が切り替わる','「次へ」→ サービス選択へ'],
+    backend:['選択店舗の営業日・定休日・ピット数を以降の空き枠計算に引き継ぎ'],
+    note:'地図は仮表示です。実装時は実地図サービスに差し替えます。'},
+  'bk-service':{phase:'PHASE 2 ／ 入庫予約',title:'② サービス選択',
+    lead:'選んだサービスの所要時間が、次の日時選択の空き枠の刻みに連動します。',
+    actions:['サービスをタップ → 選択（所要時間が確定）','「次へ」→ 予約情報へ'],
+    backend:['所要時間×ピット数で、日毎の受け入れ可能枠を算出'],
+    note:'メニューと所要時間は貴社の実運用に合わせて設定します。'},
+  'bk-info':{phase:'PHASE 2 ／ 入庫予約',title:'③ 予約情報（2枠でOK）',issues:'④',
+    lead:'候補日時は第1・第2の2枠まで。3候補を必須にすると入力負荷で離脱するため、第3は任意にしています。',
+    contents:['お名前・電話番号（登録済みなら自動入力）','マイカー情報からの車両選択','第1／第2／第3（任意）希望'],
+    actions:['車両チップをタップ → 予約対象を切り替え','希望枠をタップ → 日時選択へ'],
+    backend:['店舗が即時に確定する運用が前提。2枠で足りる代わりに、確定までのリードタイムを短くします']},
+  'bk-cal':{phase:'PHASE 2 ／ 入庫予約',title:'④ 日時選択（◎△×）',issues:'⑤',
+    lead:'1日ずつ空きを確認する手間を解消します。月間の空き状況を◎△×でまとめて見せ、日付を選ぶとサービス所要時間に応じた時間枠が並びます。',
+    contents:['月カレンダー（◎空きあり／△残りわずか／×満枠／定休日）','選択日の時間枠と残台数'],
+    actions:['日付をタップ → 時間枠が表示（所要時間で刻みが変化）','時間枠をタップ → 「この日時で決定」が有効化'],
+    backend:['空き枠は、ピット数・所要時間・既存予約から算出','締切（前日17時など）と定休日は店舗設定で制御'],
+    note:'サービスを「オイル交換（20分）」に変えて戻ると、枠の刻みが変わることを確認できます。'},
+  'bk-confirm':{phase:'PHASE 2 ／ 入庫予約',title:'④ 内容確認',
+    lead:'ここまでの選択内容が反映されます。この時点では確定していないことを明示するのが重要です。',
+    actions:['「この内容で申し込む」→ 受付完了','「修正する」→ 予約情報へ戻る'],
+    note:'「申し込み＝確定」と誤解されると、来店トラブルの原因になります。文言で明確に分けます。'},
+  'bk-done':{phase:'PHASE 2 ／ 入庫予約',title:'受付完了（受付中）',
+    lead:'受付番号を発行し、ステータスは「受付中」。確定は店舗側の操作を待ちます。',
+    backend:['受付中の通知をサービスメッセージで自動送信','受付データを店舗の管理ボードへ連携'],
+    boundary:'ここからは店舗スタッフ側の画面に切り替わります。'},
+  'admin-book':{phase:'PHASE 3 ／ 店舗確定',title:'予約一覧・確定（管理ボード）',issues:'⑥',
+    lead:'基幹システムでしか見られない状態をやめ、新規リクエストをアラートと対応ステータスで可視化します。放置を仕組みで防ぐ画面です。',
+    contents:['新規リクエストのアラート','受付中／確定／来店済のステータス','明細パネルと候補日時'],
+    actions:['行をタップ → 明細が切り替わる','候補（第1／第2）を選び「確定して通知」→ お客様へ通知が飛ぶ'],
+    backend:['確定時に枠を原子的にデクリメントし、二重確定を防止','確定結果をお客様へ自動通知'],
+    note:'基幹システム（DMS）との連携方式・同期範囲は要件定義で確定します。'},
+  'talk-fixed':{phase:'PHASE 4 ／ 通知',title:'確定通知・前日リマインド',
+    lead:'店舗の確定操作の結果が、そのままお客様への通知になります。第1／第2のどちらで確定したか、全枠NGかで文面を自動で出し分けます。',
+    contents:['確定通知（青ヘッダー＝予約に紐づく定型通知）','前日リマインド'],
+    backend:['確定・前日・当日のタイミングで自動配信','変更・キャンセルの導線を通知内に持たせる'],
+    note:'青ヘッダーのカード＝システムが定型で自動配信する通知、白い吹き出し＝店舗との1:1トーク、という描き分けをしています。'},
+  'talk-chat':{phase:'PHASE 4 ／ 予約後',title:'予約後チャット・デジタルDM',issues:'⑦',
+    lead:'予約が取れた後もLINEでやり取りできる導線です。追加整備の提案・持ち物連絡・キャンペーン案内までLINE内で完結します。',
+    actions:['返信の選択肢をタップ → 会話が進む','クーポンカードをタップ → クーポン表示（モックでは省略）'],
+    backend:['1to1チャットとデジタルDMはMEの機能','サンキューコールの重複工数を削減'],
+    note:'予約後の接点は競合サービスに少ない領域で、差別化の核になります。'},
+  'talk-complete':{phase:'PHASE 4.5 ／ 完了・引取',title:'作業完了のお知らせ',issues:'⑧',
+    lead:'お客様に届くものは常に同じ（完了のお知らせ＋日時指定ボタン）。違うのは「いつ・誰が送るか」だけで、これは店舗側の設定です。',
+    contents:['完了通知カード','引き取り日時の指定ボタン'],
+    backend:['軽作業（洗車・オイル交換）＝作業完了で自動送信','車検・点検＝作業確定で自動送信','修理・板金＝仕上がりを確認してスタッフが手動送信'],
+    note:'自動／手動の切り替えは店舗設定であり、お客様側の体験は一律です（設定画面は 19 の管理ボード）。'},
+  'pickup':{phase:'PHASE 4.5 ／ 完了・引取',title:'お引き取り日時の指定',issues:'⑩',
+    lead:'時間帯ごとの混雑を「お待たせします／お待たせしません」とお客様目線で提示し、空いている枠を自分で選びたくなる設計にしています。土日朝の集中を自然に分散させる狙いです。',
+    actions:['日付チップをタップ → その日の時間帯が表示','時間帯をタップ → 予約ボタンが有効化'],
+    backend:['引き取り枠の混雑度は、当日の入出庫予定から算出'],
+    note:'「空いています」ではなく「お待たせしません」と書くのが要点です。お客様の得になる言い方でないと、空き枠に誘導できません。'},
+  'talk-pickup':{phase:'PHASE 4.5 ／ 完了・引取',title:'引き取り確定・追いかけ',issues:'⑨',
+    lead:'4種類の通知を自動で出し分け、取りに来ない放置を仕組みで解消します。',
+    contents:['①引き取り予約 確定','②当日リマインド','③予約日 経過のお知らせ','④日時 未指定への追いかけ（吹き出し＝声かけ）'],
+    backend:['③④は在庫日数を条件に自動送信','追いかけ電話の工数と駐車場の圧迫を同時に低減']},
+  'admin-pickup':{phase:'PHASE 4.5 ／ 完了・引取',title:'完了・お引き取り管理ボード',issues:'⑧⑨',
+    lead:'作業完了 → 通知 → 引き取りまでを一覧管理し、長期在庫をアラートで可視化します。',
+    actions:['「完了通知を送る」→ 未送信の車両に通知を送信（在庫日数が更新）','「追いかけ通知」→ 未指定のお客様へ声かけを送信','作業区分の 自動／手動 をタップで切り替え'],
+    backend:['在庫日数＝作業完了からの経過日数。3日以上を超過として抽出'],
+    note:'この画面の設定が、16の完了通知が自動で飛ぶか手動になるかを決めています。'},
+  'talk-follow':{phase:'PHASE 5 ／ 完了後フォロー',title:'完了後フォロー・次回案内',
+    lead:'お礼と次回時期の案内で、次の入庫につなぎます。次回満了でPHASE 1に戻り、LTVループが回ります。',
+    backend:['次回点検・次回車検の時期を保持し、満了30日前に再び自動配信'],
+    note:'ここがループの終点であり起点です。1回の入庫で終わらせない設計が、ミニアプリ導入の投資回収に直結します。'}
+};
+
+/* ===================== 状態（後段へ直接ジャンプしても壊れないよう初期値を入れておく） ===================== */
+const S = {
+  store:'中央店', service:'車検', dur:90,
+  car:'ミニバン',
+  cand:{1:{d:'7/2(木)',t:'9:00〜10:30'},2:{d:'7/9(木)',t:'13:00〜14:30'},3:null},
+  target:1, calDate:null, calSlot:null,
+  fixedPick:1, fixed:false,
+  pkDate:'7/5(土)', pkSlot:'14:00〜15:00', pkSet:false,
+  notify:[true,false,true]
+};
+
+/* ===================== 基本ユーティリティ ===================== */
+const $  = (s,r)=> (r||document).querySelector(s);
+const $$ = (s,r)=> Array.prototype.slice.call((r||document).querySelectorAll(s));
+const qp = new URLSearchParams(location.search);
+const EMBED = qp.has('embed');
+const NOGUIDE = qp.get('guide')==='off' || EMBED;
+let cur = 'friend';
+
+function toast(msg){
+  const t = FLOW.find(f=>f.k===cur).dev==='pc' ? $('#toast2') : $('#toast');
+  t.textContent = msg; t.classList.add('on');
+  clearTimeout(t._tm); t._tm = setTimeout(()=>t.classList.remove('on'), 2200);
+}
+
+/* ===================== 画面遷移 ===================== */
+function goto(k, viaLiff){
+  const step = FLOW.find(f=>f.k===k); if(!step) return;
+  const run = ()=>{
+    cur = k;
+    $$('.screen').forEach(s=>s.classList.toggle('active', s.dataset.k===k));
+    $('#phone').classList.toggle('hide', step.dev!=='phone');
+    $('#pcframe').classList.toggle('hide', step.dev!=='pc');
+    $('#pcurl').textContent = k==='admin-pickup' ? CONFIG.adminUrl.replace('/booking','/pickup') : CONFIG.adminUrl;
+    renderHeader(k);
+    syncScreens(k);
+    renderGuide(k);
+    renderLanes(k);
+    const i = FLOW.indexOf(step);
+    $('#stepcap').textContent = step.no + ' ／ ' + step.short;
+    $('#prev').disabled = i===0; $('#next').disabled = i===FLOW.length-1;
+    const sc = $('.screen[data-k="'+k+'"]'); if(sc) sc.scrollTop = 0;
+  };
+  if(viaLiff){
+    const l = $('#liffload'); l.classList.add('on');
+    setTimeout(()=>{ l.classList.remove('on'); run(); }, 650);
+  } else run();
+}
+
+function renderHeader(k){
+  const h = HDR[k] || {type:'plain'}; const el = $('#phdr');
+  el.className = 'hdr ' + h.type;
+  if(h.type==='oa'){
+    el.innerHTML = '<span>'+(h.title||CONFIG.oaName)+'</span><span class="ic">≡</span>';
+  } else if(h.type==='liff'){
+    el.innerHTML = '<span class="ic">‹</span><span>'+h.title+'<span class="vb">認証済</span></span><span class="ic">⋯</span>';
+  } else el.innerHTML = '';
+  const top = h.type==='plain' ? 26 : el.getBoundingClientRect().height;
+  $('#screens').style.top = top + 'px';
+}
+
+/* ===================== 解説パネル ===================== */
+function sec(label, items){
+  if(!items || !items.length) return '';
+  return '<div class="g-sec"><h4>'+label+'</h4><ul>'+items.map(i=>'<li>'+i+'</li>').join('')+'</ul></div>';
+}
+function renderGuide(k){
+  if(NOGUIDE){ $('#guide').classList.add('hide'); return; }
+  const g = GUIDE[k]; if(!g) return;
+  const sys = SYSTEMS[FLOW.find(f=>f.k===k).sys];
+  let h = '';
+  h += '<div class="g-phase" style="color:'+sys.color+'">'+g.phase+'</div>';
+  h += '<div class="g-title">'+(g.issues?'<span class="g-issue">'+g.issues+'</span>':'')+g.title
+     + '<span class="g-sys" style="background:'+sys.color+'">'+sys.full+'</span></div>';
+  if(g.lead) h += '<div class="g-lead">'+g.lead+'</div>';
+  if(g.boundary) h += '<div class="g-bd">🔀 '+g.boundary+'</div>';
+  h += sec('表示コンテンツ', g.contents);
+  h += sec('ユーザーの操作', g.actions);
+  h += sec('裏側で動く処理', g.backend);
+  if(sys.note) h += '<div class="g-sec"><h4>担当システム</h4><ul><li>'+sys.note+'</li></ul></div>';
+  if(g.note) h += '<div class="g-note">'+g.note+'</div>';
+  $('#gbody').innerHTML = h;
+  $('#gbody').scrollTop = 0;
+}
+function renderLanes(k){
+  if(NOGUIDE) return;
+  const lanes = [];
+  FLOW.forEach(f=>{
+    const last = lanes[lanes.length-1];
+    if(last && last.sys===f.sys) last.steps.push(f); else lanes.push({sys:f.sys, steps:[f]});
+  });
+  $('#lanes').innerHTML = lanes.map(l=>{
+    const c = SYSTEMS[l.sys].color;
+    return '<div class="lane"><div class="lbl" style="color:'+c+'">'+SYSTEMS[l.sys].label+'</div>'
+      + '<div class="steps" style="border-color:'+c+'">'
+      + l.steps.map(s=>'<button class="sbtn'+(s.k===k?' on':'')+'" data-step="'+s.k+'"'
+      + (s.k===k?' style="background:'+c+'"':'')+'><span class="n">'+s.no+'</span>'+s.short+'</button>').join('')
+      + '</div></div>';
+  }).join('');
+}
+
+/* ===================== 画面ごとの動的描画 ===================== */
+function renderMycar(){
+  $('#mycar-stores').innerHTML = CONFIG.stores.map(s=>
+    '<span class="chip'+(s.name===S.store?' sel':'')+'" data-store="'+s.name+'">'+s.name+'</span>').join('')
+    ;
+  $('#mycar-cars').innerHTML = CONFIG.cars.map((c,i)=>
+    '<div class="vcard"><div class="vt">'+c.name+'</div>'
+    + '<div class="vn">'+c.plate+' ／ 使用者：'+c.user+' ／ 車検満了 '+c.exp+'</div>'
+    + '<div class="toggle-row" data-notify="'+i+'"><span>入庫案内・リマインド</span>'
+    + '<span class="toggle '+(S.notify[i]?'on':'off')+'"></span></div></div>').join('');
+}
+function renderStores(){
+  $('#storelist').innerHTML = CONFIG.stores.map(s=>
+    '<div class="selrow'+(s.name===S.store?' sel':'')+'" data-store="'+s.name+'">'
+    + '<div><div class="n">'+s.name+(s.tag?' <span style="font-size:9.5px;color:var(--accent)">（'+s.tag+'）</span>':'')+'</div>'
+    + '<div class="m">営業 9:00-18:00 ／ 火曜定休</div></div><span class="badge">'+s.dist+'</span></div>').join('');
+}
+function renderServices(){
+  $('#servicelist').innerHTML = CONFIG.services.map(s=>
+    '<div class="selrow'+(s.name===S.service?' sel':'')+'" data-svc="'+s.name+'">'
+    + '<div><div class="n">'+s.name+'</div>'+(s.note?'<div class="m">'+s.note+'</div>':'')+'</div>'
+    + '<span class="badge">所要'+s.dur+'分</span></div>').join('');
+}
+function renderCarPick(){
+  $('#carpick').innerHTML = CONFIG.cars.map(c=>
+    '<span class="chip'+(c.name===S.car?' sel':'')+'" data-car="'+c.name+'">'+c.name+'（'+c.plate+'）</span>').join('');
+}
+function renderCands(){
+  [1,2,3].forEach(n=>{
+    const el = $('#cand'+n); const v = S.cand[n];
+    if(v){ el.textContent = v.d+' '+v.t; el.classList.remove('empty'); }
+    else { el.textContent = n===3 ? '＋ 追加する' : 'タップして日時を選択 ›'; el.classList.add('empty'); }
+  });
+  $('#toconfirm').disabled = !(S.cand[1] && S.cand[2]);
+}
+/* --- カレンダー --- */
+const WD=['日','月','火','水','木','金','土'];
+function mark(day){ // 火曜=定休、決め打ちの疑似空き状況
+  const d = new Date(2026,6,day);
+  if(d.getDay()===2) return 'off';
+  const r = (day*7)%10;
+  if(r<4) return 'ok'; if(r<7) return 'few'; return 'full';
+}
+function renderCal(){
+  const first = new Date(2026,6,1).getDay(); const last = new Date(2026,7,0).getDate();
+  let html='', cells=[];
+  for(let i=0;i<first;i++) cells.push('<td><div class="cell pad"></div></td>');
+  for(let d=1; d<=last; d++){
+    const m = mark(d);
+    const sel = (S.calDate===d)?' sel':'';
+    const label = m==='off' ? '<span class="mk">休</span>' : '<span class="mk">'+({ok:'◎',few:'△',full:'×'})[m]+'</span>';
+    cells.push('<td><div class="cell '+m+sel+'" data-day="'+d+'">'+d+label+'</div></td>');
+  }
+  while(cells.length%7) cells.push('<td><div class="cell pad"></div></td>');
+  for(let i=0;i<cells.length;i+=7) html += '<tr>'+cells.slice(i,i+7).join('')+'</tr>';
+  $('#calbody').innerHTML = html;
+  renderSlots();
+}
+function genSlots(dur){
+  const f = m => String(Math.floor(m/60))+':'+String(m%60).padStart(2,'0');
+  const out=[]; const step = Math.max(dur, 60);   // 短時間作業は1時間刻みで1日に散らす
+  let t = 9*60;
+  while(t + dur <= 18*60){
+    if(!(t < 13*60 && t + dur > 12*60)) out.push(f(t)+'〜'+f(t+dur));
+    t += step;
+    if(t >= 12*60 && t < 13*60) t = 13*60;
+  }
+  return out.slice(0,6);
+}
+function renderSlots(){
+  const wrap = $('#slotlist');
+  if(!S.calDate){ $('#slotTitle').textContent='日付を選んでください'; wrap.innerHTML=''; $('#calDecide').disabled=true; return; }
+  const dm = mark(S.calDate);
+  const d = new Date(2026,6,S.calDate);
+  $('#slotTitle').textContent = '7/'+S.calDate+'('+WD[d.getDay()]+') の時間枠（'+S.service+'・'+S.dur+'分）';
+  const slots = genSlots(S.dur);
+  wrap.innerHTML = slots.map((s,i)=>{
+    let cls='', right='空きあり';
+    if(dm==='few' && i%2===1){ cls='few'; right='残1'; }
+    if(i===slots.length-1 && dm!=='ok'){ cls='full'; right='満枠'; }
+    if(S.calSlot===s && cls!=='full') cls='sel';
+    return '<div class="slotline '+cls+'" data-slot="'+s+'"><span>'+s+'</span><span>'+(cls==='sel'?'選択中':right)+'</span></div>';
+  }).join('');
+  $('#calDecide').disabled = !S.calSlot;
+}
+/* --- 確認画面 --- */
+function renderConfirm(){
+  $('#cf-store').textContent = S.store;
+  $('#cf-service').textContent = S.service+'（'+S.dur+'分）';
+  $('#cf-car').textContent = S.car;
+  $('#cf-c1').textContent = S.cand[1] ? S.cand[1].d+' '+S.cand[1].t : '未選択';
+  $('#cf-c2').textContent = S.cand[2] ? S.cand[2].d+' '+S.cand[2].t : '未選択';
+}
+/* --- 管理ボード（予約） --- */
+function renderAdmin(){
+  $('#adm-store').textContent = S.store+' ／ 入庫リクエスト管理';
+  $('#tb-svc').textContent = S.service;
+  $('#dt-svc').textContent = S.service+'（'+S.dur+'分）';
+  $('#tb-c1').textContent = (S.cand[1]?S.cand[1].d:'—')+' ◎';
+  $('#dt-c1').textContent = S.cand[1] ? S.cand[1].d+' '+S.cand[1].t : '—';
+  $('#dt-c2').textContent = S.cand[2] ? S.cand[2].d+' '+S.cand[2].t : '—';
+  $$('.copt').forEach(c=>c.classList.toggle('sel', +c.dataset.pick===S.fixedPick));
+  const tag = $('#tb-tag');
+  if(S.fixed){ tag.className='tag done'; tag.textContent='確定'; $('#adm-alert').classList.add('hide'); $('#fixbtn').disabled=true; $('#fixbtn').textContent='確定済み'; }
+  else { tag.className='tag wait'; tag.textContent='受付中'; $('#adm-alert').classList.remove('hide'); $('#fixbtn').disabled=false; $('#fixbtn').textContent='この日程で確定して通知'; }
+}
+/* --- 確定通知 --- */
+function renderFixed(){
+  const c = S.cand[S.fixedPick] || S.cand[1];
+  $('#fixmsg').textContent = c.d+' '+c.t.split('〜')[0]+'〜 で確定しました';
+  $('#fixsub').textContent = S.service+'・'+S.store;
+  $('#remindmsg').textContent = '明日 '+c.t.split('〜')[0]+' ご来店です';
+  $('#chatstore').textContent = S.store;
+  $('#cmpsvc').textContent = S.service;
+  $('#fwstore').textContent = S.store; $('#fwstore2').textContent = S.store;
+}
+/* --- 引き取り --- */
+const PK_DATES = ['7/4(金)','7/5(土)','7/6(日)','7/7(火)'];
+const PK_SLOTS = [
+  {t:'9:00〜11:00',  lv:'混雑・お待たせします', cls:'few'},
+  {t:'11:00〜13:00', lv:'やや混雑',            cls:'few'},
+  {t:'14:00〜15:00', lv:'お待たせしません',     cls:''},
+  {t:'17:00〜18:00', lv:'お待たせしません',     cls:''}
+];
+function renderPickup(){
+  $('#pkdates').innerHTML = PK_DATES.map(d=>'<span class="chip'+(d===S.pkDate?' sel':'')+'" data-pkd="'+d+'">'+d+'</span>').join('');
+  $('#pkslots').innerHTML = PK_SLOTS.map(s=>
+    '<div class="slotline '+(S.pkSlot===s.t?'sel':s.cls)+'" data-pks="'+s.t+'"><span>'+s.t+'</span><span>'+(S.pkSlot===s.t?'選択中 ✓':s.lv)+'</span></div>').join('');
+  $('#pkbtn').disabled = !(S.pkDate && S.pkSlot);
+  $('#pkfix').textContent = S.pkDate+' '+S.pkSlot+' で承りました';
+  $('#pkremind').textContent = '本日 '+S.pkSlot.split('〜')[0]+' にお引き取り予定です';
+}
+/* --- 完了・引取管理ボード --- */
+const PK_ROWS = [
+  {car:'ミニバン／ヤマダ',  work:'車検',    sent:'自動送信済', pick:'', stock:1, act:'詳細'},
+  {car:'コンパクト／ワタナベ',work:'洗車',   sent:'自動送信済', pick:'本日 AM', stock:0, act:'詳細'},
+  {car:'SUV／ナカムラ',     work:'修理・板金',sent:'未送信',    pick:'—', stock:3, act:'完了通知を送る'},
+  {car:'セダン／サトウ',     work:'点検',    sent:'送信済',    pick:'未指定', stock:5, act:'追いかけ通知'}
+];
+const AUTOSET = [
+  {n:'洗車・オイル交換（軽作業）', v:'自動'},
+  {n:'車検・点検',               v:'自動'},
+  {n:'修理・板金（要時間）',      v:'手動'}
+];
+function renderPkBoard(){
+  PK_ROWS[0].pick = S.pkSet ? S.pkDate+' '+S.pkSlot.split('〜')[0] : '未指定';
+  $('#pkbody').innerHTML = PK_ROWS.map((r,i)=>
+    '<tr><td>'+r.car+'</td><td>'+r.work+'</td><td>'+r.sent+'</td><td>'+r.pick+'</td>'
+    + '<td'+(r.stock>=3?' style="color:#c0392b;font-weight:700"':'')+'>'+r.stock+'日</td>'
+    + '<td><button class="action-btn'+(r.act!=='詳細'?' fill':'')+'" data-pkrow="'+i+'">'+r.act+'</button></td></tr>').join('');
+  const over = PK_ROWS.filter(r=>r.stock>=3).length;
+  $('#kpi-over').textContent = over+'件';
+  $('#kpi-avg').textContent = (PK_ROWS.reduce((a,b)=>a+b.stock,0)/PK_ROWS.length).toFixed(1)+'日';
+  $('#autoset').innerHTML = AUTOSET.map((a,i)=>
+    '<div class="copt" data-auto="'+i+'"><span>'+a.n+'</span><span class="segbtn"><span class="'+(a.v==='自動'?'on':'')+'">自動</span><span class="'+(a.v==='手動'?'on':'')+'">手動</span></span></div>').join('');
+}
+function syncScreens(k){
+  if(k==='mycar') renderMycar();
+  if(k==='bk-store') renderStores();
+  if(k==='bk-service') renderServices();
+  if(k==='bk-info'){ renderCarPick(); renderCands(); }
+  if(k==='bk-cal'){ $('#calTitle').textContent='第'+S.target+'希望の日時を選ぶ'; renderCal(); }
+  if(k==='bk-confirm') renderConfirm();
+  if(k==='admin-book') renderAdmin();
+  if(k==='talk-fixed'||k==='talk-chat'||k==='talk-complete'||k==='talk-follow') renderFixed();
+  if(k==='pickup') renderPickup();
+  if(k==='talk-pickup') renderPickup();
+  if(k==='admin-pickup') renderPkBoard();
+}
+
+/* ===================== イベント（委譲） ===================== */
+document.addEventListener('click', e=>{
+  const t = e.target;
+  const c = sel => t.closest(sel);
+
+  // ステップ移動
+  const sb = c('[data-step]'); if(sb){ goto(sb.dataset.step); return; }
+  const jp = c('[data-jump]'); if(jp){ goto(jp.dataset.jump); window.scrollTo({top:0,behavior:'smooth'}); return; }
+  const go = c('[data-go]');   if(go){ goto(go.dataset.go); return; }
+  const lf = c('[data-liff]'); if(lf){ goto(lf.dataset.liff, true); return; }
+  const ts = c('[data-toast]'); if(ts){ toast(ts.dataset.toast); return; }
+  if(c('[data-restart]')){
+    S.fixed=false; S.pkSet=false; S.cand[3]=null; S.calDate=null; S.calSlot=null;
+    PK_ROWS[2].sent='未送信'; PK_ROWS[2].act='完了通知を送る';
+    PK_ROWS[3].sent='送信済';  PK_ROWS[3].act='追いかけ通知';
+    $('#chatchoices').classList.remove('hide'); $('#chatthread').innerHTML='';
+    goto('friend'); return; }
+
+  // マイカー登録
+  const st = c('[data-store]');
+  if(st){ if(st.dataset.store) S.store = st.dataset.store;
+          if(cur==='mycar') renderMycar(); else renderStores(); return; }
+  const nt = c('[data-notify]');
+  if(nt){ const i=+nt.dataset.notify; S.notify[i]=!S.notify[i]; renderMycar();
+          toast(S.notify[i]?'この車の入庫案内をONにしました':'この車の入庫案内をOFFにしました'); return; }
+  if(c('#addcar')){
+    CONFIG.cars.push({name:'SUV',plate:'○○ 330 さ 45-67',user:'ご本人',exp:'2028/03'});
+    S.notify.push(true); renderMycar(); toast('お車を追加しました（3台目）'); return;
+  }
+  // 車検証
+  if(c('#scanbox')){
+    const box=$('#scanbox'); box.innerHTML='<div class="spin" style="border-color:#c9cbe8;border-top-color:var(--accent);margin:6px auto;"></div><div class="t" style="margin-top:8px;">読み取り中…</div>';
+    setTimeout(()=>{ box.innerHTML='<div class="ico">📄</div><div class="t">読み取りが完了しました</div><div class="d">内容をご確認ください</div>';
+      $('#scanresult').classList.remove('hide'); }, 900); return;
+  }
+  // サービス／車両
+  const sv = c('[data-svc]');
+  if(sv){ const s = CONFIG.services.find(x=>x.name===sv.dataset.svc); S.service=s.name; S.dur=s.dur;
+          S.calSlot=null; renderServices(); return; }
+  const cr = c('[data-car]'); if(cr){ S.car = cr.dataset.car; renderCarPick(); return; }
+
+  // 候補枠 → カレンダー
+  const cd = c('[data-cand]');
+  if(cd){ S.target = +cd.dataset.cand; S.calDate=null; S.calSlot=null; goto('bk-cal'); return; }
+  const day = c('[data-day]');
+  if(day && !day.classList.contains('full') && !day.classList.contains('off') && !day.classList.contains('pad')){
+    S.calDate = +day.dataset.day; S.calSlot=null; renderCal(); return; }
+  const sl = c('[data-slot]');
+  if(sl && !sl.classList.contains('full')){ S.calSlot = sl.dataset.slot; renderSlots(); return; }
+  if(c('#calDecide') && !$('#calDecide').disabled){
+    const d = new Date(2026,6,S.calDate);
+    S.cand[S.target] = {d:'7/'+S.calDate+'('+WD[d.getDay()]+')', t:S.calSlot};
+    goto('bk-info'); toast('第'+S.target+'希望を設定しました'); return;
+  }
+
+  // 管理ボード（予約）
+  const row = c('tr.row');
+  if(row){ $$('tr.row').forEach(r=>r.classList.toggle('on', r===row));
+           if(row.dataset.row!=='1042') toast('他案件の明細です（モックでは #1042 のみ操作できます）'); return; }
+  const pick = c('[data-pick]'); if(pick){ S.fixedPick = +pick.dataset.pick; renderAdmin(); return; }
+  if(c('#fixbtn') && !$('#fixbtn').disabled){
+    S.fixed = true; renderAdmin(); toast('確定しました。お客様へ通知を送信します');
+    setTimeout(()=>goto('talk-fixed'), 900); return;
+  }
+
+  // 予約後チャット
+  const rp = c('[data-reply]');
+  if(rp){ $('#chatthread').innerHTML =
+      '<div class="bubble user">'+rp.dataset.reply+'</div>'
+      + '<div class="bubble shop"><div class="nm">'+S.store+'</div>承知しました。当日は車検証をお持ちください。'
+      + (rp.dataset.reply.indexOf('代車')>=0?'代車もご用意しておきます。':'')+'</div>';
+    $('#chatchoices').classList.add('hide'); return; }
+
+  // 引き取り
+  const pd = c('[data-pkd]'); if(pd){ S.pkDate = pd.dataset.pkd; renderPickup(); return; }
+  const ps = c('[data-pks]'); if(ps){ S.pkSlot = ps.dataset.pks; renderPickup(); return; }
+  if(c('#pkbtn') && !$('#pkbtn').disabled){ S.pkSet=true; goto('talk-pickup'); toast('お引き取り日時を承りました'); return; }
+
+  // 完了・引取管理ボード
+  const pr = c('[data-pkrow]');
+  if(pr){ const i=+pr.dataset.pkrow; const r=PK_ROWS[i];
+    if(r.act==='完了通知を送る'){ r.sent='手動送信済'; r.act='詳細'; toast('完了通知を送信しました'); }
+    else if(r.act==='追いかけ通知'){ r.sent='送信済＋追いかけ'; r.act='詳細'; toast('未指定のお客様へ追いかけ通知を送信しました'); }
+    else toast('明細を開きます（モックでは省略）');
+    renderPkBoard(); return; }
+  const au = c('[data-auto]');
+  if(au){ const i=+au.dataset.auto; AUTOSET[i].v = AUTOSET[i].v==='自動'?'手動':'自動';
+    renderPkBoard(); toast(AUTOSET[i].n+' を「'+AUTOSET[i].v+'」に変更しました'); return; }
+});
+
+$('#prev').onclick = ()=>{ const i=FLOW.findIndex(f=>f.k===cur); if(i>0) goto(FLOW[i-1].k); };
+$('#next').onclick = ()=>{ const i=FLOW.findIndex(f=>f.k===cur); if(i<FLOW.length-1) goto(FLOW[i+1].k); };
+
+/* ===================== ジャーニー ===================== */
+const JOURNEY = [
+  {ph:'PHASE 0', t:'友だち獲得・登録', d:'マイカー登録（車両ごと）＋車検証登録', k:'mycar'},
+  {ph:'PHASE 1', t:'案内・想起',       d:'車検満了30日前に自動配信',           k:'talk-notice'},
+  {ph:'PHASE 2', t:'予約（4ステップ）', d:'店舗→サービス→予約情報→日時→確認',  k:'bk-store'},
+  {ph:'PHASE 3', t:'店舗確定',         d:'管理ボードで候補から確定・通知',      k:'admin-book'},
+  {ph:'PHASE 4', t:'通知・予約後',     d:'確定/リマインド＋予約後チャット',      k:'talk-fixed'},
+  {ph:'PHASE 4.5',t:'完了・お引き取り', d:'完了通知→引き取り日時の指定→平準化',  k:'talk-complete'},
+  {ph:'PHASE 5', t:'完了後フォロー',   d:'お礼＋次回案内。次回満了でPHASE 1へ',  k:'talk-follow'}
+];
+$('#journey').innerHTML = JOURNEY.map(j=>
+  '<div class="jp" data-jump="'+j.k+'"><div class="ph">'+j.ph+'</div><div class="t">'+j.t+'</div><div class="d">'+j.d+'</div></div>').join('');
+
+/* ===================== ブランド差し替え・初期化 ===================== */
+$$('[data-brand="oa"]').forEach(el=>el.textContent = CONFIG.oaName);
+$('#pcurl').textContent = CONFIG.adminUrl;
+if(NOGUIDE) $('#guide').classList.add('hide');
+if(EMBED){ document.body.style.padding='0'; $$('.sec-title,.sec-note,.journey,.imp-table,.legend,.flow-note,.disc,h1,.subtitle,.eyebrow,.hintbar').forEach(e=>e.classList.add('hide')); }
+
+const start = qp.get('step') || qp.get('screen') || 'friend';
+goto(FLOW.find(f=>f.k===start) ? start : 'friend');
+window.addEventListener('resize', ()=>renderHeader(cur));
+window.addEventListener('load',  ()=>renderHeader(cur));
+</script>
+</body>
+</html>
