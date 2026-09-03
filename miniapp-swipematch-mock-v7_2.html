@@ -3617,54 +3617,104 @@ body.grain-off .wm-art-grain { display: none; }
 }
 
 /* ---------- お問い合わせ CTA（解説パネルの上） ---------- */
+/* カラーバリアント：?cta=rose（既定） / dark / blue で切替 */
 .wm-cta-top {
+  --cta-a: #ff2d6f; --cta-b: #d90f5f; --cta-glow: rgba(255, 45, 111, 0.50);
+}
+body[data-cta="dark"] .wm-cta-top,
+body[data-cta="dark"] .wm-float-cta {
+  --cta-a: #262a4d; --cta-b: #0b0d1f; --cta-glow: rgba(20, 22, 58, 0.42);
+}
+body[data-cta="blue"] .wm-cta-top,
+body[data-cta="blue"] .wm-float-cta {
+  --cta-a: #2a2eea; --cta-b: #1b1ea8; --cta-glow: rgba(42, 46, 234, 0.45);
+}
+
+.wm-cta-wrap {
   flex-shrink: 0;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  width: 380px; box-sizing: border-box;
-  padding: 15px 16px 15px 20px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #2a2eea 0%, #1b1ea8 100%);
+  display: flex; justify-content: center;
+  animation: wmCtaIn .52s cubic-bezier(.2,.9,.3,1.5) .75s both;
+}
+.wm-cta-top {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 10px;
+  max-width: 380px; box-sizing: border-box;
+  padding: 14px 16px 14px 26px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--cta-a) 0%, var(--cta-b) 100%);
   color: #fff; text-decoration: none;
   font-family: var(--wm-font-jp, 'Noto Sans JP', system-ui, sans-serif);
-  box-shadow: 0 8px 22px rgba(42, 46, 234, 0.26);
+  box-shadow: 0 10px 26px var(--cta-glow), 0 2px 6px rgba(0,0,0,0.10);
   transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
 }
-.wm-cta-top:hover  { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(42, 46, 234, 0.34); filter: brightness(1.06); }
-.wm-cta-top:active { transform: translateY(0);    box-shadow: 0 5px 14px rgba(42, 46, 234, 0.26); }
-.wm-cta-top-main { font-size: 15px; font-weight: 800; letter-spacing: 0.01em; }
+.wm-cta-top::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  pointer-events: none;
+  box-shadow: 0 0 0 0 var(--cta-glow);
+  animation: wmCtaPulse 4.2s ease-out 1.8s infinite;
+}
+.wm-cta-top:hover  { transform: translateY(-2px); box-shadow: 0 16px 34px var(--cta-glow), 0 2px 6px rgba(0,0,0,0.12); filter: brightness(1.07); }
+.wm-cta-top:active { transform: translateY(0);    box-shadow: 0 6px 16px var(--cta-glow); }
+.wm-cta-top-main { font-size: 15.5px; font-weight: 800; letter-spacing: 0.01em; white-space: nowrap; }
 .wm-cta-top .material-symbols-rounded {
   font-size: 20px; flex-shrink: 0;
-  width: 30px; height: 30px; border-radius: 50%;
-  background: rgba(255,255,255,0.16);
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.18);
   display: flex; align-items: center; justify-content: center;
+  transition: transform .16s ease;
+}
+.wm-cta-top:hover .material-symbols-rounded { transform: translateX(3px); }
+
+@keyframes wmCtaIn {
+  from { opacity: 0; transform: translateY(-10px) scale(.92); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes wmCtaPulse {
+  0%   { box-shadow: 0 0 0 0 var(--cta-glow); }
+  16%  { box-shadow: 0 0 0 16px rgba(0,0,0,0); }
+  100% { box-shadow: 0 0 0 16px rgba(0,0,0,0); }
 }
 
 /* ---------- ?guide=off のときの単独フローティングCTA（右上） ---------- */
 .wm-float-cta {
+  --cta-a: #ff2d6f; --cta-b: #d90f5f; --cta-glow: rgba(255, 45, 111, 0.50);
   position: fixed; right: 24px; top: 24px; z-index: 9999;
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex; align-items: center; gap: 8px;
   padding: 13px 20px; border-radius: 999px;
-  background: linear-gradient(135deg, #2a2eea 0%, #1b1ea8 100%);
-  color: #fff; font-size: 13.5px; font-weight: 800;
+  background: linear-gradient(135deg, var(--cta-a) 0%, var(--cta-b) 100%);
+  color: #fff; font-size: 14px; font-weight: 800;
   font-family: var(--wm-font-jp, 'Noto Sans JP', system-ui, sans-serif);
   text-decoration: none;
-  box-shadow: 0 10px 28px rgba(42, 46, 234, 0.34);
+  box-shadow: 0 10px 28px var(--cta-glow), 0 2px 6px rgba(0,0,0,0.10);
   transition: transform .16s ease, box-shadow .16s ease;
+  animation: wmCtaIn .52s cubic-bezier(.2,.9,.3,1.5) .75s both;
 }
-.wm-float-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(42, 46, 234, 0.40); }
+.wm-float-cta::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  pointer-events: none;
+  box-shadow: 0 0 0 0 var(--cta-glow);
+  animation: wmCtaPulse 4.2s ease-out 1.8s infinite;
+}
+.wm-float-cta:hover { transform: translateY(-2px); box-shadow: 0 16px 34px var(--cta-glow); }
 .wm-float-cta .material-symbols-rounded { font-size: 18px; }
 @media (max-width: 640px) {
-  .wm-float-cta { right: 14px; top: 14px; padding: 12px 16px; font-size: 12.5px; }
+  .wm-float-cta { right: 14px; top: 14px; padding: 12px 16px; font-size: 13px; }
+}
+
+/* 動きを減らす設定のユーザーには常時アニメーションを出さない */
+@media (prefers-reduced-motion: reduce) {
+  .wm-cta-wrap, .wm-float-cta { animation: none; }
+  .wm-cta-top::after, .wm-float-cta::after { animation: none; }
 }
 
 /* 画面が狭いときは縦積み */
 @media (max-width: 1020px) {
   .wm-layout { flex-direction: column; align-items: center; }
   .wm-guide { width: min(420px, 92vw); max-height: none; height: auto !important; }
-  .wm-cta-top { width: min(420px, 92vw); }
+  .wm-cta-top { max-width: min(420px, 92vw); }
 }
 body.wm-embed .wm-guide-col { display: none; }
-body.wm-embed .wm-cta-top { display: none; }
+body.wm-embed .wm-cta-wrap { display: none; }
 
 
 /* ---------- ② LINE 友だち追加画面 ---------- */
@@ -7028,15 +7078,17 @@ window.App = App;
           <div className="wm-device-col">{device}</div>
           <div className="wm-guide-col" style={stacked ? null : { height: 864 * scale }}>
             {/* お問い合わせ CTA — 解説枠の上 */}
-            <a
-              className="wm-cta-top"
-              href={window.WM_CTA_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="wm-cta-top-main">お問い合わせはこちら</span>
-              <span className="material-symbols-rounded">arrow_forward</span>
-            </a>
+            <div className="wm-cta-wrap">
+              <a
+                className="wm-cta-top"
+                href={window.WM_CTA_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className="wm-cta-top-main">お問い合わせはこちら</span>
+                <span className="material-symbols-rounded">arrow_forward</span>
+              </a>
+            </div>
             <GuidePanel height={null}/>
           </div>
         </div>
@@ -7083,6 +7135,10 @@ window.App = App;
           window.parent.postMessage({type:'__edit_mode_set_keys', edits: t}, '*');
         });
       });
+
+      // CTAのカラーバリアント（?cta=rose|dark|blue）
+      const ctaVariant = new URLSearchParams(location.search).get('cta');
+      document.body.dataset.cta = ['rose','dark','blue'].includes(ctaVariant) ? ctaVariant : 'rose';
 
       // Embed mode: transparent background, no letterbox
       const isEmbed = new URLSearchParams(location.search).has('embed');
