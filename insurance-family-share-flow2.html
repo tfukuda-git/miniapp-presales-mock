@@ -677,9 +677,10 @@ function fSettings(){
 }
 function fTutorial(){
   var steps=[
-    {img:0,h1:"ご家族から共有されました",h2:"共有された保険を確認",note:"ご家族が共有した保険情報を、このアプリでいつでも確認できます。閲覧できる情報が全て・最新とは限りません。ご不明点は招待者（ご契約者）にご確認ください。"},
-    {img:3,h1:"",h2:"もしもの時は緊急連絡先へ",note:"担当者や保険会社の窓口にワンタップで発信。いざというときに、すぐ確認・連絡できます。"},
-    {img:1,h1:"",h2:"ご自身の保険も共有できます",note:"あなた自身の保険を登録して、ご家族と共有することもできます。"}
+    {img:0,h1:"家族でもしもに備える",h2:"「家族あんしん共有」へようこそ",note:"証券や名刺を見ながら、ご家族に共有したい内容を無料でかんたんに登録できます。"},
+    {img:1,h1:"家族のために",h2:"自由に整理・登録",note:"情報の登録・更新はお客様自身でお願いします。最新の内容に保てるよう、定期的な見直しをおすすめします。"},
+    {img:2,h1:"",h2:"見せる範囲は自由自在",note:"「誰に」「何を」共有するかはいつでも変更できます。ご利用や共有に関するご家族間のトラブルについて、当社は責任を負いかねます。"},
+    {img:3,h1:"",h2:"もしもの時は緊急連絡先へ",note:"担当者や保険会社の窓口にワンタップで発信。ご家族が困ったときに、すぐ確認・連絡できます。"}
   ];
   var s=famB.tuStep||0;var st=steps[s];var last=(s===steps.length-1);
   var dots=steps.map(function(_,i){return '<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+(i===s?'#e8547f':'#cdd6cf')+'"></span>';}).join(" ");
@@ -726,7 +727,7 @@ function fRender(){
   var tb=noTabs?'':'<div class="tabbar">'+tabs.map(function(t){return '<button class="'+((famB.mtab==t[0]&&!famB.mpage)?"act":"")+'" '+A("ftab",t[0])+'>'+t[2]+'<span>'+t[1]+'</span></button>';}).join("")+'</div>';
   return SB+'<div class="view"><div class="pad">'+body+'</div></div>'+tb+'<div class="toast" id="toastB"></div>';
 }
-function ftuNext(){if((famB.tuStep||0)<2){famB.tuStep=(famB.tuStep||0)+1;renderB();}else{ftuFinish();}}
+function ftuNext(){if((famB.tuStep||0)<3){famB.tuStep=(famB.tuStep||0)+1;renderB();}else{ftuFinish();}}
 function ftuFinish(){if(famB.tuReplay){famB.tuReplay=false;famB.tuStep=0;famB.mpage=null;famB.mtab="settings";}else{famB.tuDone=true;famB.tuStep=0;}renderB();}
 function ftuSkip(){famB.tuDone=true;famB.tuStep=0;renderB();}
 function ftuClose(){famB.tuReplay=false;famB.tuStep=0;famB.mpage=null;famB.mtab="settings";renderB();}
