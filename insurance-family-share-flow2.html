@@ -198,7 +198,7 @@ var ONBO_IMG=["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAD8CAYAAAAG730
 
 var state={tab:"home",page:null,famTab:"by",addStep:0,addMode:"manual",c1:false,editIdx:0,memberIdx:0,tutorialDone:false,tuStep:0,tuReplay:false,profileDone:false,pconsent:false,newIns:{},photo:false,inviteName:"",inviteConfirmed:false,pickerSel:[]};
 var famB={step:"line",notified:false,friendAdded:false,addPopup:false,mtab:"family",mfamTab:"with",mpage:null,tuDone:false,tuStep:0,tuReplay:false,pname:"",ptel:"",pbd:"",consent:false};
-var sharedMembers=[];var pendingInvites=[];var INVITE_DAYS=7;/* 招待の有効期限（日数はFG確認中・仮置き） */
+var sharedMembers=[];var pendingInvites=[];var INVITE_DAYS=7;/* 招待の有効期限（7日・FG確認済み 2026-09-25） */
 function fmtMD(d){return (d.getMonth()+1)+"/"+d.getDate();}
 
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
@@ -471,21 +471,21 @@ function setCheck(cbId,btnId,on){var cb=document.getElementById(cbId);if(cb){cb.
 function toggleP(){state.pconsent=!state.pconsent;if(!setCheck("ppcb","ppbtn",state.pconsent))render();}
 function saveProfile(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var nm=g("p_name");if(!nm){toast("氏名を入力してください");return;}var bd=readDate("p_bd");if(!bd){toast("生年月日を入力してください");return;}var bdd=new Date(bd+"T00:00:00"),bp=bd.split("-");if(isNaN(bdd)||bdd.getMonth()+1!=+bp[1]||bdd>=new Date()){toast("生年月日は過去の実在する日付を入力してください");return;}var tl=g("p_tel");if(tl&&!/^0\d{9,10}$/.test(tl)){toast("電話番号は数字のみ（ハイフンなし）で入力してください");return;}if(!state.pconsent){toast("プライバシーポリシー・利用規約への同意が必要です");return;}state.pname=nm;state.ptel=g("p_tel");state.pbd=readDate("p_bd");state.profileDone=true;toast("プロフィールを登録しました");render();}
 function confirmManual(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var co=g("f_co");if(!co){toast("保険会社を入力してください");return;}var tel=g("f_tel");var fee=g("f_fee");if(fee&&!/^\d{1,10}$/.test(fee)){toast("半角数字（整数）で入力してください");return;}if(!tel){toast("連絡先を入力してください");return;}if(!/^0\d{9,10}$/.test(tel)){toast("電話番号は数字のみ（ハイフンなし）で入力してください");return;}state.newIns={co:co,name:g("f_name"),no:g("f_no"),start:readDate("f_start"),end:readDate("f_end"),fee:g("f_fee"),agent:g("f_agent"),tel:tel,memo:g("f_memo")};state.addStep=1;render();}
-function attachPhoto(){if((state.photo||0)>=2){toast("証券画像は最大2枚までです");return;}state.camStep=state.camOk?"cam":"perm";render();}
+function attachPhoto(){if((state.photo||0)>=2){toast("証券画像は最大2枚までです");return;}state.camStep="perm";render();}
 function camDeny(){state.camStep=null;render();}
-function camAllow(){state.camOk=true;state.camStep="cam";render();}
-function camShoot(){state.photo=(state.photo||0)+1;state.camStep=null;toast("証券写真を添付しました（自動入力は今後対応）");render();}
+function camAllow(){state.camOk=true;camShoot();}
+function camShoot(){state.photo=(state.photo||0)+1;state.camStep=null;toast("（実機では端末のカメラで撮影）証券写真を添付しました");render();}
 function screenCamera(){
   if(state.camStep=="perm"){
     var caution='<div style="background:#fff4f4;border:1px solid #f5c2c2;border-radius:8px;color:#b42318;font-size:12px;line-height:1.6;padding:10px 12px;text-align:left">⚠ 健康保険証・マイナ保険証など公的保険の写真は撮影・添付しないでください。<br>⚠ 病歴・診断書など健康状態がわかる書類は撮影しないでください。</div>';
     return '<div style="text-align:center;padding:34px 8px 0">'
       +'<div style="width:64px;height:64px;border-radius:18px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">'+I.camera.replace('width="40" height="40"','width="30" height="30"')+'</div>'
-      +'<div style="font-weight:700;font-size:16px;line-height:1.5;margin-bottom:8px">「家族あんしん共有」がカメラへのアクセスを求めています</div>'
-      +'<div style="font-size:13px;color:var(--ink2);line-height:1.7;margin-bottom:18px;max-width:290px;margin-left:auto;margin-right:auto">保険証券を撮影して登録するために使用します。撮影した写真はご自身の保険情報としてのみ利用されます。</div>'
+      +'<div style="font-weight:700;font-size:16px;line-height:1.5;margin-bottom:8px">証券を撮影する前に</div>'
+      +'<div style="font-size:13px;color:var(--ink2);line-height:1.7;margin-bottom:18px;max-width:290px;margin-left:auto;margin-right:auto">撮影した写真はご自身の保険情報としてのみ利用されます。「カメラを起動する」を押すと端末のカメラが起動します（初回は端末のアクセス許可が表示されます）。</div>'
       +caution
       +'<div style="display:flex;gap:10px;margin-top:20px">'
-      +'<button class="btn btn-ghost btn-block" style="margin:0" '+A("camDeny")+'>許可しない</button>'
-      +'<button class="btn btn-primary btn-block" style="margin:0" '+A("camAllow")+'>許可</button></div>'
+      +'<button class="btn btn-ghost btn-block" style="margin:0" '+A("camDeny")+'>キャンセル</button>'
+      +'<button class="btn btn-primary btn-block" style="margin:0" '+A("camAllow")+'>カメラを起動する</button></div>'
       +'</div>';
   }
   var cautionD='<div style="background:rgba(255,255,255,.94);border-radius:8px;color:#b42318;font-size:11.5px;line-height:1.6;padding:9px 11px;text-align:left">⚠ 健康保険証・マイナ保険証など公的保険の写真は撮影・添付しないでください。<br>⚠ 病歴・診断書など健康状態がわかる書類は撮影しないでください。</div>';
@@ -526,8 +526,8 @@ function deleteIns(){myInsurances.splice(state.editIdx,1);toast("保険を削除
 function removeShare(n){sharedMembers=sharedMembers.filter(function(a){return a[0]!==n;});toast(n+"さんへの共有を停止しました（家族に通知されません）");render();}
 function inviteToggle(){state.inviteConfirmed=!state.inviteConfirmed;if(!setCheck("ivcb","ivbtn",state.inviteConfirmed))render();}
 function openPicker(){if(!state.inviteConfirmed){toast("注意事項の確認が必要です");return;}state.pickerSel=[];state.page="picker";render();}
-function pickerToggle(n){var i=state.pickerSel.indexOf(n);if(i>=0)state.pickerSel.splice(i,1);else state.pickerSel.push(n);render();}
-function pickerSend(){if(!state.pickerSel.length){toast("共有相手を選んでください");return;}var sel=state.pickerSel.slice();var ex=new Date();ex.setDate(ex.getDate()+INVITE_DAYS);sel.forEach(function(){pendingInvites.push({exp:fmtMD(ex)});});toast(sel.length+"名に共有の招待を送りました（LINEで通知）");famB.step="line";famB.notified=true;renderB();toastB(OWNER+"さんからLINEが届きました");state.pickerSel=[];state.inviteConfirmed=false;setTimeout(function(){goTab("family");},1200);}
+function pickerToggle(n){state.pickerSel=(state.pickerSel[0]===n)?[]:[n];render();}
+function pickerSend(){if(!state.pickerSel.length){toast("共有相手を選んでください");return;}var sel=state.pickerSel.slice();var ex=new Date();ex.setDate(ex.getDate()+INVITE_DAYS);sel.forEach(function(){pendingInvites.push({exp:fmtMD(ex)});});toast(sel[0]+"さんに共有の招待を送りました（LINEで通知）");famB.step="line";famB.notified=true;renderB();toastB(OWNER+"さんからLINEが届きました");state.pickerSel=[];state.inviteConfirmed=false;setTimeout(function(){goTab("family");},1200);}
 function screenPicker(){
   var rows=friends.map(function(n){var init=n.replace(/\s/g,"").slice(-2,-1);var on=state.pickerSel.indexOf(n)>=0;
     return '<div class="row" '+A("pickerToggle",n)+'><div class="avatar" style="background:#cfd3da">'+esc(init)+'</div>'
@@ -535,10 +535,10 @@ function screenPicker(){
       +'<div class="cb'+(on?' on':'')+'">'+(on?I.check:"")+'</div></div>';}).join("");
   return '<div class="backbar"><button class="back" '+A("go","invite")+'>'+I.back+' 共有相手を追加に戻る</button></div>'
     +'<div class="head-row"><div class="h1" style="font-size:22px">送信先を選択</div></div>'
-    +'<div class="note">LINEの友だち一覧です（LINEの送信先選択のイメージ）。共有相手を選んで送信します（複数選択可）。<br>※このデモでは、送信すると<b>右の端末（共有先のご家族）</b>に届きます。</div>'
+    +'<div class="note">LINEの友だち一覧です（LINEの送信先選択のイメージ）。共有相手を<b>1名</b>選んで送信します（1回の招待で送れるのは1名です）。<br>※このデモでは、送信すると<b>右の端末（共有先のご家族）</b>に届きます。</div>'
     +'<div class="section-label">トーク</div>'+rows
     +(state.pickerSel.length?'<div class="consent-box blue" style="margin-top:12px"><div class="ct">送信前のご確認</div><ul><li>・共有すると<b>'+esc(state.pickerSel.join('、'))+'</b>さんのLINEに通知が届き、相手が「受け取る」と対象の情報が閲覧可能になります。</li></ul></div>':'')
-    +'<button class="btn btn-primary btn-block" style="margin-top:14px;opacity:'+(state.pickerSel.length?1:.45)+'" '+A("pickerSend")+'>送信'+(state.pickerSel.length?'（'+state.pickerSel.length+'名）':'')+'</button>';
+    +'<button class="btn btn-primary btn-block" style="margin-top:14px;opacity:'+(state.pickerSel.length?1:.45)+'" '+A("pickerSend")+'>送信'+'</button>';
 }
 
 /* ===== 家族 端末 ===== */
@@ -622,10 +622,8 @@ function bOfficial(){
     +'<div class="linehead"><div class="lav">'+I.shield+'</div><div>'+CUST+'<div style="font-size:11px;font-weight:400;opacity:.9">公式アカウント</div></div></div>'
     +'<div class="linechat" id="bbody"><div class="daystamp"><span>今日</span></div>'
     +'<div class="msg"><div class="mic">'+I.shield+'</div><div class="wrap"><div class="who">'+CUST+'</div>'
-    +'<div class="bubble"><b>【家族あんしん共有】</b><br>'+OWNER+'さんとの保険情報の共有が開始されました。下のリッチメニュー、またはこのメッセージから内容をご確認いただけます。</div>'
-    +'<div class="linkcard2"><div class="lc-top">'+I.shield+' 共有された保険を見る</div>'
-    +'<div class="lc-d">'+OWNER+'さんの保険情報と緊急連絡先が確認できます。</div>'
-    +'<div class="lc-btn" '+A("openMini","family")+'>ミニアプリで開く ›</div></div></div></div></div>'
+    +'<div class="bubble"><b>【家族あんしん共有】</b><br>'+OWNER+'さんとの保険情報の共有が開始されました。下のリッチメニュー「家族あんしん共有」から内容をご確認いただけます。</div>'
+    +'</div></div></div>'
     +menu+'<div class="toast" id="toastB"></div>';
 }
 /* ご家族のミニアプリ本体（契約者と同じ3タブUI） */
@@ -744,7 +742,7 @@ function famConsent(){famB.consent=!famB.consent;if(!setCheck("fmcb","fmbtn",fam
 function famReceive(){if(!famB.consent){toastB("情報の取扱いへの同意が必要です");return;}var exists=sharedMembers.some(function(a){return a[0]==FAM;});if(!exists)sharedMembers.push([FAM,"家"]);pendingInvites.shift();famB.step="profile";renderB();render();toast(FAM+"さんが共有を受け取りました");}
 function bProfile(){return SB+'<div class="view"><div class="pad">'+brandbar("家族あんしん共有")+'<div class="center-title" style="margin-top:10px"><h2>プロフィール登録</h2><p>共有された保険を見るために、あなたのお名前と生年月日を登録してください</p></div>'+formFieldId("fp_name","お名前（必須）","例）佐藤 美咲",famB.pname,30)+formFieldDate("fp_bd","生年月日（必須）",famB.pbd)+formFieldId("fp_tel","電話番号（任意）","例）09000000000（ハイフンなし）",famB.ptel,30)+'<div class="note">LINEのお名前のみ取得しているため、正式なお名前をご登録ください。生年月日は同姓同名の識別に使用します。</div>'+'<div class="check-row" '+A("fpToggle")+'><div id="fpcb" class="cb'+(famB.pconsent?' on':'')+'">'+(famB.pconsent?I.check:"")+'</div><div class="ctxt">プライバシーポリシー・利用規約に同意します</div></div>'+'<button id="fpbtn" class="btn btn-brand btn-block" style="margin-top:4px;opacity:'+(famB.pconsent?1:.45)+'" '+A("fpSave")+'>登録する</button>'+'</div></div><div class="toast" id="toastB"></div>';}
 function fpToggle(){famB.pconsent=!famB.pconsent;if(!setCheck("fpcb","fpbtn",famB.pconsent))renderB();}
-function fpSave(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var nm=g("fp_name");if(!nm){toastB("氏名を入力してください");return;}var bd=readDate("fp_bd");if(!bd){toastB("生年月日を入力してください");return;}var bdd=new Date(bd+"T00:00:00"),bp=bd.split("-");if(isNaN(bdd)||bdd.getMonth()+1!=+bp[1]||bdd>=new Date()){toastB("生年月日は過去の実在する日付を入力してください");return;}var tl=g("fp_tel");if(tl&&!/^0\d{9,10}$/.test(tl)){toastB("電話番号は数字のみ（ハイフンなし）で入力してください");return;}if(!famB.pconsent){toastB("同意にチェックしてください");return;}famB.pname=nm;famB.pbd=bd;famB.ptel=tl;famB.step="official";renderB();toastB(CUST+" から共有開始のお知らせが届きました");}
+function fpSave(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var nm=g("fp_name");if(!nm){toastB("氏名を入力してください");return;}var bd=readDate("fp_bd");if(!bd){toastB("生年月日を入力してください");return;}var bdd=new Date(bd+"T00:00:00"),bp=bd.split("-");if(isNaN(bdd)||bdd.getMonth()+1!=+bp[1]||bdd>=new Date()){toastB("生年月日は過去の実在する日付を入力してください");return;}var tl=g("fp_tel");if(tl&&!/^0\d{9,10}$/.test(tl)){toastB("電話番号は数字のみ（ハイフンなし）で入力してください");return;}if(!famB.pconsent){toastB("同意にチェックしてください");return;}famB.pname=nm;famB.pbd=bd;famB.ptel=tl;famB.tuDone=true;famB.step="miniapp";famB.mtab="family";famB.mpage=null;renderB();toastB(CUST+" 公式アカウントから共有開始のお知らせが届きました");}
 
 /* ===== event delegation (インラインonclick非依存でクリック可能) ===== */
 document.addEventListener("click",function(e){
