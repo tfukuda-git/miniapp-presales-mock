@@ -216,8 +216,9 @@ function insCard(ins,idx){
     +'<button class="ins-kebab" '+A("openEdit",idx)+'>'+I.kebab+'</button></div>'
     +'<div class="grid2"><div class="field"><div class="lbl">保険料</div><div class="val">'+esc(ins.fee)+'</div></div>'
     +'<div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(ins.no||"—")+'</div></div></div>'
-    +'<div class="field full"><div><div class="lbl">担当者・連絡先</div><div class="val">'+esc(ins.agent||"—")+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(ins.tel)+'</span></div></div>'
+    +'<div class="field full"><div><div class="lbl">担当者・連絡先</div><div class="val">'+esc(ins.agent||"未登録")+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(ins.tel)+'</span></div></div>'
     +'<button class="callbtn" '+A("toast","発信: "+ins.tel)+'>'+I.phone+'</button></div>'
+    +(ins.agent?'':'<div style="margin:-4px 2px 10px;font-size:12px;line-height:1.6;color:#b54708;background:#fff7ed;border-radius:8px;padding:7px 10px">保険情報に担当者をご入力ください <span style="color:var(--brand);font-weight:700;cursor:pointer" '+A("openEdit",idx)+'>入力する ›</span></div>')
     +(ins.memo?'<div class="field full"><div><div class="lbl">メモ</div><div class="val">'+esc(ins.memo)+'</div></div></div>':'')
     +'<div class="share-row"><span class="lab">保険の共有</span><div class="tg'+(ins.shared?' on':'')+'" '+A("toggleShare",idx)+'></div></div></div>';
 }
@@ -427,7 +428,7 @@ function screenMemberDetail(){
     +'<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div><div style="flex:1"><div class="ins-name">'+esc(x.name)+'</div><div class="ins-co">'+esc(x.co)+'</div></div></div>'
     +'<div class="grid2"><div class="field"><div class="lbl">保険料</div><div class="val">'+esc(x.fee||"—")+'</div></div>'
     +'<div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(x.no||"—")+'</div></div></div>'
-    +'<div class="field full"><div><div class="lbl">担当者・連絡先</div><div class="val">'+esc(x.agent||"—")+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn" '+A("toast","発信")+'>'+I.phone+'</button></div></div>'
+    +'<div class="field full"><div><div class="lbl">担当者・連絡先</div><div class="val">'+esc(x.agent||"未登録")+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn" '+A("toast","発信")+'>'+I.phone+'</button></div>'+(x.agent?'':'<div style="margin:-4px 2px 10px;font-size:12px;line-height:1.6;color:#b54708;background:#fff7ed;border-radius:8px;padding:7px 10px">担当者が登録されていません。ご契約者にご確認ください</div>')+'</div>'
     +'<div class="note">共有された情報は閲覧のみ可能です（編集・削除はできません）。</div>';
 }
 function tabbar(){
@@ -645,7 +646,7 @@ function sharedDetailBody(){
   return '<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div><div style="flex:1"><div class="ins-name">'+esc(x.name)+'</div><div class="ins-co">'+esc(x.co)+'</div></div></div>'
     +'<div class="grid2"><div class="field"><div class="lbl">保険料</div><div class="val">'+esc(x.fee||"—")+'</div></div>'
     +'<div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(x.no||"—")+'</div></div></div>'
-    +'<div class="field full"><div><div class="lbl">担当者・連絡先</div><div class="val">'+esc(x.agent||"—")+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn" '+A("toastB","発信")+'>'+I.phone+'</button></div></div>'
+    +'<div class="field full"><div><div class="lbl">担当者・連絡先</div><div class="val">'+esc(x.agent||"未登録")+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn" '+A("toastB","発信")+'>'+I.phone+'</button></div>'+(x.agent?'':'<div style="margin:-4px 2px 10px;font-size:12px;line-height:1.6;color:#b54708;background:#fff7ed;border-radius:8px;padding:7px 10px">担当者が登録されていません。ご契約者にご確認ください</div>')+'</div>'
     +'<div class="note">共有された情報は閲覧のみ可能です（編集・削除はできません）。</div>';
 }
 function fHome(){
