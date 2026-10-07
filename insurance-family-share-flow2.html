@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>家族あんしん共有 — はなさく生命 ミニアプリ デモ（2端末）</title>
+<title>はなさくポケット — はなさく生命 ミニアプリ デモ（2端末）</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -159,7 +159,7 @@
     <div class="phone"><div class="island"></div><div class="screen" id="screenB"></div></div>
   </div>
 </div>
-<div class="caption">家族あんしん共有サービス ／ はなさく生命保険 LINEミニアプリ ・ 要件反映デモ（社内用）<br>左：契約者が「共有相手を追加」→ 右：ご家族のLINEに通知 → 友だち追加 → ミニアプリで承認申請、まで体験できます<br><a href="hanasaku-admin-console.html" style="display:inline-block;margin-top:12px;color:#ffb3c8;text-decoration:none;font-weight:700;border:1px solid #6a5a72;border-radius:8px;padding:7px 14px">🖥 運用管理画面（管理者向け）を見る →</a></div>
+<div class="caption">はなさくポケット ／ はなさく生命保険 LINEミニアプリ ・ 要件反映デモ（社内用）<br>左：契約者が「共有相手を追加」→ 右：ご家族のLINEに通知 → 友だち追加 → ミニアプリで承認申請、まで体験できます<br><a href="hanasaku-admin-console.html" style="display:inline-block;margin-top:12px;color:#ffb3c8;text-decoration:none;font-weight:700;border:1px solid #6a5a72;border-radius:8px;padding:7px 14px">🖥 運用管理画面（管理者向け）を見る →</a></div>
 
 <script>
 var CUST="はなさく生命",COMP="第一生命",OWNER="田中 太郎",FAM="共有先のご家族";
@@ -258,11 +258,11 @@ function screenSettings(){
   return '<div class="head-row"><div class="h1">設定</div></div>'
     +'<div class="profile"><div class="av">太</div><div><div class="nm">'+esc(nm)+'</div><div class="meta">契約者 ・ LINE連携済み</div></div></div>'
     +'<div class="set-group"><div class="set-list">'+item(I.person,"プロフィール編集",nm,A("openProfileEdit"))+item(I.help,"アプリの使い方","",A("openTutorial"))+item(I.doc,"プライバシーポリシー","")+'</div></div>'
-    +'<div class="ver">家族あんしん共有 v1.0.0<br>'+CUST+'保険株式会社</div>';
+    +'<div class="ver">はなさくポケット v1.0.0<br>'+CUST+'保険株式会社</div>';
 }
 function screenTutorial(){
   var steps=[
-    {h1:"家族でもしもに備える",h2:"「家族あんしん共有」へようこそ",note:"証券や名刺を見ながら、ご家族に共有したい内容を無料でかんたんに登録できます。"},
+    {h1:"家族でもしもに備える",h2:"「はなさくポケット」へようこそ",note:"証券や名刺を見ながら、ご家族に共有したい内容を無料でかんたんに登録できます。"},
     {h1:"家族のために",h2:"自由に整理・登録",note:"情報の登録・更新はお客様自身でお願いします。最新の内容に保てるよう、定期的な見直しをおすすめします。"},
     {h1:"",h2:"見せる範囲は自由自在",note:"「誰に」「何を」共有するかはいつでも変更できます。ご利用や共有に関するご家族間のトラブルについて、当社は責任を負いかねます。"},
     {h1:"",h2:"もしもの時は緊急連絡先へ",note:"担当者や保険会社の窓口にワンタップで発信。ご家族が困ったときに、すぐ確認・連絡できます。"}
@@ -394,16 +394,29 @@ function screenInvite(){
     +'<div style="width:30px;height:30px;border-radius:50%;background:#cfd3da;color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0">太</div>'
     +'<div style="max-width:82%">'
     +'<div style="font-size:11px;color:#fff;opacity:.92;margin-bottom:3px">'+esc(state.pname||OWNER)+'</div>'
-    +'<div style="background:#fff;border-radius:4px 12px 12px 12px;padding:8px 10px;font-size:12.5px;color:#1f2430;line-height:1.5">'+esc(state.pname||OWNER)+'さんから、保険情報共有の招待が届いています。下のリンクを開いてご確認ください。</div>'
-    +'<div style="background:#fff;border-radius:12px;margin-top:6px;overflow:hidden;border:1px solid #e7e9ef">'
-    +'<div style="padding:9px 11px;font-size:12px;font-weight:700;color:var(--brand);display:flex;align-items:center;gap:6px">'+I.shield.replace(/width="22" height="22"/,'width="13" height="13"')+' 家族あんしん共有ミニアプリ</div>'
-    +'<div style="padding:0 11px 9px;font-size:11.5px;color:var(--ink2);line-height:1.5">リンクを開くにはこちらをタップ</div>'
-    +'</div></div></div></div></div>'
+    +shareCard("",true)+'</div></div></div></div>'
     +'<div class="check-row" '+A("inviteToggle")+'><div id="ivcb" class="cb'+(state.inviteConfirmed?' on':'')+'">'+(state.inviteConfirmed?I.check:"")+'</div><div class="ctxt">上記の注意事項を確認しました</div></div>'
     +'<button id="ivbtn" class="btn btn-primary btn-block" style="opacity:'+(state.inviteConfirmed?1:.45)+'" '+A("openPicker")+'>LINEの友だちを選んで送る</button>'
     +'<button class="btn btn-ghost btn-block" style="margin-top:10px" '+A("goTab","family")+'>キャンセル</button>';
 }
 function deskFor(co){var d={};d[CUST]="0120-101-101";d[COMP]="0120-202-202";return d[co]||"0120-000-000";}
+function detailExtra(x,t){
+  var n=x.photos||0,thumbs="";
+  for(var i=0;i<n;i++){thumbs+='<div '+A(t,"（実機では証券画像を拡大表示）")+' style="width:96px;height:68px;border-radius:8px;background:#eef1f4;border:1px solid #dfe3ea;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#8a94a6;font-size:11px;cursor:pointer">'+I.doc+'<span>証券画像'+(i+1)+'</span></div>';}
+  return '<div class="field full"><div><div class="lbl">メモ</div><div class="val" style="white-space:pre-wrap">'+esc(x.memo||"—")+'</div></div></div>'
+    +'<div class="field full" style="display:block"><div class="lbl">証券画像</div>'+(n?'<div style="display:flex;gap:8px;margin-top:6px">'+thumbs+'</div>':'<div class="val">—</div>')+'</div>';
+}
+function shareCard(act,small){
+  var ex=new Date();ex.setDate(ex.getDate()+INVITE_DAYS);var lim=(ex.getMonth()+1)+"/"+ex.getDate();
+  var f=small?0.9:1;var px=function(n){return Math.round(n*f*10)/10+"px";};
+  return '<div '+(act||"")+' style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.14);max-width:260px'+(act?';cursor:pointer':'')+'">'
+    +'<div style="padding:'+px(14)+' '+px(14)+' '+px(4)+'"><div style="font-weight:800;font-size:'+px(15)+';color:#1f2430">保険の情報を共有します</div>'
+    +'<div style="font-size:'+px(12.5)+';color:var(--ink2);line-height:1.6;margin-top:6px">もしものときのために、私の保険の情報を共有します。下のボタンから受け取ってください。</div>'
+    +'<div style="display:flex;justify-content:space-between;font-size:'+px(12)+';margin-top:10px;padding-top:8px;border-top:1px solid #eef0f3"><span style="color:var(--muted)">受け取り期限</span><span style="color:#1f2430;font-weight:600">'+lim+' まで</span></div></div>'
+    +'<div style="padding:'+px(10)+' '+px(14)+' '+px(12)+'"><div style="background:var(--brand);color:#fff;text-align:center;border-radius:8px;padding:'+px(10)+' 0;font-weight:700;font-size:'+px(13.5)+'">共有を受け取る</div></div>'
+    +'<div style="display:flex;align-items:center;gap:6px;border-top:1px solid #eef0f3;padding:'+px(8)+' '+px(12)+';font-size:'+px(11.5)+';color:var(--ink2)"><span style="width:18px;height:18px;border-radius:5px;background:var(--brand-soft);color:var(--brand);display:inline-flex;align-items:center;justify-content:center">'+I.shield.replace(/width="22" height="22"/,'width="12" height="12"')+'</span><span style="flex:1">はなさくポケット</span><span style="color:var(--muted)">›</span></div>'
+    +'</div>';
+}
 function dfmt(d){return d?String(d).replace(/-/g,"/"):"—";}
 function emgType(name){var m=name.match(/（([^）]+)）/);return m?m[1]:name;}
 function emgBlock(insArr,act){
@@ -431,7 +444,7 @@ function screenMemberDetail(){
     +'<div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(x.no||"—")+'</div></div></div>'
     +'<div class="grid2"><div class="field"><div class="lbl">契約開始日</div><div class="val">'+esc(dfmt(x.start))+'</div></div>'
     +'<div class="field"><div class="lbl">契約満了日</div><div class="val">'+esc(dfmt(x.end))+'</div></div></div>'
-    +'<div class="field full"><div><div class="lbl">担当者・連絡先</div><div class="val">'+esc(x.agent||"未登録")+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn" '+A("toast","発信")+'>'+I.phone+'</button></div>'+(x.agent?'':'<div style="margin:-4px 2px 10px;font-size:12px;line-height:1.6;color:#b54708;background:#fff7ed;border-radius:8px;padding:7px 10px">担当者が登録されていません。ご契約者にご確認ください</div>')+'</div>'
+    +'<div class="field full"><div><div class="lbl">担当者・連絡先</div><div class="val">'+esc(x.agent||"未登録")+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn" '+A("toast","発信")+'>'+I.phone+'</button></div>'+(x.agent?'':'<div style="margin:-4px 2px 10px;font-size:12px;line-height:1.6;color:#b54708;background:#fff7ed;border-radius:8px;padding:7px 10px">担当者が登録されていません。ご契約者にご確認ください</div>')+detailExtra(x,"toast")+'</div>'
     +'<div class="note">共有された情報は閲覧のみ可能です（編集・削除はできません）。</div>';
 }
 function tabbar(){
@@ -524,7 +537,7 @@ function setStep(s){state.addStep=s;render();}
 function setMode(m){state.addMode=m;state.addStep=0;render();}
 function addBack(){if(state.addStep>0){state.addStep--;render();}else{go(null);}}
 function toggleC(n){state.c1=!state.c1;if(!setCheck("ccb","cbtn",state.c1))render();}
-function registerDone(){if(!state.c1){toast("同意が必要です");return;}var n=state.newIns||{};myInsurances.push({name:n.name||"（保険の種類未入力）",co:n.co||"—",no:n.no||"—",start:n.start||"",end:n.end||"",fee:n.fee||"—",agent:n.agent||"—",tel:n.tel||"—",memo:n.memo||"",shared:true});toast("保険を登録しました");setTimeout(function(){goTab("home");},900);}
+function registerDone(){if(!state.c1){toast("同意が必要です");return;}var n=state.newIns||{};myInsurances.push({name:n.name||"（保険の種類未入力）",co:n.co||"—",no:n.no||"—",start:n.start||"",end:n.end||"",fee:n.fee||"—",agent:n.agent||"—",tel:n.tel||"—",memo:n.memo||"",photos:state.photo||0,shared:true});toast("保険を登録しました");setTimeout(function(){goTab("home");},900);}
 function saveEdit(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var co=g("e_co");if(!co){toast("保険会社を入力してください");return;}var tel=g("e_tel");var fee=g("e_fee");if(fee&&!/^\d{1,10}$/.test(fee)){toast("半角数字（整数）で入力してください");return;}if(!tel){toast("連絡先を入力してください");return;}if(!/^0\d{9,10}$/.test(tel)){toast("電話番号は数字のみ（ハイフンなし）で入力してください");return;}var ins=myInsurances[state.editIdx];if(!ins){goTab("home");return;}ins.co=co;ins.name=g("e_name");ins.no=g("e_no");ins.start=readDate("e_start");ins.end=readDate("e_end");ins.fee=g("e_fee");ins.agent=g("e_agent");ins.tel=tel;ins.memo=g("e_memo");toast("変更を保存しました（家族には通知されません）");setTimeout(function(){goTab("home");},900);}
 function deleteIns(){myInsurances.splice(state.editIdx,1);toast("保険を削除しました（家族には通知されません）");setTimeout(function(){goTab("home");},1000);}
 function removeShare(n){sharedMembers=sharedMembers.filter(function(a){return a[0]!==n;});toast(n+"さんへの共有を停止しました（家族に通知されません）");render();}
@@ -555,11 +568,8 @@ function renderB(){
 function bLine(){
   function inMsg(t,card){return '<div class="msg"><div class="mic" style="background:#cfd3da;color:#fff;font-size:14px;font-weight:700">太</div><div class="wrap"><div class="who">'+OWNER+'</div><div class="bubble">'+t+'</div>'+(card||"")+'</div></div>';}
   function outMsg(t){return '<div class="msg out"><div class="wrap"><div class="bubble me">'+t+'</div></div></div>';}
-  var card='<div class="linkcard2" '+A("famGo","app")+' style="cursor:pointer"><div class="lc-top">'+I.shield+' 家族あんしん共有ミニアプリ</div>'
-    +'<div class="lc-d">リンクを開くにはこちらをタップ</div>'
-    +'<div class="lc-btn">開く ›</div></div>';
   var shareMsg = famB.notified
-    ? inMsg(OWNER+"さんから、保険情報共有の招待が届いています。下のリンクを開いてご確認ください。",card)
+    ? '<div class="msg"><div class="mic" style="background:#cfd3da;color:#fff;font-size:14px;font-weight:700">太</div><div class="wrap"><div class="who">'+OWNER+'</div>'+shareCard(A("famGo","app"))+'</div></div>'
     : "";
   var hint = famB.notified ? "" : '<div class="daystamp" style="margin-top:10px"><span>契約者が「共有相手を追加」で招待すると、ここに共有メッセージが届きます</span></div>';
   return SB
@@ -575,13 +585,13 @@ function bAdd(){
   return SB
     +'<div class="addfriend"><div class="oav">'+I.shield.replace('width="22" height="22"','width="44" height="44"')+'</div>'
     +'<div class="onm">'+CUST+'</div><div class="oid">@hanasaku_kazoku</div>'
-    +'<div class="odesc">家族あんしん共有サービス<br>保険情報をご家族と安全に共有できる公式アカウントです。</div>'
+    +'<div class="odesc">はなさくポケット<br>保険情報をご家族と安全に共有できる公式アカウントです。</div>'
     +'<button class="abtn" '+A("famAddDone")+'>'+I.plus+' 追加</button>'
     +'<div style="font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6">追加すると承認画面に戻り、共有を受け取れます</div></div>'
     +'<div class="toast" id="toastB"></div>';
 }
 function bApp(){
-  var body=brandbar("家族あんしん共有")
+  var body=brandbar("はなさくポケット")
     +'<div class="approve-head"><div class="av" style="background:#7d8aa0">太</div><div class="nm">'+OWNER+'さん</div><div class="pill" style="background:var(--brand-soft);color:var(--brand)">'+I.bell+' 共有が届いています</div></div>'
     +'<div class="card approve-card" style="margin-top:16px"><div class="at">保険情報の共有を受け取りますか？</div>'
     +'<div class="ad">'+OWNER+'さんが、あなたと保険情報を共有しようとしています。「共有を受け取る」を押すと、共有された保険情報と緊急連絡先をこのミニアプリで確認できるようになります。</div>';
@@ -593,7 +603,7 @@ function bApp(){
       +'<button class="btn btn-ghost btn-block" style="margin-top:10px" '+A("toastB","あとで確認できます")+'>あとで</button>';
   }else{
     body+='<div class="consent-box blue" style="margin-top:2px"><div class="ct">情報の取扱いへの同意</div><ul>'
-      +'<li>・本サービス（家族あんしん共有）の利用にあたり、'+CUST+'のプライバシーポリシー・利用規約に同意します</li>'
+      +'<li>・本サービス（はなさくポケット）の利用にあたり、'+CUST+'のプライバシーポリシー・利用規約に同意します</li>'
       +'<li>・'+OWNER+'さんから共有される保険情報を受け取り、本アプリで閲覧することに同意します</li>'
       +'<li>・共有された情報の閲覧・管理はご自身の責任で行います。個人情報は'+CUST+'のプライバシーポリシーに従い取り扱われます。</li>'
       +'<li>・共有はいつでも解除できます（公式アカウントのブロックや友だち削除だけでは解除されません）。</li></ul>'
@@ -619,14 +629,14 @@ function famAddDone(){famB.friendAdded=true;famB.addPopup=false;famB.step="app";
 function bOfficial(){
   var menu='<div class="rmbar">はなさく生命 リッチメニュー</div>'
     +'<div class="richmenu">'
-    +'<div class="rt main" '+A("openMini","family")+'>'+I.shield+'<span>家族あんしん共有</span></div>'
+    +'<div class="rt main" '+A("openMini","family")+'>'+I.shield+'<span>はなさくポケット</span></div>'
     +'<div class="rt" '+A("openMini","member")+'>'+I.phone+'<span>緊急連絡先</span></div>'
     +'<div class="rt" '+A("toastB","お問い合わせ")+'>'+I.help+'<span>お問い合わせ</span></div></div>';
   return SB
     +'<div class="linehead"><div class="lav">'+I.shield+'</div><div>'+CUST+'<div style="font-size:11px;font-weight:400;opacity:.9">公式アカウント</div></div></div>'
     +'<div class="linechat" id="bbody"><div class="daystamp"><span>今日</span></div>'
     +'<div class="msg"><div class="mic">'+I.shield+'</div><div class="wrap"><div class="who">'+CUST+'</div>'
-    +'<div class="bubble"><b>【家族あんしん共有】</b><br>'+OWNER+'さんとの保険情報の共有が開始されました。下のリッチメニュー「家族あんしん共有」から内容をご確認いただけます。</div>'
+    +'<div class="bubble"><b>【はなさくポケット】</b><br>'+OWNER+'さんとの保険情報の共有が開始されました。下のリッチメニュー「はなさくポケット」から内容をご確認いただけます。</div>'
     +'</div></div></div>'
     +menu+'<div class="toast" id="toastB"></div>';
 }
@@ -651,7 +661,7 @@ function sharedDetailBody(){
     +'<div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(x.no||"—")+'</div></div></div>'
     +'<div class="grid2"><div class="field"><div class="lbl">契約開始日</div><div class="val">'+esc(dfmt(x.start))+'</div></div>'
     +'<div class="field"><div class="lbl">契約満了日</div><div class="val">'+esc(dfmt(x.end))+'</div></div></div>'
-    +'<div class="field full"><div><div class="lbl">担当者・連絡先</div><div class="val">'+esc(x.agent||"未登録")+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn" '+A("toastB","発信")+'>'+I.phone+'</button></div>'+(x.agent?'':'<div style="margin:-4px 2px 10px;font-size:12px;line-height:1.6;color:#b54708;background:#fff7ed;border-radius:8px;padding:7px 10px">担当者が登録されていません。ご契約者にご確認ください</div>')+'</div>'
+    +'<div class="field full"><div><div class="lbl">担当者・連絡先</div><div class="val">'+esc(x.agent||"未登録")+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn" '+A("toastB","発信")+'>'+I.phone+'</button></div>'+(x.agent?'':'<div style="margin:-4px 2px 10px;font-size:12px;line-height:1.6;color:#b54708;background:#fff7ed;border-radius:8px;padding:7px 10px">担当者が登録されていません。ご契約者にご確認ください</div>')+detailExtra(x,"toastB")+'</div>'
     +'<div class="note">共有された情報は閲覧のみ可能です（編集・削除はできません）。</div>';
 }
 function fHome(){
@@ -679,11 +689,11 @@ function fSettings(){
   return closePill()+'<div class="head-row"><div class="h1">設定</div></div>'
     +'<div class="profile"><div class="av">家</div><div><div class="nm">'+esc(nm)+'</div><div class="meta">家族（共有された側） ・ LINE連携済み</div></div></div>'
     +'<div class="set-group"><div class="set-list">'+item(I.person,"プロフィール編集",nm,A("fopenProfileEdit"))+item(I.help,"アプリの使い方","",A("fopenTutorial"))+item(I.doc,"プライバシーポリシー","")+'</div></div>'
-    +'<div class="ver">家族あんしん共有 v1.0.0<br>'+CUST+'保険株式会社</div>';
+    +'<div class="ver">はなさくポケット v1.0.0<br>'+CUST+'保険株式会社</div>';
 }
 function fTutorial(){
   var steps=[
-    {img:0,h1:"家族でもしもに備える",h2:"「家族あんしん共有」へようこそ",note:"証券や名刺を見ながら、ご家族に共有したい内容を無料でかんたんに登録できます。"},
+    {img:0,h1:"家族でもしもに備える",h2:"「はなさくポケット」へようこそ",note:"証券や名刺を見ながら、ご家族に共有したい内容を無料でかんたんに登録できます。"},
     {img:1,h1:"家族のために",h2:"自由に整理・登録",note:"情報の登録・更新はお客様自身でお願いします。最新の内容に保てるよう、定期的な見直しをおすすめします。"},
     {img:2,h1:"",h2:"見せる範囲は自由自在",note:"「誰に」「何を」共有するかはいつでも変更できます。ご利用や共有に関するご家族間のトラブルについて、当社は責任を負いかねます。"},
     {img:3,h1:"",h2:"もしもの時は緊急連絡先へ",note:"担当者や保険会社の窓口にワンタップで発信。ご家族が困ったときに、すぐ確認・連絡できます。"}
@@ -747,7 +757,7 @@ function fgo(p){famB.mpage=p;renderB();}
 function fsetFam(f){famB.mfamTab=f;renderB();}
 function famConsent(){famB.consent=!famB.consent;if(!setCheck("fmcb","fmbtn",famB.consent))renderB();}
 function famReceive(){if(!famB.consent){toastB("情報の取扱いへの同意が必要です");return;}var exists=sharedMembers.some(function(a){return a[0]==FAM;});if(!exists)sharedMembers.push([FAM,"家"]);pendingInvites.shift();famB.step="profile";renderB();render();toast(FAM+"さんが共有を受け取りました");}
-function bProfile(){return SB+'<div class="view"><div class="pad">'+brandbar("家族あんしん共有")+'<div class="center-title" style="margin-top:10px"><h2>プロフィール登録</h2><p>共有された保険を見るために、あなたのお名前と生年月日を登録してください</p></div>'+formFieldId("fp_name","お名前（必須）","例）佐藤 美咲",famB.pname,30)+formFieldDate("fp_bd","生年月日（必須）",famB.pbd)+formFieldId("fp_tel","電話番号（任意）","例）09000000000（ハイフンなし）",famB.ptel,30)+'<div class="note">LINEのお名前のみ取得しているため、正式なお名前をご登録ください。生年月日は同姓同名の識別に使用します。</div>'+'<div class="check-row" '+A("fpToggle")+'><div id="fpcb" class="cb'+(famB.pconsent?' on':'')+'">'+(famB.pconsent?I.check:"")+'</div><div class="ctxt">プライバシーポリシー・利用規約に同意します</div></div>'+'<button id="fpbtn" class="btn btn-brand btn-block" style="margin-top:4px;opacity:'+(famB.pconsent?1:.45)+'" '+A("fpSave")+'>登録する</button>'+'</div></div><div class="toast" id="toastB"></div>';}
+function bProfile(){return SB+'<div class="view"><div class="pad">'+brandbar("はなさくポケット")+'<div class="center-title" style="margin-top:10px"><h2>プロフィール登録</h2><p>共有された保険を見るために、あなたのお名前と生年月日を登録してください</p></div>'+formFieldId("fp_name","お名前（必須）","例）佐藤 美咲",famB.pname,30)+formFieldDate("fp_bd","生年月日（必須）",famB.pbd)+formFieldId("fp_tel","電話番号（任意）","例）09000000000（ハイフンなし）",famB.ptel,30)+'<div class="note">LINEのお名前のみ取得しているため、正式なお名前をご登録ください。生年月日は同姓同名の識別に使用します。</div>'+'<div class="check-row" '+A("fpToggle")+'><div id="fpcb" class="cb'+(famB.pconsent?' on':'')+'">'+(famB.pconsent?I.check:"")+'</div><div class="ctxt">プライバシーポリシー・利用規約に同意します</div></div>'+'<button id="fpbtn" class="btn btn-brand btn-block" style="margin-top:4px;opacity:'+(famB.pconsent?1:.45)+'" '+A("fpSave")+'>登録する</button>'+'</div></div><div class="toast" id="toastB"></div>';}
 function fpToggle(){famB.pconsent=!famB.pconsent;if(!setCheck("fpcb","fpbtn",famB.pconsent))renderB();}
 function fpSave(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var nm=g("fp_name");if(!nm){toastB("氏名を入力してください");return;}var bd=readDate("fp_bd");if(!bd){toastB("生年月日を入力してください");return;}var bdd=new Date(bd+"T00:00:00"),bp=bd.split("-");if(isNaN(bdd)||bdd.getMonth()+1!=+bp[1]||bdd>=new Date()){toastB("生年月日は過去の実在する日付を入力してください");return;}var tl=g("fp_tel");if(tl&&!/^0\d{9,10}$/.test(tl)){toastB("電話番号は数字のみ（ハイフンなし）で入力してください");return;}if(!famB.pconsent){toastB("同意にチェックしてください");return;}famB.pname=nm;famB.pbd=bd;famB.ptel=tl;famB.tuDone=true;famB.step="miniapp";famB.mtab="family";famB.mpage=null;renderB();toastB(CUST+" 公式アカウントから共有開始のお知らせが届きました");}
 
