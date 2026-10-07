@@ -404,6 +404,7 @@ function screenInvite(){
     +'<button class="btn btn-ghost btn-block" style="margin-top:10px" '+A("goTab","family")+'>キャンセル</button>';
 }
 function deskFor(co){var d={};d[CUST]="0120-101-101";d[COMP]="0120-202-202";return d[co]||"0120-000-000";}
+function dfmt(d){return d?String(d).replace(/-/g,"/"):"—";}
 function emgType(name){var m=name.match(/（([^）]+)）/);return m?m[1]:name;}
 function emgBlock(insArr,act){
   if(!insArr||!insArr.length)return "";
@@ -428,6 +429,8 @@ function screenMemberDetail(){
     +'<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div><div style="flex:1"><div class="ins-name">'+esc(x.name)+'</div><div class="ins-co">'+esc(x.co)+'</div></div></div>'
     +'<div class="grid2"><div class="field"><div class="lbl">保険料</div><div class="val">'+esc(x.fee||"—")+'</div></div>'
     +'<div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(x.no||"—")+'</div></div></div>'
+    +'<div class="grid2"><div class="field"><div class="lbl">契約開始日</div><div class="val">'+esc(dfmt(x.start))+'</div></div>'
+    +'<div class="field"><div class="lbl">契約満了日</div><div class="val">'+esc(dfmt(x.end))+'</div></div></div>'
     +'<div class="field full"><div><div class="lbl">担当者・連絡先</div><div class="val">'+esc(x.agent||"未登録")+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn" '+A("toast","発信")+'>'+I.phone+'</button></div>'+(x.agent?'':'<div style="margin:-4px 2px 10px;font-size:12px;line-height:1.6;color:#b54708;background:#fff7ed;border-radius:8px;padding:7px 10px">担当者が登録されていません。ご契約者にご確認ください</div>')+'</div>'
     +'<div class="note">共有された情報は閲覧のみ可能です（編集・削除はできません）。</div>';
 }
@@ -646,6 +649,8 @@ function sharedDetailBody(){
   return '<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div><div style="flex:1"><div class="ins-name">'+esc(x.name)+'</div><div class="ins-co">'+esc(x.co)+'</div></div></div>'
     +'<div class="grid2"><div class="field"><div class="lbl">保険料</div><div class="val">'+esc(x.fee||"—")+'</div></div>'
     +'<div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(x.no||"—")+'</div></div></div>'
+    +'<div class="grid2"><div class="field"><div class="lbl">契約開始日</div><div class="val">'+esc(dfmt(x.start))+'</div></div>'
+    +'<div class="field"><div class="lbl">契約満了日</div><div class="val">'+esc(dfmt(x.end))+'</div></div></div>'
     +'<div class="field full"><div><div class="lbl">担当者・連絡先</div><div class="val">'+esc(x.agent||"未登録")+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(x.tel)+'</span></div></div><button class="callbtn" '+A("toastB","発信")+'>'+I.phone+'</button></div>'+(x.agent?'':'<div style="margin:-4px 2px 10px;font-size:12px;line-height:1.6;color:#b54708;background:#fff7ed;border-radius:8px;padding:7px 10px">担当者が登録されていません。ご契約者にご確認ください</div>')+'</div>'
     +'<div class="note">共有された情報は閲覧のみ可能です（編集・削除はできません）。</div>';
 }
