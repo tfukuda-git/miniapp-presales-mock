@@ -171,7 +171,7 @@ var CUST="はなさく生命",COMP="第一生命",OWNER="田中 太郎",FAM="共
 var myInsurances=[];
 var members=[];
 var friends=["田中 花子","田中 一郎","田中 健一","佐藤 美咲"];
-var memberDetail={name:"田中 花子",init:"花",emergency:[{lbl:"保険会社の担当者",val:"田中 誠",green:false},{lbl:CUST,val:"0120-000-000",green:true}],insurances:[{name:"はなさく医療（医療保険）",co:CUST,no:"HN-2022-0310",fee:"¥7,200",agent:"田中 誠",tel:"090-1234-5678"}]};
+var memberDetail={name:"田中 花子",init:"花",emergency:[{lbl:"保険会社の担当者",val:"田中 誠",green:false},{lbl:CUST,val:"0120-000-000",green:true}],insurances:[{name:"はなさく医療（医療保険）",cov:["医療","がん"],co:CUST,no:"HN-2022-0310",fee:"¥7,200",agent:"田中 誠",tel:"090-1234-5678"}]};
 var ocrResult=[{lbl:"保険会社",val:CUST},{lbl:"保険種類",val:"はなさく収入保障（収入保障保険）"},{lbl:"証券番号",val:"HN-2025-0226"},{lbl:"月額保険料",val:"¥6,800"},{lbl:"契約者名",val:OWNER},{lbl:"担当者名",val:"佐藤 美咲"},{lbl:"担当者連絡先",val:"090-9876-5432"}];
 var I={
   shield:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6l7-3z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>',
@@ -215,10 +215,11 @@ function brandbar(sub){return '<div class="brandbar"><div class="bmark">'+I.shie
 function A(act,v){return 'data-act="'+act+'"'+(v!=null?' data-v="'+esc(v)+'"':'');}
 
 /* ===== 契約者 端末 ===== */
+function covTags(x){var c=x&&x.cov||[];if(!c.length)return "";return '<div style="display:flex;flex-wrap:wrap;gap:5px;margin:-2px 0 10px"><span style="font-size:11px;color:var(--muted);align-self:center;margin-right:2px">備えている保障</span>'+c.map(function(t){return '<span style="font-size:11.5px;font-weight:700;color:#0f8a7b;background:#e7f6f1;border-radius:10px;padding:2px 9px">'+esc(t)+'</span>';}).join("")+'</div>';}
 function insCard(ins,idx){
   return '<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div>'
     +'<div style="flex:1"><div class="ins-name">'+esc(ins.name)+'</div><div class="ins-co">'+esc(ins.co)+'</div></div>'
-    +'<button class="ins-kebab" '+A("openEdit",idx)+'>'+I.kebab+'</button></div>'
+    +'<button class="ins-kebab" '+A("openEdit",idx)+'>'+I.kebab+'</button></div>'+covTags(ins)
     +'<div class="grid2"><div class="field"><div class="lbl">保険料</div><div class="val">'+esc(ins.fee)+'</div></div>'
     +'<div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(ins.no||"—")+'</div></div></div>'
     +'<div class="field full"><div><div class="lbl">担当者・連絡先</div><div class="val">'+esc(ins.agent||"未登録")+' <span style="color:var(--muted);font-weight:400;font-size:13px">'+esc(ins.tel)+'</span></div></div>'
@@ -262,7 +263,7 @@ function screenSettings(){
   var nm=state.pname||OWNER;
   return '<div class="head-row"><div class="h1">設定</div></div>'
     +'<div class="profile"><div class="av">太</div><div><div class="nm">'+esc(nm)+'</div><div class="meta">契約者 ・ LINE連携済み</div></div></div>'
-    +'<div class="set-group"><div class="set-list">'+item(I.person,"プロフィール編集",nm,A("openProfileEdit"))+item(I.help,"アプリの使い方","",A("openTutorial"))+item(I.doc,"プライバシーポリシー","")+'</div></div>'
+    +'<div class="set-group"><div class="set-list">'+item(I.person,"プロフィール編集",nm,A("openProfileEdit"))+item(I.help,"アプリの使い方","",A("openTutorial"))+item(I.doc,"利用規約","",A("showDoc","terms|A"))+item(I.doc,"プライバシーポリシー","",A("showDoc","pp|A"))+item(I.phone,"お問い合わせ","",A("showDoc","contact|A"))+'</div></div>'
     +'<div class="ver">はなさくポケット v1.0.0<br>'+CUST+'保険株式会社</div>';
 }
 var TU_IC={yen:'<path d="M6 4l6 8 6-8M12 12v8M7 13h10M7 17h10"/>',line:'<path d="M21 11c0-4.4-4-8-9-8s-9 3.6-9 8c0 4 3.2 7.3 7.6 7.9.3.1.7.2.8.5l.1 1.6c0 .4.4.6.7.4 1-.6 6-3.6 7.8-6.5A7 7 0 0 0 21 11z"/>',stack:'<rect x="4" y="4" width="16" height="6" rx="2"/><rect x="4" y="14" width="16" height="6" rx="2"/>',cam:'<path d="M3 8a2 2 0 0 1 2-2h2l2-2h6l2 2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="4"/>',eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',check:'<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 12l3 3 5-6"/>',toggle:'<rect x="2" y="7" width="20" height="10" rx="5"/><circle cx="16" cy="12" r="3"/>',tel:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',fam:'<circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14 20c0-2.5 1.3-4.5 3-4.5s4 2 4 4.5"/>',search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>'};
@@ -448,7 +449,7 @@ function screenMember(){
 function screenMemberDetail(){
   var m=members[state.memberIdx||0];var x=m.insurances[state.mInsIdx||0];if(!x)return screenMember();
   return '<div class="backbar"><button class="back" '+A("go","member")+'>'+I.back+' '+m.name+'さんの保険に戻る</button></div>'
-    +'<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div><div style="flex:1"><div class="ins-name">'+esc(x.name)+'</div><div class="ins-co">'+esc(x.co)+'</div></div></div>'
+    +'<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div><div style="flex:1"><div class="ins-name">'+esc(x.name)+'</div><div class="ins-co">'+esc(x.co)+'</div></div></div>'+covTags(x)
     +'<div class="grid2"><div class="field"><div class="lbl">保険料</div><div class="val">'+esc(x.fee||"—")+'</div></div>'
     +'<div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(x.no||"—")+'</div></div></div>'
     +'<div class="grid2"><div class="field"><div class="lbl">契約開始日</div><div class="val">'+esc(dfmt(x.start))+'</div></div>'
@@ -669,7 +670,7 @@ function sharedDetailBody(){
   var shared=myInsurances.filter(function(x){return x.shared;});
   var x=shared[famB.sharedIdx||0];
   if(!x)return sharedBody();
-  return '<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div><div style="flex:1"><div class="ins-name">'+esc(x.name)+'</div><div class="ins-co">'+esc(x.co)+'</div></div></div>'
+  return '<div class="card"><div class="ins-top"><div class="ins-ic">'+I.shield+'</div><div style="flex:1"><div class="ins-name">'+esc(x.name)+'</div><div class="ins-co">'+esc(x.co)+'</div></div></div>'+covTags(x)
     +'<div class="grid2"><div class="field"><div class="lbl">保険料</div><div class="val">'+esc(x.fee||"—")+'</div></div>'
     +'<div class="field"><div class="lbl">証券番号</div><div class="val">'+esc(x.no||"—")+'</div></div></div>'
     +'<div class="grid2"><div class="field"><div class="lbl">契約開始日</div><div class="val">'+esc(dfmt(x.start))+'</div></div>'
@@ -701,7 +702,7 @@ function fSettings(){
   var nm=famB.pname||FAM;
   return closePill()+'<div class="head-row"><div class="h1">設定</div></div>'
     +'<div class="profile"><div class="av">家</div><div><div class="nm">'+esc(nm)+'</div><div class="meta">家族（共有された側） ・ LINE連携済み</div></div></div>'
-    +'<div class="set-group"><div class="set-list">'+item(I.person,"プロフィール編集",nm,A("fopenProfileEdit"))+item(I.help,"アプリの使い方","",A("fopenTutorial"))+item(I.doc,"プライバシーポリシー","")+'</div></div>'
+    +'<div class="set-group"><div class="set-list">'+item(I.person,"プロフィール編集",nm,A("fopenProfileEdit"))+item(I.help,"アプリの使い方","",A("fopenTutorial"))+item(I.doc,"利用規約","",A("showDoc","terms|B"))+item(I.doc,"プライバシーポリシー","",A("showDoc","pp|B"))+item(I.phone,"お問い合わせ","",A("showDoc","contact|B"))+'</div></div>'
     +'<div class="ver">はなさくポケット v1.0.0<br>'+CUST+'保険株式会社</div>';
 }
 function fTutorial(){
@@ -765,6 +766,21 @@ function bProfile(){return SB+'<div class="view"><div class="pad">'+brandbar("�
 function fpToggle(){famB.pconsent=!famB.pconsent;if(!setCheck("fpcb","fpbtn",famB.pconsent))renderB();}
 function fpSave(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var nm=g("fp_name");if(!nm){toastB("氏名を入力してください");return;}var bd=readDate("fp_bd");if(!bd){toastB("生年月日を入力してください");return;}var bdd=new Date(bd+"T00:00:00"),bp=bd.split("-");if(isNaN(bdd)||bdd.getMonth()+1!=+bp[1]||bdd>=new Date()){toastB("生年月日は過去の実在する日付を入力してください");return;}var tl=g("fp_tel");if(tl&&!/^0\d{9,10}$/.test(tl)){toastB("電話番号は数字のみ（ハイフンなし）で入力してください");return;}if(!famB.pconsent){toastB("同意にチェックしてください");return;}famB.pname=nm;famB.pbd=bd;famB.ptel=tl;famB.tuDone=true;famB.step="miniapp";famB.mtab="family";famB.mpage=null;renderB();toastB(CUST+" 公式アカウントから共有開始のお知らせが届きました");}
 
+var DOCS={
+ terms:{t:"利用規約",b:'<p style="font-size:13px;line-height:1.8;color:var(--ink2)">この利用規約は、'+"はなさく生命"+'が提供する「はなさくポケット」（以下「本サービス」）の利用条件を定めるものです。</p>'
+  +['第1条（目的）','第2条（利用登録）','第3条（登録情報の管理）','第4条（家族への共有）','第5条（禁止事項）','第6条（免責事項）','第7条（退会）','第8条（規約の変更）'].map(function(h){return '<div style="font-weight:700;font-size:14px;margin:14px 0 4px">'+h+'</div><div style="height:8px;background:#e8ebef;border-radius:4px;margin:6px 0;width:96%"></div><div style="height:8px;background:#e8ebef;border-radius:4px;margin:6px 0;width:88%"></div><div style="height:8px;background:#e8ebef;border-radius:4px;margin:6px 0;width:70%"></div>';}).join("")
+  +'<div style="font-size:11px;color:#98a2b3;margin-top:16px">※モック：本文は確定した規約の文面を掲載します</div>'},
+ pp:{t:"プライバシーポリシー",b:'<p style="font-size:13px;line-height:1.8;color:var(--ink2)">本サービスでお預かりする個人情報（LINEのユーザー識別子、ご登録いただいたお名前・生年月日・電話番号、保険の情報・証券画像、ご家族との共有の情報など）は、'+"はなさく生命"+'のプライバシーポリシーに従って取り扱います。</p>'
+  +'<div class="card" style="margin-top:12px"><div style="font-weight:700;font-size:14px;margin-bottom:6px">主な内容</div><ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.9;color:var(--ink2)"><li>取得する情報と利用目的</li><li>第三者への提供・業務の委託</li><li>情報の管理と保管期間</li><li>開示・訂正・削除のご請求</li><li>お問い合わせ窓口</li></ul></div>'
+  +'<button class="btn btn-primary btn-block" style="margin-top:6px" data-act="toast" data-v="外部のページを開きます（はなさく生命のプライバシーポリシー）">プライバシーポリシー（全文）を見る</button>'
+  +'<div style="font-size:11px;color:#98a2b3;margin-top:12px">※モック：全文ははなさく生命様のプライバシーポリシーのページを開きます（URL確認中）</div>'},
+ contact:{t:"お問い合わせ",b:'<p style="font-size:13px;line-height:1.8;color:var(--ink2)">はなさくポケットの使い方や、ご登録内容の削除（退会）のご相談は、以下からお問い合わせください。</p>'
+  +'<div class="card" style="margin-top:12px"><div style="font-weight:700;font-size:14px">LINEでお問い合わせ</div><div style="font-size:12.5px;color:var(--muted);margin:4px 0 10px">公式アカウントのトークでご質問を受け付けています</div><button class="btn btn-block" style="background:#06c755;color:#fff" data-act="toast" data-v="公式アカウントのトークを開きます">トークで問い合わせる</button></div>'
+  +'<div class="card"><div style="font-weight:700;font-size:14px">お電話でのお問い合わせ</div><div style="font-size:12.5px;color:var(--muted);margin:4px 0 10px">'+"はなさく生命"+' お客さまサービスセンター</div><button class="btn btn-ghost btn-block" data-act="toast" data-v="発信: 0120-000-000">0120-000-000 に電話する</button><div style="font-size:11.5px;color:var(--muted);margin-top:6px;text-align:center">受付時間：平日 9:00〜17:00</div></div>'
+  +'<div style="font-size:11px;color:#98a2b3;margin-top:6px">※モック：窓口・電話番号・受付時間は確定した内容に差し替えます</div>'}
+};
+function showDoc(v){var p=String(v).split("|"),d=DOCS[p[0]];var sc=p[1]=="B"?document.getElementById("screenB"):document.querySelector(".screen");if(!d||!sc)return;var o=document.createElement("div");o.className="docov";o.style.cssText="position:absolute;inset:44px 0 0 0;background:var(--bg);z-index:65;display:flex;flex-direction:column;padding-top:8px";o.innerHTML='<div class="backbar" style="padding:6px 16px"><button class="back" data-act="closeDoc">'+I.back+' 設定に戻る</button></div><div style="flex:1;overflow-y:auto;padding:4px 16px 24px"><div class="h1" style="font-size:22px;margin-bottom:8px">'+d.t+'</div>'+d.b+'</div>';sc.appendChild(o);}
+function closeDoc(el){var o=el.closest(".docov");if(o)o.remove();}
 /* ===== event delegation (インラインonclick非依存でクリック可能) ===== */
 document.addEventListener("click",function(e){
   var el=e.target.closest ? e.target.closest("[data-act]") : null;
@@ -783,6 +799,8 @@ document.addEventListener("click",function(e){
     case "openMember": openMember(parseInt(v,10)); break;
     case "openMemberIns": openMemberIns(v); break;
     case "registerDone": registerDone(); break;
+    case "showDoc": showDoc(v); break;
+    case "closeDoc": closeDoc(el); break;
     case "spGo": spClose(); state.tab="family"; go("invite"); break;
     case "spClose": spClose(); break;
     case "confirmManual": confirmManual(); break;
@@ -832,6 +850,7 @@ document.addEventListener("click",function(e){
 render();
 renderB();
 document.addEventListener("input",function(e){var t=e.target;if(t&&/_memo$/.test(t.id||"")){var c=document.getElementById(t.id+"_cnt");if(c)c.textContent=t.value.length+"/200";}});
+</script>
 </script>
 <style>#pwgate{position:fixed;inset:0;background:#0f172a;display:flex;align-items:center;justify-content:center;z-index:99999;font-family:system-ui}#pwgate .box{background:#fff;padding:32px 28px;border-radius:14px;width:300px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.3)}#pwgate h3{margin:0 0 6px;font-size:17px;color:#0f172a}#pwgate p{margin:0 0 16px;font-size:13px;color:#64748b}#pwgate input{width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:15px;box-sizing:border-box;margin-bottom:12px}#pwgate button{width:100%;padding:11px;border:0;border-radius:8px;background:#06c755;color:#fff;font-size:15px;font-weight:600;cursor:pointer}#pwgate .err{color:#b42318;font-size:12px;height:16px;margin-bottom:6px}</style>
 <div id="pwgate"><div class="box"><h3>デモを表示</h3><p>パスワードを入力してください</p><div class="err" id="pwerr"></div><input id="pwin" type="password" placeholder="パスワード" onkeydown="if(event.key==='Enter')pwck()"><button onclick="pwck()">表示する</button></div></div>
