@@ -501,6 +501,7 @@ function numNorm(v){return String(v||"").replace(/[０-９]/g,function(c){return
 function confirmManual(){var g=function(id){var el=document.getElementById(id);return el?String(el.value).trim():"";};var co=g("f_co");if(!co){toast("保険会社を入力してください");return;}var cov=readCov("f");if(!cov.length){toast("備えている保障を1つ以上選んでください");return;}var tel=numNorm(g("f_tel"));var fee=numNorm(g("f_fee"));if(fee&&!/^\d{1,10}$/.test(fee)){toast("半角数字（整数）で入力してください");return;}if(tel&&!/^0\d{9,10}$/.test(tel)){toast("電話番号は数字のみ（ハイフンなし）で入力してください");return;}state.newIns={co:co,cov:cov,name:g("f_name"),no:g("f_no"),start:readDate("f_start"),end:readDate("f_end"),fee:fee,agent:g("f_agent"),tel:tel,memo:g("f_memo")};state.addStep=1;render();}
 function attachPhoto(){if((state.photo||0)>=2){toast("証券画像は最大2枚までです");return;}state.camStep="perm";render();}
 function camDeny(){state.camStep=null;render();}
+function camLib(){state.photo=(state.photo||0)+1;state.camStep=null;toast("（実機では端末の写真ライブラリが開きます）証券写真を添付しました");render();}
 function camAllow(){state.camOk=true;camShoot();}
 function camShoot(){state.photo=(state.photo||0)+1;state.camStep=null;toast("（実機では端末のカメラで撮影）証券写真を添付しました");render();}
 function screenCamera(){
@@ -509,11 +510,12 @@ function screenCamera(){
     return '<div style="text-align:center;padding:34px 8px 0">'
       +'<div style="width:64px;height:64px;border-radius:18px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">'+I.camera.replace('width="40" height="40"','width="30" height="30"')+'</div>'
       +'<div style="font-weight:700;font-size:16px;line-height:1.5;margin-bottom:8px">証券を撮影する前に</div>'
-      +'<div style="font-size:13px;color:var(--ink2);line-height:1.7;margin-bottom:18px;max-width:290px;margin-left:auto;margin-right:auto">撮影した写真はご自身の保険情報としてのみ利用されます。「カメラを起動する」を押すと端末のカメラが起動します（初回は端末のアクセス許可が表示されます）。</div>'
+      +'<div style="font-size:13px;color:var(--ink2);line-height:1.7;margin-bottom:18px;max-width:290px;margin-left:auto;margin-right:auto">撮影した写真はご自身の保険情報としてのみ利用されます。「カメラを起動する」を押すと端末のカメラが起動します（初回は端末のアクセス許可が表示されます）。撮影済みの写真は「写真ライブラリから選ぶ」から登録できます。</div>'
       +caution
       +'<div style="display:flex;gap:10px;margin-top:20px">'
       +'<button class="btn btn-ghost btn-block" style="margin:0" '+A("camDeny")+'>キャンセル</button>'
       +'<button class="btn btn-primary btn-block" style="margin:0" '+A("camAllow")+'>カメラを起動する</button></div>'
+      +'<button class="btn btn-ghost btn-block" style="margin:10px 0 0" '+A("camLib")+'>写真ライブラリから選ぶ</button>'
       +'</div>';
   }
   var cautionD='<div style="background:rgba(255,255,255,.94);border-radius:8px;color:#b42318;font-size:11.5px;line-height:1.6;padding:9px 11px;text-align:left">⚠ 健康保険証・マイナ保険証など公的保険の写真は撮影・添付しないでください。<br>⚠ 病歴・診断書など健康状態がわかる書類は撮影しないでください。</div>';
@@ -806,6 +808,7 @@ document.addEventListener("click",function(e){
     case "confirmManual": confirmManual(); break;
     case "attachPhoto": attachPhoto(); break;
     case "camAllow": camAllow(); break;
+    case "camLib": camLib(); break;
     case "camDeny": camDeny(); break;
     case "camShoot": camShoot(); break;
     case "saveProfile": saveProfile(); break;
