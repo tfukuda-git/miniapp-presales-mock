@@ -295,8 +295,8 @@ function screenProfileEdit(){
     +'<div class="note">正式なお名前・連絡先をご登録ください。生年月日は同姓同名の識別に使用します。</div>'
     +'<button class="btn btn-primary btn-block" style="margin-top:4px" '+A("saveProfileEdit")+'>変更を保存</button>';
 }
-var COVS=["死亡","医療","がん","特定疾病","資産形成","収入保障","介護・障がい","その他"];
-function covField(pre,sel){sel=sel||[];return '<div class="form-field req"><div class="lbl">備えている保障（必須・複数選択可）</div><div class="covs">'+COVS.map(function(c){var on=sel.indexOf(c)>=0;return '<label class="cov'+(on?' on':'')+'"><input type="checkbox" name="'+pre+'_cov" value="'+c+'"'+(on?' checked':'')+' onchange="this.parentNode.classList.toggle(\'on\',this.checked)">'+c+'</label>';}).join("")+'</div></div>';}
+var COVS=["死亡","医療","がん","特定疾病","年金・資産形成","収入保障","介護・障がい","その他"];
+function covField(pre,sel){sel=sel||[];return '<div class="form-field req"><div class="lbl">備えている保障（必須・複数選択可）</div><div class="covs">'+COVS.map(function(c){var on=sel.indexOf(c)>=0;return '<label class="cov'+(on?' on':'')+'"><input type="checkbox" name="'+pre+'_cov" value="'+c+'"'+(on?' checked':'')+' onchange="this.parentNode.classList.toggle(\'on\',this.checked)">'+c+'</label>';}).join("")+'</div><div class="cov-note" style="font-size:11px;color:var(--muted);line-height:1.5;margin-top:8px">※特定疾病：がん、急性心筋梗塞、脳卒中等により被保険者が所定の状態になったときなどに、保険金として受け取れるもの</div></div>';}
 function readCov(pre){return Array.prototype.map.call(document.querySelectorAll('input[name="'+pre+'_cov"]:checked'),function(e){return e.value;});}
 function formField(lbl,ph){return '<div class="form-field"><div class="lbl">'+lbl+'</div><input type="text" placeholder="'+ph+'"></div>';}
 function formFieldId(id,lbl,ph,val,ml){var im=/_(fee|tel)$/.test(id)?' inputmode="numeric"':'';return '<div class="form-field"><div class="lbl">'+lbl+'</div><input id="'+id+'" type="text"'+im+(ml?' maxlength="'+ml+'"':'')+' placeholder="'+esc(ph)+'" value="'+esc(val||"")+'"></div>';}
